@@ -9,7 +9,6 @@ import java.util.List;
 
 public class Customer {
 
-
     //variables
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +17,6 @@ public class Customer {
     private String email;
     private String password;
     private String customerRegisterDate;
-
 
     // relationships
     @OneToOne

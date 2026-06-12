@@ -18,8 +18,8 @@ public class Order {
     private LocalDateTime orderStartDateTime;
     private String address;
     private LocalDateTime orderRegisterDate;
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
-
 
     // relationships --------------
     @ManyToOne
