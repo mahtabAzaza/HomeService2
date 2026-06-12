@@ -22,9 +22,9 @@ public class Service {
 
 
     // relationships --------------------
-    @OneToMany
+    @OneToMany (mappedBy= "customer")
     private List<Order> orders;
-    @ManyToMany
+    @ManyToMany (mappedBy= "specialist")
     private List<Proposal> Proposals;
     @ManyToMany
     private List<Specialist> specialists;

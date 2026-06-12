@@ -17,27 +17,26 @@ public class Specialist {
     @Column(nullable = false, unique = true)
     private String email;
     private String password;
-    private byte profileImage;
+    private byte[] profileImage;
     private LocalDateTime registerDate;
-
     @Enumerated(EnumType.STRING)
     private SpecialistStatus status;
 
     //relationships --------------------------
     @OneToOne
     private Wallet wallet;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "specialist")
     private List<Proposal> proposals;
     @ManyToMany
+    @JoinTable(name = "specialist_services",
+            joinColumns = @JoinColumn(name = "specialist_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id"))
     private List <Service> services;
 
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "services",
-//            joinColumns = @JoinColumn(name = "specialist_id"),
-//            inverseJoinColumns = @JoinColumn(name = "service_id")
-//    )
+    //constructor
+    public Specialist (){
+    }
 
 
     // getter setter--------------------------------
@@ -57,7 +56,7 @@ public class Specialist {
         return password;
     }
 
-    public byte getProfileImage() {
+    public byte[] getProfileImage() {
         return profileImage;
     }
 
@@ -85,7 +84,7 @@ public class Specialist {
         this.password = password;
     }
 
-    public void setProfileImage(byte profileImage) {
+    public void setProfileImage(byte[] profileImage) {
         this.profileImage = profileImage;
     }
 

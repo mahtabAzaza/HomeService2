@@ -19,7 +19,7 @@ public class Review {
     // relationships ------------------
     @OneToOne
     private Order order;
-    @OneToMany
+    @OneToMany (mappedBy= "customer")
     private List<Customer> customers;
 
     // getter setter ------------------

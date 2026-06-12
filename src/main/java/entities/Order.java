@@ -1,7 +1,5 @@
 package entities;
-
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,8 +7,7 @@ import java.util.List;
 @Table(name = "orders")
 public class Order {
 
-
-    // variable -------------
+    // variable --------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderId;
@@ -22,14 +19,14 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    // relationships --------------
+    // relationships -------
     @ManyToOne
     private Customer customer;
-    @OneToMany
+    @OneToMany (mappedBy= "specialists")
     private List<Proposal> proposals;
     @ManyToOne
     private Service service;
-    @OneToOne
+    @OneToOne (mappedBy= "customer")
     private Specialist specialist;
 
 
@@ -89,7 +86,6 @@ public class Order {
     public void setOrderStartDateTime(LocalDateTime orderStartDateTime) {
         this.orderStartDateTime = orderStartDateTime;
     }
-
     public void setAddress(String address) {
         this.address = address;
     }
@@ -105,4 +101,9 @@ public class Order {
     public void setSpecialist(Specialist specialist) {
         this.specialist = specialist;
     }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
 }

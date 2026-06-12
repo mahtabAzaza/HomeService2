@@ -1,12 +1,10 @@
 package entities;
-
 import jakarta.persistence.*;
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "customers")
-
 public class Customer {
 
     //variables
@@ -14,18 +12,22 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
+    @Column(nullable = false, unique = true)
     private String email;
     private String password;
-    private String customerRegisterDate;
+    private LocalDateTime customerRegisterDate;
 
     // relationships
     @OneToOne
     private Wallet wallet;
-    @OneToMany
+    @OneToMany (mappedBy = "customer")
     private List<Order> orders;
-    @ManyToMany
+    @OneToMany (mappedBy = "customer")
     private List<Review> reviews;
 
+    // constructor
+    public Customer() {
+    }
 
     //getter setter
     public long getId() {
@@ -44,7 +46,7 @@ public class Customer {
         return password;
     }
 
-    public String getCustomerRegisterDate() {
+    public LocalDateTime getCustomerRegisterDate() {
         return customerRegisterDate;
     }
 

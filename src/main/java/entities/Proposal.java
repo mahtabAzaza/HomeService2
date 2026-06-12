@@ -1,8 +1,7 @@
 package entities;
 
 import jakarta.persistence.*;
-
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "proposals")
@@ -15,14 +14,13 @@ public class Proposal {
     private long proposalPrice;
     private String startDate;
     private String duration;
-    private String proposalRegistrationDate;
+    private LocalDateTime proposalRegistrationDate;
 
     //relationships --------------
     @ManyToOne
     private Specialist specialist;
     @ManyToOne
     private Order order;
-
 
     // getter setter
     public int getProposalID() {
@@ -41,7 +39,7 @@ public class Proposal {
         return duration;
     }
 
-    public String getProposalRegistrationDate() {
+    public LocalDateTime getProposalRegistrationDate() {
         return proposalRegistrationDate;
     }
 
@@ -65,7 +63,7 @@ public class Proposal {
         this.duration = duration;
     }
 
-    public void setProposalRegistrationDate(String proposalRegistrationDate) {
+    public void setProposalRegistrationDate(LocalDateTime proposalRegistrationDate) {
         this.proposalRegistrationDate = proposalRegistrationDate;
     }
 
