@@ -18,10 +18,10 @@ public class Wallet {
 
 
     // relationships-------------------
-    @OneToOne(cascade = CascadeType.ALL)
-    private long specialistID;
-    @OneToOne(cascade = CascadeType.ALL)
-    private long customerID;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    private long specialistID;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    private long customerID;
 
 
 
