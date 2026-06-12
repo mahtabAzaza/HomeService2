@@ -7,14 +7,22 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "wallets")
 public class Wallet {
+
+
+    //variables-----------------------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int walletID;
-    int specialistID;
-    int customerID;
-    long balance;
-    String customerName;
-    String specialistName;
+    private int walletID;
+    private String ownerName;
+    private long balance;
+
+    // relationships-------------------
+    @OneToOne(cascade = CascadeType.ALL)
+    private long specialistID;
+    @OneToOne(cascade = CascadeType.ALL)
+    private long customerID;
+
+
 
 
 
