@@ -32,7 +32,6 @@ public class Specialist {
     private List <Service> services;
 
 
-
 //    @ManyToMany
 //    @JoinTable(
 //            name = "services",

@@ -35,8 +35,6 @@ public class Service {
 
 
     // getter setter
-
-
     public long getServiceId() {
         return serviceId;
     }

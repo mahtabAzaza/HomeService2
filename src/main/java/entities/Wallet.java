@@ -16,6 +16,7 @@ public class Wallet {
     private String ownerName;
     private long balance;
 
+
     // relationships-------------------
     @OneToOne(cascade = CascadeType.ALL)
     private long specialistID;

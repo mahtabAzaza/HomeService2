@@ -8,7 +8,6 @@ import java.util.List;
 @Table(name = "proposals")
 public class Proposal {
 
-
     // variables --------------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

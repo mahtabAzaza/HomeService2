@@ -22,7 +22,6 @@ public class Review {
     @OneToMany
     private List<Customer> customers;
 
-
     // getter setter ------------------
     public long getOrderID() {
         return orderID;
