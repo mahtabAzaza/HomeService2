@@ -1,5 +1,5 @@
 package service;
-
+import entities.Proposal;
 import entities.Specialist;
 
 public interface SpecialistService{
@@ -7,11 +7,14 @@ public interface SpecialistService{
 //Sign up
     void signUp(Specialist specialist);
 //login
-    void signIn(String email, String password);
-//proposal
+    void logIn(String email, String password);
+//add proposal for orders
+    void addProposal( Proposal proposal);
+    // add Long loggedInSpecialistId to method input
 
-//wallet
+//use wallet
+    void useWallet (Long specialistID, double balance);
 //change info
-
+    void changeInfo (Long specialistID, Specialist updatedSpecialist);
 
 }

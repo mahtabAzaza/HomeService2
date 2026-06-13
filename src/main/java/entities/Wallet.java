@@ -12,21 +12,21 @@ public class Wallet {
     //variables-----------------------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int walletID;
+    private Long walletID;
     private String ownerName;
     private long balance;
 
 
      //relationships-------------------
     @OneToOne
-    private long specialistID;
+    private Long specialistID;
     @OneToOne
-    private long customerID;
+    private Long customerID;
 
     //getter setter
 
 
-    public int getWalletID() {
+    public Long getWalletID() {
         return walletID;
     }
 

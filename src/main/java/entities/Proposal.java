@@ -10,8 +10,8 @@ public class Proposal {
     // variables --------------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int proposalID;
-    private long proposalPrice;
+    private Long proposalID;
+    private Long proposalPrice;
     private String startDate;
     private String duration;
     private LocalDateTime proposalRegistrationDate;
@@ -23,11 +23,11 @@ public class Proposal {
     private Order order;
 
     // getter setter
-    public int getProposalID() {
+    public Long getProposalID() {
         return proposalID;
     }
 
-    public long getProposalPrice() {
+    public Long getProposalPrice() {
         return proposalPrice;
     }
 

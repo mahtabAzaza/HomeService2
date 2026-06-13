@@ -10,7 +10,7 @@ public class Customer {
     //variables
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     @Column(nullable = false, unique = true)
     private String email;
@@ -30,7 +30,7 @@ public class Customer {
     }
 
     //getter setter
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

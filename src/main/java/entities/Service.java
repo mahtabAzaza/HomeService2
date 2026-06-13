@@ -13,7 +13,7 @@ public class Service {
     // variables -------------------------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long serviceId;
+    private Long serviceId;
     private String serviceName;
     private long serviceBasePrice;
     private String serviceDescription;
@@ -35,7 +35,7 @@ public class Service {
 
 
     // getter setter
-    public long getServiceId() {
+    public Long getServiceId() {
         return serviceId;
     }
 

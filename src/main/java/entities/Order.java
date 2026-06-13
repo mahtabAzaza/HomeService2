@@ -10,7 +10,7 @@ public class Order {
     // variable --------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long orderId;
+    private Long orderId;
     private String orderDescription;
     private long priceOffer;
     private LocalDateTime orderStartDateTime;
@@ -31,7 +31,7 @@ public class Order {
 
 
     // getter setter
-    public long getOrderId() {
+    public Long getOrderId() {
         return orderId;
     }
 

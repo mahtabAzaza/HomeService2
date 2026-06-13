@@ -1,19 +1,15 @@
 package service;
 
-import entities.Manager;
-import jakarta.persistence.ManyToOne;
-
-public class ManagerService {
-
-    @ManyToOne
-    public Manager manager;
 
 
+public interface ManagerService {
+
+    //manage services:
+    // (add/delete specialist)
+    // (add/delete service)
+    // (edit service)
+    //approve specialists
+    //add/remove specialist
 
 
-
-    public void managerLogIn(String name, String password) {
-        this.manager = new Manager();
-        return;
-    }
 }

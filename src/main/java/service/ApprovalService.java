@@ -1,4 +1,9 @@
 package service;
 
-public class ApprovalService {
+public interface ApprovalService {
+
+    //
+
+
 }
+

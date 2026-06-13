@@ -12,7 +12,7 @@ public class Review {
     // variables ---------------------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long orderID;
+    private Long orderID;
     private int score;
     private String statement;
 
@@ -23,7 +23,7 @@ public class Review {
     private List<Customer> customers;
 
     // getter setter ------------------
-    public long getOrderID() {
+    public Long getOrderID() {
         return orderID;
     }
 
