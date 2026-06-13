@@ -1,15 +1,15 @@
 package service;
 
-import entities.Wallet;
 
-public class WalletService extends Wallet {
+public interface WalletService {
 
-    public WalletService(int id, String name, String email, String password, String registerDate)
-    {
-
-    }
-
-
-
+    // show balance
+    double showBalance(long walletID);
+    // charge wallet
+    void chargeWallet(long walletID, double amount);
+    // pay for order
+    void payForOrder(long customerId, long orderID );
+    // withdraw money
+    void withdrawMoney(long walletID, double amount, String cardNumber);
 
 }
