@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+    <session-factory>
+
+        <!-- PostgreSQL Driver -->
+        <property name="hibernate.connection.driver_class">
+            org.postgresql.Driver
+        </property>
+
+        <!-- Database URL -->
+        <property name="hibernate.connection.url">
+            jdbc:postgresql://localhost:5432/home_service_db
+        </property>
+
+        <!-- Username -->
+        <property name="hibernate.connection.username">
+            Aterban
+        </property>
+
+        <!-- Password -->
+        <property name="hibernate.connection.password">
+            1234
+        </property>
+
+        <!-- PostgreSQL Dialect -->
+        <property name="hibernate.dialect">
+            org.hibernate.dialect.PostgreSQLDialect
+        </property>
+
+        <!-- Show SQL in console -->
+        <property name="hibernate.show_sql">
+            true
+        </property>
+
+        <!-- Format SQL -->
+        <property name="hibernate.format_sql">
+            true
+        </property>
+
+        <!-- Automatically update tables -->
+        <property name="hibernate.hbm2ddl.auto">
+            update
+        </property>
+
+        <!-- Entity Classes -->
+        <mapping class="entities.Customer"/>
+        <mapping class="entities.Specialist"/>
+        <mapping class="entities.Manager"/>
+        <mapping class="entities.Order"/>
+        <mapping class="entities.Proposal"/>
+        <mapping class="entities.Review"/>
+        <mapping class="entities.Wallet"/>
+        <mapping class="entities.Service"/>
+
+    </session-factory>
+
+</hibernate-configuration>
