@@ -28,10 +28,12 @@ public class Service {
     private List<Proposal> Proposals;
     @ManyToMany
     private List<Specialist> specialists;
+
     @ManyToOne
-    private String parentService ;
-    @OneToMany
-    private String childService;
+    private Service parentService;
+
+    @OneToMany(mappedBy = "parentService")
+    private List<Service> childServices;
 
 
     // getter setter
@@ -55,12 +57,12 @@ public class Service {
         return serviceCategory;
     }
 
-    public String getParentService() {
+    public Service getParentService() {
         return parentService;
     }
 
-    public String getChildService() {
-        return childService;
+    public List<Service> getChildServices() {
+        return childServices;
     }
 
     public void setServiceName(String serviceName) {
@@ -91,11 +93,11 @@ public class Service {
         this.orders = orders;
     }
 
-    public void setParentService(String parentService) {
+    public void setParentService(Service parentService) {
         this.parentService = parentService;
     }
 
-    public void setChildService(String childService) {
-        this.childService = childService;
+    public void setChildServices(List<Service> childServices) {
+        this.childServices = childServices;
     }
 }

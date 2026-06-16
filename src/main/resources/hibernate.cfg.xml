@@ -20,12 +20,12 @@
 
         <!-- Username -->
         <property name="hibernate.connection.username">
-            Aterban
+            postgres
         </property>
 
         <!-- Password -->
         <property name="hibernate.connection.password">
-            1234
+            postgres
         </property>
 
         <!-- PostgreSQL Dialect -->

@@ -1,9 +1,25 @@
-//package UI;
-//
-//import java.util.Scanner;
-//
-//public class Main {
-//
+package UI;
+
+import entities.Customer;
+import repository.CustomerRepository;
+import repository.impl.CustomerRepositoryImpl;
+
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Customer customer = new Customer();
+
+        customer.setName("Ali");
+        customer.setEmail("ali@test.com");
+        customer.setPassword("12345678");
+
+        CustomerRepository customerRepository =
+                new CustomerRepositoryImpl();
+
+        customerRepository.save(customer);
+
 //    Scanner sc = new Scanner(System.in);
 //    while(true)
 //            System.out.println("1. manager login")
@@ -35,4 +51,5 @@
 //        }
 //
 //    }
-//}
+    }
+}
