@@ -18,11 +18,15 @@ public class Customer {
     private LocalDateTime customerRegisterDate;
 
     // relationships
+    // هر مشتری یک کیف پول دارد
     @OneToOne
+    @JoinColumn(name = "wallet_id")
     private Wallet wallet;
-    @OneToMany (mappedBy = "customer")
+    // هر مشتری می‌تواند چند سفارش ثبت کند
+    @OneToMany(mappedBy = "customer")
     private List<Order> orders;
-    @OneToMany (mappedBy = "customer")
+    // هر مشتری می‌تواند چند نظر ثبت کند
+    @OneToMany(mappedBy = "customer")
     private List<Review> reviews;
 
     // constructor

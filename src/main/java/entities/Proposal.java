@@ -12,17 +12,22 @@ public class Proposal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long proposalID;
     private Long proposalPrice;
-    private String startDate;
-    private String duration;
+    private LocalDateTime startDate;
+    private Integer duration;
     private LocalDateTime proposalRegistrationDate;
 
     //relationships --------------
+    // هر پیشنهاد توسط یک متخصص ثبت می‌شود
     @ManyToOne
+    @JoinColumn(name = "specialist_id")
     private Specialist specialist;
+    // هر پیشنهاد برای یک سفارش ثبت می‌شود
     @ManyToOne
+    @JoinColumn(name = "order_id")
     private Order order;
 
     // getter setter
+
     public Long getProposalID() {
         return proposalID;
     }
@@ -31,11 +36,11 @@ public class Proposal {
         return proposalPrice;
     }
 
-    public String getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public String getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
@@ -51,15 +56,15 @@ public class Proposal {
         return order;
     }
 
-    public void setProposalPrice(long proposalPrice) {
+    public void setProposalPrice(Long proposalPrice) {
         this.proposalPrice = proposalPrice;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 

@@ -3,7 +3,7 @@ package entities;
 import jakarta.persistence.*;
 
 import java.util.List;
-import java.util.Set;
+
 
 @Entity
 @Table(name = "reviews")
@@ -17,14 +17,17 @@ public class Review {
     private String statement;
 
     // relationships ------------------
-    @OneToOne
-    private Order order;
+    // مشتری که نظر را ثبت کرده
     @ManyToOne
+    @JoinColumn(name = "customer_id")
     private Customer customer;
-    @OneToMany (mappedBy= "customer")
-    private List<Review> reviews;
+    // متخصصی که درباره او نظر داده شده
+    @ManyToOne
+    @JoinColumn(name = "specialist_id")
+    private Specialist specialist;
 
     // getter setter ------------------
+
     public Long getOrderID() {
         return orderID;
     }
@@ -37,39 +40,27 @@ public class Review {
         return statement;
     }
 
-    public Order getOrder() {
-        return order;
-    }
-
     public Customer getCustomer() {
         return customer;
     }
 
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setStatement(String statement) {
-        this.statement = statement;
+    public Specialist getSpecialist() {
+        return specialist;
     }
 
     public void setScore(int score) {
         this.score = score;
     }
 
-    public void setOrderID(long orderID) {
-        this.orderID = orderID;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
+    public void setStatement(String statement) {
+        this.statement = statement;
     }
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public void setSpecialist(Specialist specialist) {
+        this.specialist = specialist;
     }
 }

@@ -20,13 +20,20 @@ public class Order {
     private OrderStatus orderStatus;
 
     // relationships -------
+    // هر سفارش متعلق به یک مشتری است
     @ManyToOne
+    @JoinColumn(name = "customer_id")
     private Customer customer;
-    @OneToMany (mappedBy= "specialists")
-    private List<Proposal> proposals;
+    // هر سفارش مربوط به یک خدمت یا زیرخدمت است
     @ManyToOne
+    @JoinColumn(name = "service_id")
     private Service service;
-    @OneToOne (mappedBy= "customer")
+    // هر سفارش می‌تواند چند پیشنهاد داشته باشد
+    @OneToMany(mappedBy = "order")
+    private List<Proposal> proposals;
+    // متخصص انتخاب شده برای انجام این سفارش
+    @ManyToOne
+    @JoinColumn(name = "selected_specialist_id")
     private Specialist specialist;
 
 

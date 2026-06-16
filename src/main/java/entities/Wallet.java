@@ -1,6 +1,4 @@
 package entities;
-
-
 import jakarta.persistence.*;
 
 
@@ -18,9 +16,11 @@ public class Wallet {
 
 
      //relationships-------------------
-    @OneToOne
-    private  Specialist specialist;
-    @OneToOne
+     // کیف پول متخصص
+     @OneToOne(mappedBy = "wallet")
+     private Specialist specialist;
+    // کیف پول مشتری
+    @OneToOne(mappedBy = "wallet")
     private Customer customer;
 
     //getter setter
@@ -46,19 +46,19 @@ public class Wallet {
         return customer;
     }
 
-    public void setBalance(long balance) {
-        this.balance = balance;
-    }
-
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setBalance(long balance) {
+        this.balance = balance;
     }
 
     public void setSpecialist(Specialist specialist) {
         this.specialist = specialist;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }

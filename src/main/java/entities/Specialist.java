@@ -23,16 +23,24 @@ public class Specialist {
     private SpecialistStatus status;
 
     //relationships --------------------------
+    // هر متخصص یک کیف پول دارد
     @OneToOne
+    @JoinColumn(name = "wallet_id")
     private Wallet wallet;
+    // هر متخصص می‌تواند چند پیشنهاد ثبت کند
     @OneToMany(mappedBy = "specialist")
     private List<Proposal> proposals;
+    // هر متخصص می‌تواند چند زیرخدمت انجام دهد
     @ManyToMany
-    @JoinTable(name = "specialist_services",
+    @JoinTable(
+            name = "specialist_services",
             joinColumns = @JoinColumn(name = "specialist_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_id"))
-    private List <Service> services;
-
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<Service> services;
+    // هر متخصص می‌تواند در نهایت چند سفارش را انجام دهد
+    @OneToMany(mappedBy = "specialist")
+    private List<Order> orders;
 
     //constructor
     public Specialist (){
@@ -40,6 +48,7 @@ public class Specialist {
 
 
     // getter setter--------------------------------
+
     public Long getId() {
         return id;
     }
@@ -72,6 +81,18 @@ public class Specialist {
         return wallet;
     }
 
+    public List<Proposal> getProposals() {
+        return proposals;
+    }
+
+    public List<Service> getServices() {
+        return services;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -88,9 +109,27 @@ public class Specialist {
         this.profileImage = profileImage;
     }
 
+    public void setRegisterDate(LocalDateTime registerDate) {
+        this.registerDate = registerDate;
+    }
+
+    public void setStatus(SpecialistStatus status) {
+        this.status = status;
+    }
+
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
     }
 
+    public void setProposals(List<Proposal> proposals) {
+        this.proposals = proposals;
+    }
 
+    public void setServices(List<Service> services) {
+        this.services = services;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
 }

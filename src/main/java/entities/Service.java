@@ -1,14 +1,11 @@
 package entities;
-
-
 import jakarta.persistence.*;
-
 import java.util.List;
+
 
 @Entity
 @Table(name = "services")
 public class Service {
-
 
     // variables -------------------------
     @Id
@@ -19,17 +16,20 @@ public class Service {
     private String serviceDescription;
     private String serviceCategory;
 
-
-
     // relationships --------------------
-    @OneToMany (mappedBy= "customer")
+    @OneToMany(mappedBy = "service")
     private List<Order> orders;
-    @ManyToMany (mappedBy= "specialist")
-    private List<Proposal> Proposals;
+
     @ManyToMany
+    @JoinTable(
+            name = "service_specialist",
+            joinColumns = @JoinColumn(name = "service_id"),
+            inverseJoinColumns = @JoinColumn(name = "specialist_id")
+    )
     private List<Specialist> specialists;
 
     @ManyToOne
+    @JoinColumn(name = "parent_service_id")
     private Service parentService;
 
     @OneToMany(mappedBy = "parentService")
@@ -57,6 +57,14 @@ public class Service {
         return serviceCategory;
     }
 
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public List<Specialist> getSpecialists() {
+        return specialists;
+    }
+
     public Service getParentService() {
         return parentService;
     }
@@ -81,16 +89,12 @@ public class Service {
         this.serviceCategory = serviceCategory;
     }
 
-    public void setProposals(List<Proposal> proposals) {
-        Proposals = proposals;
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     public void setSpecialists(List<Specialist> specialists) {
         this.specialists = specialists;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
     }
 
     public void setParentService(Service parentService) {
