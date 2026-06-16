@@ -19,8 +19,10 @@ public class Review {
     // relationships ------------------
     @OneToOne
     private Order order;
+    @ManyToOne
+    private Customer customer;
     @OneToMany (mappedBy= "customer")
-    private List<Customer> customers;
+    private List<Review> reviews;
 
     // getter setter ------------------
     public Long getOrderID() {
@@ -39,8 +41,12 @@ public class Review {
         return order;
     }
 
-    public List<Customer> getCustomers() {
-        return customers;
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
     }
 
     public void setStatement(String statement) {
@@ -59,7 +65,11 @@ public class Review {
         this.order = order;
     }
 
-    public void setCustomers(List<Customer> customers) {
-        this.customers = customers;
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }

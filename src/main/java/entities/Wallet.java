@@ -19,9 +19,9 @@ public class Wallet {
 
      //relationships-------------------
     @OneToOne
-    private Long specialistID;
+    private  Specialist specialist;
     @OneToOne
-    private Long customerID;
+    private Customer customer;
 
     //getter setter
 
@@ -38,12 +38,12 @@ public class Wallet {
         return balance;
     }
 
-    public long getSpecialistID() {
-        return specialistID;
+    public Specialist getSpecialist() {
+        return specialist;
     }
 
-    public long getCustomerID() {
-        return customerID;
+    public Customer getCustomer() {
+        return customer;
     }
 
     public void setBalance(long balance) {
@@ -54,11 +54,11 @@ public class Wallet {
         this.ownerName = ownerName;
     }
 
-    public void setSpecialistID(long specialistID) {
-        this.specialistID = specialistID;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
-    public void setCustomerID(long customerID) {
-        this.customerID = customerID;
+    public void setSpecialist(Specialist specialist) {
+        this.specialist = specialist;
     }
 }
