@@ -16,8 +16,10 @@ public class Order {
     private LocalDateTime orderStartDateTime;
     private String address;
     private LocalDateTime orderRegisterDate;
+    private Long finalPrice;
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
 
     // relationships -------
     // هر سفارش متعلق به یک مشتری است
@@ -113,4 +115,15 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
+    public Long getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(Long finalPrice) {
+        this.finalPrice = finalPrice;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 }

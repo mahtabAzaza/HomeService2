@@ -1,8 +1,6 @@
 package repository;
-
-import entities.Specialist;
+import entities.Service;
 
 public interface ServiceRepository extends
-        BaseRepository<Specialist,Long> {
-
+        BaseRepository<Service, Long> {
 }

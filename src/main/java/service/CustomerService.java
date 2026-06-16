@@ -1,27 +1,30 @@
 package service;
-import entities.Customer;
-import entities.Order;
-import entities.Review;
-import entities.Wallet;
+import entities.*;
+
+import java.util.List;
 
 
-public interface CustomerService  {
+// @Service
+public interface CustomerService {
 
-    //sign up
-    void SignUp(Customer customer);
-    //login
-    void LogIn(Customer customer);
-    //change info
-    void changeInformation(Customer customer);
-    //see services
-    void displayServices ();
-    //register orders/ add orders
-    void addOrder(Order order);
-    //wallet
-    void useWallet(Wallet wallet);
-    //review
-    void addReview(Review review);
-
-
-
+//    Customer signUp(Customer customer);
+//
+//    Customer login(String username, String password);
+//
+//    void changeInfo(Customer customer);
+//
+//    List<Service> seeServices();
+//
+//    Order registerOrder(Order order);
+//
+//    void chooseSpecialist(Long orderId, Long specialistId);
+//
+//    void chargeWallet(Long customerId, double amount);
+//
+//    void payOrder(Long customerId, Long orderId);
+//
+//    void review(Long customerId,
+//                Long orderId,
+//                int score,
+//                String comment);
 }

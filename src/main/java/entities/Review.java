@@ -12,7 +12,7 @@ public class Review {
     // variables ---------------------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderID;
+    private Long reviewID;
     private int score;
     private String statement;
 
@@ -25,11 +25,13 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "specialist_id")
     private Specialist specialist;
+    @OneToOne
+    private Order order;
 
     // getter setter ------------------
 
     public Long getOrderID() {
-        return orderID;
+        return reviewID;
     }
 
     public int getScore() {
@@ -62,5 +64,21 @@ public class Review {
 
     public void setSpecialist(Specialist specialist) {
         this.specialist = specialist;
+    }
+
+    public Long getReviewID() {
+        return reviewID;
+    }
+
+    public void setReviewID(Long reviewID) {
+        this.reviewID = reviewID;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }
