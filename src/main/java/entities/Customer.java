@@ -89,4 +89,8 @@ public class Customer {
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
+
+    public void setCustomerRegisterDate(LocalDateTime customerRegisterDate) {
+        this.customerRegisterDate = customerRegisterDate;
+    }
 }

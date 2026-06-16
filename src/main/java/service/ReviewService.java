@@ -2,8 +2,6 @@ package service;
 
 import entities.*;
 import repository.BaseRepository;
-
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class ReviewService {
@@ -18,7 +16,7 @@ public class ReviewService {
     }
 
     /**
-     * ثبت نظر واقعی مشتری برای سفارش انجام شده
+     * ثبت نظر مشتری برای سفارش انجام شده
      */
     public void addReview(Long orderId, int score, String statement) {
 

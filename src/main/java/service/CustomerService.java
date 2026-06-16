@@ -1,30 +1,88 @@
 package service;
+
 import entities.*;
+import repository.BaseRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
+public class CustomerService {
 
-// @Service
-public interface CustomerService {
+    private final BaseRepository<Customer, Long> customerRepository;
+    private final BaseRepository<Service, Long> serviceRepository;
+    private final BaseRepository<Order, Long> orderRepository;
 
-//    Customer signUp(Customer customer);
-//
-//    Customer login(String username, String password);
-//
-//    void changeInfo(Customer customer);
-//
-//    List<Service> seeServices();
-//
-//    Order registerOrder(Order order);
-//
-//    void chooseSpecialist(Long orderId, Long specialistId);
-//
-//    void chargeWallet(Long customerId, double amount);
-//
-//    void payOrder(Long customerId, Long orderId);
-//
-//    void review(Long customerId,
-//                Long orderId,
-//                int score,
-//                String comment);
+    public CustomerService(BaseRepository<Customer, Long> customerRepository,
+                           BaseRepository<Service, Long> serviceRepository,
+                           BaseRepository<Order, Long> orderRepository) {
+        this.customerRepository = customerRepository;
+        this.serviceRepository = serviceRepository;
+        this.orderRepository = orderRepository;
+    }
+
+    /**
+     * 📌 ثبت نام مشتری
+     */
+    public void signUp(Customer customer) {
+
+        customer.setCustomerRegisterDate(LocalDateTime.now());
+        customerRepository.save(customer);
+    }
+
+    /**
+     * 📌 ورود مشتری (ساده)
+     */
+    public Customer login(String email, String password) {
+
+        return customerRepository.findAll()
+                .stream()
+                .filter(c -> c.getEmail().equals(email)
+                        && c.getPassword().equals(password))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+    }
+
+    /**
+     * 📌 تغییر اطلاعات مشتری
+     */
+    public void changeInfo(Long customerId, Customer updated) {
+
+        Customer customer = customerRepository.findById(customerId);
+
+        if (Objects.isNull(customer)) {
+            throw new RuntimeException("Customer not found");
+        }
+
+        customer.setName(updated.getName());
+        customer.setEmail(updated.getEmail());
+        customer.setPassword(updated.getPassword());
+
+        customerRepository.update(customer);
+    }
+
+    /**
+     * 📌 دیدن سرویس‌ها
+     */
+    public List<Service> seeServices() {
+        return serviceRepository.findAll();
+    }
+
+    /**
+     * 📌 ثبت سفارش
+     */
+    public void registerOrder(Long customerId, Order order) {
+
+        Customer customer = customerRepository.findById(customerId);
+
+        if (Objects.isNull(customer)) {
+            throw new RuntimeException("Customer not found");
+        }
+
+        order.setCustomer(customer);
+        order.setOrderStartDateTime(LocalDateTime.now());
+        order.setOrderStatus(OrderStatus.WAITING_FOR_PROPOSAL);
+
+        orderRepository.save(order);
+    }
 }
