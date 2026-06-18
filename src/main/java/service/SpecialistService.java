@@ -18,9 +18,29 @@ public class SpecialistService {
         this.serviceRepository = serviceRepository;
     }
 
+
     /**
-     *  ویرایش اطلاعات متخصص
-     * بعد از تغییر، وضعیت برمی‌گرده به WAITING_FOR_APPROVAL
+     *Sign up
+     */
+    public void signUp(Specialist specialist) {
+        specialistRepository.save(specialist);
+    }
+
+    /**
+     * Log in
+     */
+    public Specialist login(String email, String password) {
+
+        return specialistRepository.findAll()
+                .stream()
+                .filter(c -> c.getEmail().equals(email)
+                        && c.getPassword().equals(password))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+    }
+
+    /**
+     * specialist change info
      */
     public void updateSpecialist(Long specialistId, Specialist updated) {
 
@@ -59,7 +79,7 @@ public class SpecialistService {
 //    }
 
     /**
-     * مشاهده وضعیت حساب
+     * show status
      */
     public SpecialistStatus getStatus(Long specialistId) {
 
@@ -73,7 +93,7 @@ public class SpecialistService {
     }
 
     /**
-     *  مشاهده همه متخصص‌های یک سرویس
+     * show all specialists for a service
      */
     public List<Specialist> getSpecialistsByService(Long serviceId) {
 

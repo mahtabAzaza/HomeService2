@@ -18,7 +18,7 @@ public class WalletService {
     }
 
     /**
-     *  نمایش موجودی کیف پول
+     * show balance
      */
     public double showBalance(Long walletId) {
 
@@ -32,7 +32,7 @@ public class WalletService {
     }
 
     /**
-     *  شارژ کیف پول (مشتری)
+     * charge wallet
      */
     public void chargeWallet(Long walletId, double amount) {
 
@@ -52,7 +52,7 @@ public class WalletService {
     }
 
     /**
-     *  برداشت پول از کیف پول
+     * withdraw Money
      */
     public void withdrawMoney(Long walletId, double amount) {
 
@@ -69,14 +69,14 @@ public class WalletService {
         if (wallet.getBalance() < amount) {
             throw new RuntimeException("Insufficient balance");
         }
-// ///////////////////////////////
+// ///////////////////////////////////////////////
         wallet.setBalance((long) (wallet.getBalance() - amount));
 // /////////////////////////////
         walletRepository.update(wallet);
     }
-
+// / ///////////////////////////////////////////////
     /**
-     *  پرداخت سفارش
+     * pay for order
      *  کم کردن از مشتری
      *  اضافه کردن به متخصص
      */
