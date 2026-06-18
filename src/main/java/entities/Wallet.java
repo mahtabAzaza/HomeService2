@@ -23,9 +23,8 @@ public class Wallet {
     @OneToOne(mappedBy = "wallet")
     private Customer customer;
 
+
     //getter setter
-
-
     public Long getWalletID() {
         return walletID;
     }

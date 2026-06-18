@@ -20,6 +20,12 @@ public class Main {
 
         customerRepository.save(customer);
 
+
+
+
+
+
+
 //    Scanner sc = new Scanner(System.in);
 //    while(true)
 //            System.out.println("1. manager login")

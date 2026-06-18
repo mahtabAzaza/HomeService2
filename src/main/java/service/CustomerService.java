@@ -2,6 +2,7 @@ package service;
 
 import entities.*;
 import repository.BaseRepository;
+import repository.CustomerRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +32,7 @@ public class CustomerService {
     }
 
     /**
-     * Log in
+     * Login
      */
     public Customer login(String email, String password) {
 
@@ -57,7 +58,7 @@ public class CustomerService {
         customer.setName(updated.getName());
         customer.setEmail(updated.getEmail());
         customer.setPassword(updated.getPassword());
-//    customerRepository.findByEmail(customer.getEmail());
+//    CustomerRepository.findByEmail(customer.getEmail());
 //    if (existing != null){
 //        throw new RuntimeException("Email already exists");
 //    }

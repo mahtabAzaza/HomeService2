@@ -27,7 +27,7 @@ public class SpecialistService {
     }
 
     /**
-     * Log in
+     * Login
      */
     public Specialist login(String email, String password) {
 
