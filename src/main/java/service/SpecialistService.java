@@ -19,7 +19,7 @@ public class SpecialistService {
     }
 
     /**
-     * 📌 ویرایش اطلاعات متخصص
+     *  ویرایش اطلاعات متخصص
      * بعد از تغییر، وضعیت برمی‌گرده به WAITING_FOR_APPROVAL
      */
     public void updateSpecialist(Long specialistId, Specialist updated) {
@@ -35,31 +35,31 @@ public class SpecialistService {
         specialist.setPassword(updated.getPassword());
         specialist.setProfileImage(updated.getProfileImage());
 
-        // 📌 بعد از تغییر اطلاعات باید دوباره تایید شود
+        //  بعد از تغییر اطلاعات باید دوباره تایید شود
         specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
 
         specialistRepository.update(specialist);
     }
 
+//    /**
+//     *  اضافه کردن تخصص (service) به متخصص
+//     */
+//    public void addServiceToSpecialist(Long specialistId, Long serviceId) {
+//
+//        Specialist specialist = specialistRepository.findById(specialistId);
+//        Service service = serviceRepository.findById(serviceId);
+//
+//        if (Objects.isNull(specialist) || Objects.isNull(service)) {
+//            throw new RuntimeException("Not found");
+//        }
+//
+//        specialist.getServices().add(service);
+//
+//        specialistRepository.update(specialist);
+//    }
+
     /**
-     * 📌 اضافه کردن تخصص (service) به متخصص
-     */
-    public void addServiceToSpecialist(Long specialistId, Long serviceId) {
-
-        Specialist specialist = specialistRepository.findById(specialistId);
-        Service service = serviceRepository.findById(serviceId);
-
-        if (Objects.isNull(specialist) || Objects.isNull(service)) {
-            throw new RuntimeException("Not found");
-        }
-
-        specialist.getServices().add(service);
-
-        specialistRepository.update(specialist);
-    }
-
-    /**
-     * 📌 مشاهده وضعیت حساب
+     * مشاهده وضعیت حساب
      */
     public SpecialistStatus getStatus(Long specialistId) {
 
@@ -73,7 +73,7 @@ public class SpecialistService {
     }
 
     /**
-     * 📌 مشاهده همه متخصص‌های یک سرویس
+     *  مشاهده همه متخصص‌های یک سرویس
      */
     public List<Specialist> getSpecialistsByService(Long serviceId) {
 

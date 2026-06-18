@@ -16,8 +16,7 @@ public class ApprovalService {
     }
 
     /**
-     * تایید متخصص توسط مدیر
-     * فقط زمانی اجازه دارد که متخصص وجود داشته باشد
+     *approve specialist by manager
      */
     public void approveSpecialist(Long specialistId) {
 
@@ -31,16 +30,14 @@ public class ApprovalService {
         if (specialist.getStatus() == SpecialistStatus.APPROVED) {
             return;
         }
-
         // تغییر وضعیت به تایید شده
         specialist.setStatus(SpecialistStatus.APPROVED);
-
         // ذخیره تغییرات
         specialistRepository.update(specialist);
     }
 
     /**
-     * برگرداندن متخصص به حالت انتظار (مثلاً بعد از ویرایش اطلاعات)
+     *   put specialist back to waiting for approval
      */
     public void sendToWaitingApproval(Long specialistId) {
 

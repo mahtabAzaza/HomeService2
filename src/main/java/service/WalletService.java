@@ -77,8 +77,8 @@ public class WalletService {
 
     /**
      *  پرداخت سفارش
-     * - کم کردن از مشتری
-     * - اضافه کردن به متخصص
+     *  کم کردن از مشتری
+     *  اضافه کردن به متخصص
      */
     public void payForOrder(Long orderId) {
 

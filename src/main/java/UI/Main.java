@@ -11,9 +11,9 @@ public class Main {
     public static void main(String[] args) {
         Customer customer = new Customer();
 
-        customer.setName("Ali");
-        customer.setEmail("ali@test.com");
-        customer.setPassword("12345678");
+        customer.setName("mina");
+        customer.setEmail("min@test.com");
+        customer.setPassword("1234");
 
         CustomerRepository customerRepository =
                 new CustomerRepositoryImpl();

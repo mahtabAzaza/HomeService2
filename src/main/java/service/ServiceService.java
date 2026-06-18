@@ -14,7 +14,7 @@ public class ServiceService {
     }
 
     /**
-     * Add a new service
+     * Add a new service  (by manager)
      */
     public void createService(Service service) {
 
@@ -30,7 +30,7 @@ public class ServiceService {
     }
 
     /**
-     * Edit a service
+     * Edit a service (by manager)
      */
     public void updateService(Service service) {
 
@@ -49,7 +49,7 @@ public class ServiceService {
     }
 
     /**
-     * Delete a service
+     * Delete a service  (by manager)
      */
     public void deleteService(Long id) {
 
@@ -76,3 +76,19 @@ public class ServiceService {
         return serviceRepository.findById(id);
     }
 }
+
+
+
+
+// void displayServiceTree() {
+//
+//    List<Service> services = serviceRepository.findAll();
+//
+//    for (Service service : services) {
+//
+//
+//        if (service.getParentService() == null) {
+//            printTree(service, 0);
+//        }
+//    }
+//}

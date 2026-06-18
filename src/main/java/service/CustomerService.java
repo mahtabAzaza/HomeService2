@@ -22,7 +22,7 @@ public class CustomerService {
     }
 
     /**
-     * 📌 ثبت نام مشتری
+     *Sign up
      */
     public void signUp(Customer customer) {
 
@@ -31,7 +31,7 @@ public class CustomerService {
     }
 
     /**
-     * 📌 ورود مشتری (ساده)
+     * Log in
      */
     public Customer login(String email, String password) {
 
@@ -44,7 +44,7 @@ public class CustomerService {
     }
 
     /**
-     * 📌 تغییر اطلاعات مشتری
+     * change customer info
      */
     public void changeInfo(Long customerId, Customer updated) {
 
@@ -57,19 +57,22 @@ public class CustomerService {
         customer.setName(updated.getName());
         customer.setEmail(updated.getEmail());
         customer.setPassword(updated.getPassword());
-
+//    customerRepository.findByEmail(customer.getEmail());
+//    if (existing != null){
+//        throw new RuntimeException("Email already exists");
+//    }
         customerRepository.update(customer);
     }
 
     /**
-     * 📌 دیدن سرویس‌ها
+     * Show services and subservices
      */
-    public List<Service> seeServices() {
+    public List<Service> displayServices() {
         return serviceRepository.findAll();
     }
 
     /**
-     * 📌 ثبت سفارش
+     *  sign an order
      */
     public void registerOrder(Long customerId, Order order) {
 

@@ -18,7 +18,7 @@ public class ManagerService {
     }
 
     /**
-     * 📌 تایید متخصص توسط مدیر
+     *approve specialist by manager
      */
     public void approveSpecialist(Long specialistId) {
 
@@ -34,7 +34,7 @@ public class ManagerService {
     }
 
     /**
-     * 📌 ایجاد خدمت جدید
+     * add a  new service
      */
     public void createService(Service service) {
 
@@ -46,7 +46,7 @@ public class ManagerService {
     }
 
     /**
-     * 📌 حذف خدمت
+     *Delete a service
      */
     public void deleteService(Long serviceId) {
 
@@ -60,14 +60,14 @@ public class ManagerService {
     }
 
     /**
-     * 📌 مشاهده همه متخصص‌ها
+     * اSee all specialists
      */
     public List<Specialist> getAllSpecialists() {
         return specialistRepository.findAll();
     }
 
     /**
-     * 📌 مشاهده همه سرویس‌ها
+     *see all services
      */
     public List<Service> getAllServices() {
         return serviceRepository.findAll();
