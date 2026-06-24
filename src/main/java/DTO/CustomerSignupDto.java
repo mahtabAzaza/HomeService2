@@ -1,11 +1,15 @@
 package DTO;
 
-public class CustomerSignUpDto {
+import java.time.LocalDateTime;
+
+public class CustomerSignupDto {
+
 
     private String name ;
     private String email;
     private String password;
     private byte[] profilePicture;
+    private LocalDateTime customerRegisterDate;
 
 
 
@@ -41,6 +45,14 @@ public class CustomerSignUpDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDateTime getCustomerRegisterDate() {
+        return customerRegisterDate;
+    }
+
+    public void setCustomerRegisterDate(LocalDateTime customerRegisterDate) {
+        this.customerRegisterDate = customerRegisterDate;
     }
 }
 

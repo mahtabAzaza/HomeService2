@@ -2,14 +2,14 @@ package DTO;
 
 import java.time.LocalDateTime;
 
-public class SpecialistDTO {
+public class SpecialistDto {
 
     private Long id;
     private String name ;
     private String email;
     private byte[] profileImage;
     private String status;
-    private LocalDateTime registerDate;
+    private LocalDateTime customerRegisterDate;
 
 
 
@@ -38,11 +38,11 @@ public class SpecialistDTO {
     }
 
     public LocalDateTime getRegisterDate() {
-        return registerDate;
+        return customerRegisterDate;
     }
 
     public void setRegisterDate(LocalDateTime registerDate) {
-        this.registerDate = registerDate;
+        this.customerRegisterDate = registerDate;
     }
 
     public byte[] getProfileImage() {
