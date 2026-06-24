@@ -1,5 +1,5 @@
 package repository;
-import entities.Specialist;
+import entity.Specialist;
 
 public interface OrderRepository extends
         BaseRepository<Specialist,Long> {

@@ -1,30 +1,18 @@
 package DTO;
 
-public class CustomerSignUpDto {
+public class SpecialistSignupDTO {
 
-    private String name ;
+    private String name;
     private String email;
     private String password;
-    private byte[] profilePicture;
-
-
-
-    // getters and setters
-    public byte[] getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(byte[] profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
+     private byte[] profileImage;
 
     public String getName() {
-        return name ;
+        return name;
     }
 
     public void setName(String fullName) {
-        this.name  = name;
+        this.name = name;
     }
 
     public String getEmail() {
@@ -42,5 +30,12 @@ public class CustomerSignUpDto {
     public void setPassword(String password) {
         this.password = password;
     }
-}
 
+    public byte[] getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(byte[] profileImage) {
+        this.profileImage = profileImage;
+    }
+}

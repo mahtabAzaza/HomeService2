@@ -1,7 +1,6 @@
 package repository;
 
-import entities.Customer;
-import entities.Specialist;
+import entity.Specialist;
 
 public interface WalletRepository extends
         BaseRepository<Specialist,Long> {

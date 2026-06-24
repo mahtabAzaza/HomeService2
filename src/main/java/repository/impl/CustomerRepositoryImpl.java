@@ -1,6 +1,6 @@
 package repository.impl;
 
-import entities.Customer;
+import entity.Customer;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import repository.CustomerRepository;

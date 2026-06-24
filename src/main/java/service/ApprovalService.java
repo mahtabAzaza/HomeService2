@@ -1,7 +1,7 @@
 package service;
 
-import entities.Specialist;
-import entities.SpecialistStatus;
+import entity.Specialist;
+import entity.SpecialistStatus;
 import repository.BaseRepository;
 import java.util.Objects;
 

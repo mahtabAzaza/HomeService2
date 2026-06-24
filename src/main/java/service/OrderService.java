@@ -1,5 +1,5 @@
 package service;
-import entities.*;
+import entity.*;
 import repository.BaseRepository;
 import java.time.LocalDateTime;
 import java.util.List;

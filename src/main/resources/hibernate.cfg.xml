@@ -49,14 +49,14 @@
         </property>
 
         <!-- Entity Classes -->
-        <mapping class="entities.Customer"/>
-        <mapping class="entities.Specialist"/>
-        <mapping class="entities.Manager"/>
-        <mapping class="entities.Order"/>
-        <mapping class="entities.Proposal"/>
-        <mapping class="entities.Review"/>
-        <mapping class="entities.Wallet"/>
-        <mapping class="entities.Service"/>
+        <mapping class="entity.Customer"/>
+        <mapping class="entity.Specialist"/>
+        <mapping class="entity.Manager"/>
+        <mapping class="entity.Order"/>
+        <mapping class="entity.Proposal"/>
+        <mapping class="entity.Review"/>
+        <mapping class="entity.Wallet"/>
+        <mapping class="entity.Service"/>
 
     </session-factory>
 

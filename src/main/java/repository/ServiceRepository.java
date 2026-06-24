@@ -1,5 +1,5 @@
 package repository;
-import entities.Service;
+import entity.Service;
 
 public interface ServiceRepository extends
         BaseRepository<Service, Long> {

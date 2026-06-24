@@ -1,4 +1,4 @@
-package entities;
+package entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +16,7 @@ public class Customer {
     private String email;
     private String password;
     private LocalDateTime customerRegisterDate;
+    private byte[] profilePicture;
 
     // relationships
     // هر مشتری یک کیف پول دارد
@@ -92,5 +93,13 @@ public class Customer {
 
     public void setCustomerRegisterDate(LocalDateTime customerRegisterDate) {
         this.customerRegisterDate = customerRegisterDate;
+    }
+
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }

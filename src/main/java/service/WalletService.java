@@ -1,8 +1,8 @@
 package service;
 
-import entities.Order;
-import entities.OrderStatus;
-import entities.Wallet;
+import entity.Order;
+import entity.OrderStatus;
+import entity.Wallet;
 import repository.BaseRepository;
 import java.util.Objects;
 

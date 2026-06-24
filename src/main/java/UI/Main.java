@@ -1,10 +1,8 @@
 package UI;
 
-import entities.Customer;
+import entity.Customer;
 import repository.CustomerRepository;
 import repository.impl.CustomerRepositoryImpl;
-
-import java.util.Scanner;
 
 public class Main {
 

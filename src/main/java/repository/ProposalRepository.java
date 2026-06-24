@@ -1,6 +1,6 @@
 package repository;
 
-import entities.Specialist;
+import entity.Specialist;
 
 public interface ProposalRepository extends
         BaseRepository<Specialist,Long> {

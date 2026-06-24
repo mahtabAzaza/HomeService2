@@ -1,6 +1,6 @@
 package service;
 
-import entities.*;
+import entity.*;
 import repository.BaseRepository;
 import java.util.Objects;
 

@@ -1,7 +1,7 @@
 package repository;
 
-import entities.Customer;
-import entities.Specialist;
+import entity.Customer;
+import entity.Specialist;
 
 public interface ManagerRepository extends
         BaseRepository<Specialist,Long> {
