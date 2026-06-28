@@ -1,30 +1,28 @@
 package service.serviceImpl;
 
-import DTO.SpecialistDto;
 import DTO.SpecialistSignupDto;
 import entity.*;
-import repository.OrderRepository;
-import repository.ProposalRepository;
-import repository.SpecialistRepository;
-import repository.WalletRepository;
+import exception.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import repository.*;
 import service.SpecialistService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Service
+@Transactional
 public class SpecialistServiceImpl implements SpecialistService {
 
     private final SpecialistRepository specialistRepository;
-    private final ProposalRepository proposalRepository;
     private final OrderRepository orderRepository;
     private final WalletRepository walletRepository;
 
     public SpecialistServiceImpl(SpecialistRepository specialistRepository,
-                                 ProposalRepository proposalRepository,
                                  OrderRepository orderRepository,
                                  WalletRepository walletRepository) {
-
         this.specialistRepository = specialistRepository;
-        this.proposalRepository = proposalRepository;
         this.orderRepository = orderRepository;
         this.walletRepository = walletRepository;
     }
@@ -32,112 +30,135 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public void signup(SpecialistSignupDto dto) {
 
-        Specialist specialist = SpecialistMapper.toEntity(dto);
+        if (specialistRepository.findByEmail(dto.getEmail()) != null) {
+            throw new DuplicateEmailException("Email already in use");
+        }
 
-        specialist.setRegisterDate(LocalDateTime.now());
+        if (dto.getProfileImage() != null && dto.getProfileImage().length > 300 * 1024) {
+            throw new InvalidOperationException("Profile image must be under 300 KB");
+        }
 
+        Wallet wallet = new Wallet();
+        wallet.setBalance(0L);
+        wallet.setOwnerName(dto.getFirstName() + " " + dto.getLastName());
+        walletRepository.save(wallet);
+
+        Specialist specialist = new Specialist();
+        specialist.setFirstName(dto.getFirstName());
+        specialist.setLastName(dto.getLastName());
+        specialist.setEmail(dto.getEmail());
+        specialist.setPassword(dto.getPassword());
+        specialist.setProfileImage(dto.getProfileImage());
+        specialist.setRegistrationDate(LocalDateTime.now());
         specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
+        specialist.setRole(Role.SPECIALIST);
+        specialist.setWallet(wallet);
 
         specialistRepository.save(specialist);
     }
 
-
     @Override
+    @Transactional(readOnly = true)
     public Specialist login(String email, String password) {
 
-        Specialist specialist =
-                specialistRepository.findByEmail(email);
+        Specialist specialist = specialistRepository.findByEmail(email);
 
-        if (specialist == null) {
-            throw new RuntimeException("Specialist not found");
-        }
-
-        if (!specialist.getPassword().equals(password)) {
-            throw new RuntimeException("Wrong password");
+        if (specialist == null || !specialist.getPassword().equals(password)) {
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         if (specialist.getStatus() != SpecialistStatus.APPROVED) {
-            throw new RuntimeException("Account not approved");
+            throw new NotApprovedException("Your account is not approved yet");
         }
 
         return specialist;
     }
 
-
     @Override
-    public void updateProfile(SpecialistDto dto) {
+    public void updateProfile(Long specialistId, SpecialistSignupDto dto) {
 
-        Specialist specialist =
-                specialistRepository.findById(dto.getId());
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
-        if (specialist == null) {
-            throw new RuntimeException("Specialist not found");
+        if (dto.getProfileImage() != null && dto.getProfileImage().length > 300 * 1024) {
+            throw new InvalidOperationException("Profile image must be under 300 KB");
         }
 
+        specialist.setFirstName(dto.getFirstName());
+        specialist.setLastName(dto.getLastName());
         specialist.setEmail(dto.getEmail());
-
+        specialist.setPassword(dto.getPassword());
         specialist.setProfileImage(dto.getProfileImage());
 
+        // بعد از ویرایش اطلاعات باید دوباره تایید شود
         specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
-
-        specialistRepository.update(specialist);
-
     }
 
-
     @Override
-    public void submitProposal(Proposal proposal) {
+    @Transactional(readOnly = true)
+    public List<Order> getAvailableOrders(Long specialistId) {
 
-        Order order =
-                orderRepository.findById(
-                        proposal.getOrder().getOrderId());
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
-        if (order == null) {
-            throw new RuntimeException("Order not found");
+        if (specialist.getStatus() != SpecialistStatus.APPROVED) {
+            throw new NotApprovedException("Your account is not approved yet");
         }
 
-
-        proposal.setProposalRegistrationDate(LocalDateTime.now());
-
-        proposalRepository.save(proposal);
-
+        return orderRepository.findByServiceInAndOrderStatus(
+                specialist.getServices(),
+                OrderStatus.WAITING_FOR_PROPOSAL
+        );
     }
 
-
-
     @Override
-    public double getWalletBalance(Long specialistId) {
+    public void markOrderStarted(Long orderId) {
 
-        Wallet wallet =
-                walletRepository.findById(specialistId);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
 
-        return wallet.getBalance();
+        if (order.getOrderStatus() != OrderStatus.WAITING_FOR_SPECIALIST) {
+            throw new InvalidOperationException("Order is not in the correct state to start");
+        }
 
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
     }
 
+    @Override
+    public void markOrderDone(Long orderId) {
 
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+
+        if (order.getOrderStatus() != OrderStatus.IN_PROGRESS) {
+            throw new InvalidOperationException("Order has not been started yet");
+        }
+
+        order.setOrderStatus(OrderStatus.DONE);
+    }
 
     @Override
-    public void withdraw(Long specialistId,
-                         double amount) {
+    @Transactional(readOnly = true)
+    public Long getWalletBalance(Long specialistId) {
 
-        Wallet wallet =
-                walletRepository.findById(specialistId);
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
+        return specialist.getWallet().getBalance();
+    }
+
+    @Override
+    public void withdraw(Long specialistId, Long amount) {
+
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
+
+        Wallet wallet = specialist.getWallet();
 
         if (wallet.getBalance() < amount) {
-            throw new RuntimeException("Insufficient balance");
+            throw new InsufficientBalanceException("Not enough balance in wallet");
         }
 
-
-        wallet.setBalance(
-                (long) (wallet.getBalance() - amount)
-        );
-
-
-        walletRepository.update(wallet);
-
+        wallet.setBalance(wallet.getBalance() - amount);
     }
-
-
 }

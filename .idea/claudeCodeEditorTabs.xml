@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="5cdd53b1-c512-4d9b-9924-1b08069e1e93" />
+    <option name="activeSessionId" value="be61a683-d8cf-4c0a-9634-d09725eeede8" />
     <option name="openSessionIds">
       <list>
-        <option value="5cdd53b1-c512-4d9b-9924-1b08069e1e93" />
+        <option value="be61a683-d8cf-4c0a-9634-d09725eeede8" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
-        <entry key="5cdd53b1-c512-4d9b-9924-1b08069e1e93" value="/sessions/14e13678-de4c-4b2e-8098-d030b3141a11" />
+        <entry key="be61a683-d8cf-4c0a-9634-d09725eeede8" value="/sessions/104800fd-22ac-4699-9f7b-e33970974dd6" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
-        <entry key="5cdd53b1-c512-4d9b-9924-1b08069e1e93" value="i have this project and i want to migrate it to sp" />
+        <entry key="be61a683-d8cf-4c0a-9634-d09725eeede8" value="Cannot resolve column 'profile_image' @Lob @Column" />
       </map>
     </option>
   </component>

@@ -3,12 +3,17 @@ package service.serviceImpl;
 import entity.Service;
 import entity.Specialist;
 import entity.SpecialistStatus;
+import exception.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import repository.ServiceRepository;
 import repository.SpecialistRepository;
 import service.ManagerService;
 
+import java.util.List;
 
-
+@Service
+@Transactional
 public class ManagerServiceImpl implements ManagerService {
 
     private final SpecialistRepository specialistRepository;
@@ -20,106 +25,109 @@ public class ManagerServiceImpl implements ManagerService {
         this.serviceRepository = serviceRepository;
     }
 
-    // 1. تایید متخصص
     @Override
     public void approveSpecialist(Long specialistId) {
 
-        Specialist specialist = specialistRepository.findById(specialistId);
-
-        if (specialist == null) {
-            throw new RuntimeException("Specialist not found");
-        }
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
         specialist.setStatus(SpecialistStatus.APPROVED);
-
-        specialistRepository.update(specialist);
     }
 
-    // 2. افزودن زیرخدمت
     @Override
-    public void addSubService(Service service) {
+    public void deleteSpecialist(Long specialistId) {
 
-        if (service.getParentService() == null) {
-            throw new RuntimeException("Parent service is required");
-        }
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
-        Service parent = serviceRepository.findById(service.getParentService().getServiceId());
+        specialistRepository.delete(specialist);
+    }
 
-        if (parent == null) {
-            throw new RuntimeException("Parent service not found");
-        }
+    @Override
+    public void createService(String name, String description, Long basePrice) {
 
-        // جلوگیری از تکرار نام زیر همان والد
-        for (Service child : parent.getChildServices()) {
-            if (child.getServiceName().equals(service.getServiceName())) {
-                throw new RuntimeException("Duplicate sub service name under same parent");
-            }
-        }
+        Service service = new Service();
+        service.setServiceName(name);
+        service.setServiceDescription(description);
+        service.setServiceBasePrice(basePrice);
+        service.setParentService(null);
 
         serviceRepository.save(service);
     }
 
-    // 3. ویرایش خدمت
     @Override
-    public void updateService(Service service) {
+    public void addSubService(Long parentId, String name, String description, Long basePrice) {
 
-        Service existing = serviceRepository.findById(service.getServiceId());
+        Service parent = serviceRepository.findById(parentId)
+                .orElseThrow(() -> new NotFoundException("Parent service not found"));
 
-        if (existing == null) {
-            throw new RuntimeException("Service not found");
+        // نام زیرخدمت نباید تکراری در همان والد باشد
+        List<Service> siblings = serviceRepository.findByParentService(parent);
+        boolean duplicate = siblings.stream()
+                .anyMatch(s -> s.getServiceName().equals(name));
+
+        if (duplicate) {
+            throw new InvalidOperationException("A sub-service with this name already exists under the same parent");
         }
 
-        existing.setServiceName(service.getServiceName());
-        existing.setServiceBasePrice(service.getServiceBasePrice());
-        existing.setServiceDescription(service.getServiceDescription());
+        Service subService = new Service();
+        subService.setServiceName(name);
+        subService.setServiceDescription(description);
+        subService.setServiceBasePrice(basePrice);
+        subService.setParentService(parent);
 
-        serviceRepository.update(existing);
+        serviceRepository.save(subService);
     }
 
-    // 4. حذف زیرخدمت
+    @Override
+    public void updateService(Long serviceId, String name, String description, Long basePrice) {
+
+        Service service = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new NotFoundException("Service not found"));
+
+        service.setServiceName(name);
+        service.setServiceDescription(description);
+        service.setServiceBasePrice(basePrice);
+    }
+
     @Override
     public void removeSubService(Long serviceId) {
 
-        Service service = serviceRepository.findById(serviceId);
-
-        if (service == null) {
-            throw new RuntimeException("Service not found");
-        }
+        Service service = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new NotFoundException("Service not found"));
 
         serviceRepository.delete(service);
     }
 
-    // 5. افزودن متخصص به زیرخدمت
     @Override
     public void addSpecialistToService(Long specialistId, Long serviceId) {
 
-        Specialist specialist = specialistRepository.findById(specialistId);
-        Service service = serviceRepository.findById(serviceId);
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
-        if (specialist == null || service == null) {
-            throw new RuntimeException("Specialist or Service not found");
+        Service service = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new NotFoundException("Service not found"));
+
+        if (!specialist.getServices().contains(service)) {
+            specialist.getServices().add(service);
         }
-
-        if (!service.getSpecialists().contains(specialist)) {
-            service.getSpecialists().add(specialist);
-        }
-
-        serviceRepository.update(service);
     }
 
-    // 6. حذف متخصص از زیرخدمت
     @Override
     public void removeSpecialistFromService(Long specialistId, Long serviceId) {
 
-        Specialist specialist = specialistRepository.findById(specialistId);
-        Service service = serviceRepository.findById(serviceId);
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
-        if (specialist == null || service == null) {
-            throw new RuntimeException("Specialist or Service not found");
-        }
+        Service service = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new NotFoundException("Service not found"));
 
-        service.getSpecialists().remove(specialist);
+        specialist.getServices().remove(service);
+    }
 
-        serviceRepository.update(service);
+    @Override
+    @Transactional(readOnly = true)
+    public List<Specialist> getAllSpecialists() {
+        return specialistRepository.findAll();
     }
 }

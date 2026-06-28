@@ -1,10 +1,10 @@
 package service;
 
-
-import DTO.SpecialistDto;
 import DTO.SpecialistSignupDto;
-import entity.Proposal;
+import entity.Order;
 import entity.Specialist;
+
+import java.util.List;
 
 public interface SpecialistService {
 
@@ -14,124 +14,21 @@ public interface SpecialistService {
     // ورود
     Specialist login(String email, String password);
 
-    // ویرایش اطلاعات
-    void updateProfile(SpecialistDto dto);
+    // ویرایش اطلاعات (وضعیت دوباره به انتظار تایید برمی‌گردد)
+    void updateProfile(Long specialistId, SpecialistSignupDto dto);
 
-    // ثبت پیشنهاد
-    void submitProposal(Proposal proposal);
+    // مشاهده سفارش‌های قابل پیشنهاد (در حوزه تخصص متخصص)
+    List<Order> getAvailableOrders(Long specialistId);
 
-    // مشاهده موجودی
-    double getWalletBalance(Long specialistId);
+    // اعلام شروع کار
+    void markOrderStarted(Long orderId);
+
+    // اعلام پایان کار
+    void markOrderDone(Long orderId);
+
+    // مشاهده موجودی کیف پول
+    Long getWalletBalance(Long specialistId);
 
     // برداشت از کیف پول
-    void withdraw(Long specialistId, double amount);
-
+    void withdraw(Long specialistId, Long amount);
 }
-
-
-//
-//import entity.*;
-//import repository.BaseRepository;
-//
-//import java.util.List;
-//import java.util.Objects;
-//
-//public class SpecialistService {
-//
-//    private final BaseRepository<Specialist, Long> specialistRepository;
-//    private final BaseRepository<Service, Long> serviceRepository;
-//
-//    public SpecialistService(BaseRepository<Specialist, Long> specialistRepository,
-//                             BaseRepository<Service, Long> serviceRepository) {
-//        this.specialistRepository = specialistRepository;
-//        this.serviceRepository = serviceRepository;
-//    }
-//
-//
-//    /**
-//     *Sign up
-//     */
-//    public void signUp(Specialist specialist) {
-//        specialistRepository.save(specialist);
-//    }
-//
-//    /**
-//     * Login
-//     */
-//    public Specialist login(String email, String password) {
-//
-//        return specialistRepository.findAll()
-//                .stream()
-//                .filter(c -> c.getEmail().equals(email)
-//                        && c.getPassword().equals(password))
-//                .findFirst()
-//                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-//    }
-//
-//    /**
-//     * specialist change info
-//     */
-//    public void updateSpecialist(Long specialistId, Specialist updated) {
-//
-//        Specialist specialist = specialistRepository.findById(specialistId);
-//
-//        if (Objects.isNull(specialist)) {
-//            throw new RuntimeException("Specialist not found");
-//        }
-//
-//        specialist.setName(updated.getName());
-//        specialist.setEmail(updated.getEmail());
-//        specialist.setPassword(updated.getPassword());
-//        specialist.setProfileImage(updated.getProfileImage());
-//
-//        //  بعد از تغییر اطلاعات باید دوباره تایید شود
-//        specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
-//
-//        specialistRepository.update(specialist);
-//    }
-//
-/// /    /**
-/// /     *  اضافه کردن تخصص (service) به متخصص
-/// /     */
-/// /    public void addServiceToSpecialist(Long specialistId, Long serviceId) {
-/// /
-/// /        Specialist specialist = specialistRepository.findById(specialistId);
-/// /        Service service = serviceRepository.findById(serviceId);
-/// /
-/// /        if (Objects.isNull(specialist) || Objects.isNull(service)) {
-/// /            throw new RuntimeException("Not found");
-/// /        }
-/// /
-/// /        specialist.getServices().add(service);
-/// /
-/// /        specialistRepository.update(specialist);
-/// /    }
-//
-//    /**
-//     * show status
-//     */
-//    public SpecialistStatus getStatus(Long specialistId) {
-//
-//        Specialist specialist = specialistRepository.findById(specialistId);
-//
-//        if (Objects.isNull(specialist)) {
-//            throw new RuntimeException("Specialist not found");
-//        }
-//
-//        return specialist.getStatus();
-//    }
-//
-//    /**
-//     * show all specialists for a service
-//     */
-//    public List<Specialist> getSpecialistsByService(Long serviceId) {
-//
-//        Service service = serviceRepository.findById(serviceId);
-//
-//        if (Objects.isNull(service)) {
-//            throw new RuntimeException("Service not found");
-//        }
-//
-//        return service.getSpecialists();
-//    }
-//}
