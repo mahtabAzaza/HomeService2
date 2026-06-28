@@ -1,63 +1,63 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
 
-<!DOCTYPE hibernate-configuration PUBLIC
-        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<!--<!DOCTYPE hibernate-configuration PUBLIC-->
+<!--        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"-->
+<!--        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">-->
 
-<hibernate-configuration>
+<!--<hibernate-configuration>-->
 
-    <session-factory>
+<!--    <session-factory>-->
 
-        <!-- PostgreSQL Driver -->
-        <property name="hibernate.connection.driver_class">
-            org.postgresql.Driver
-        </property>
+<!--        &lt;!&ndash; PostgreSQL Driver &ndash;&gt;-->
+<!--        <property name="hibernate.connection.driver_class">-->
+<!--            org.postgresql.Driver-->
+<!--        </property>-->
 
-        <!-- Database URL -->
-        <property name="hibernate.connection.url">
-            jdbc:postgresql://localhost:5432/home_service_db
-        </property>
+<!--        &lt;!&ndash; Database URL &ndash;&gt;-->
+<!--        <property name="hibernate.connection.url">-->
+<!--            jdbc:postgresql://localhost:5432/home_service_db-->
+<!--        </property>-->
 
-        <!-- Username -->
-        <property name="hibernate.connection.username">
-            postgres
-        </property>
+<!--        &lt;!&ndash; Username &ndash;&gt;-->
+<!--        <property name="hibernate.connection.username">-->
+<!--            postgres-->
+<!--        </property>-->
 
-        <!-- Password -->
-        <property name="hibernate.connection.password">
-            postgres
-        </property>
+<!--        &lt;!&ndash; Password &ndash;&gt;-->
+<!--        <property name="hibernate.connection.password">-->
+<!--            postgres-->
+<!--        </property>-->
 
-        <!-- PostgreSQL Dialect -->
-        <property name="hibernate.dialect">
-            org.hibernate.dialect.PostgreSQLDialect
-        </property>
+<!--        &lt;!&ndash; PostgreSQL Dialect &ndash;&gt;-->
+<!--        <property name="hibernate.dialect">-->
+<!--            org.hibernate.dialect.PostgreSQLDialect-->
+<!--        </property>-->
 
-        <!-- Show SQL in console -->
-        <property name="hibernate.show_sql">
-            true
-        </property>
+<!--        &lt;!&ndash; Show SQL in console &ndash;&gt;-->
+<!--        <property name="hibernate.show_sql">-->
+<!--            true-->
+<!--        </property>-->
 
-        <!-- Format SQL -->
-        <property name="hibernate.format_sql">
-            true
-        </property>
+<!--        &lt;!&ndash; Format SQL &ndash;&gt;-->
+<!--        <property name="hibernate.format_sql">-->
+<!--            true-->
+<!--        </property>-->
 
-        <!-- Automatically update tables -->
-        <property name="hibernate.hbm2ddl.auto">
-            update
-        </property>
+<!--        &lt;!&ndash; Automatically update tables &ndash;&gt;-->
+<!--        <property name="hibernate.hbm2ddl.auto">-->
+<!--            update-->
+<!--        </property>-->
 
-        <!-- Entity Classes -->
-        <mapping class="entity.Customer"/>
-        <mapping class="entity.Specialist"/>
-        <mapping class="entity.Manager"/>
-        <mapping class="entity.Order"/>
-        <mapping class="entity.Proposal"/>
-        <mapping class="entity.Review"/>
-        <mapping class="entity.Wallet"/>
-        <mapping class="entity.Service"/>
+<!--        &lt;!&ndash; Entity Classes &ndash;&gt;-->
+<!--        <mapping class="entity.Customer"/>-->
+<!--        <mapping class="entity.Specialist"/>-->
+<!--        <mapping class="entity.Manager"/>-->
+<!--        <mapping class="entity.Order"/>-->
+<!--        <mapping class="entity.Proposal"/>-->
+<!--        <mapping class="entity.Review"/>-->
+<!--        <mapping class="entity.Wallet"/>-->
+<!--        <mapping class="entity.Service"/>-->
 
-    </session-factory>
+<!--    </session-factory>-->
 
-</hibernate-configuration>
+<!--</hibernate-configuration>-->

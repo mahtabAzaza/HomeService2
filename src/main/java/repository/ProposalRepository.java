@@ -1,7 +1,8 @@
 package repository;
 
+import entity.Proposal;
 import entity.Specialist;
 
 public interface ProposalRepository extends
-        BaseRepository<Specialist,Long> {
+        BaseRepository<Proposal,Long> {
 }

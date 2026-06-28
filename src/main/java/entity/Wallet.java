@@ -1,63 +1,26 @@
 package entity;
+
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "wallets")
-public class Wallet {
+public class Wallet extends BaseEntity<Long> {
 
-
-    //variables-----------------------
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long walletID;
     private String ownerName;
-    private long balance;
 
+    private Long balance;
 
-     //relationships-------------------
-     // کیف پول متخصص
-     @OneToOne(mappedBy = "wallet")
-     private Specialist specialist;
+    // کیف پول متخصص
+    @OneToOne(mappedBy = "wallet")
+    private Specialist specialist;
+
     // کیف پول مشتری
     @OneToOne(mappedBy = "wallet")
     private Customer customer;
-
-
-    //getter setter
-    public Long getWalletID() {
-        return walletID;
-    }
-
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public long getBalance() {
-        return balance;
-    }
-
-    public Specialist getSpecialist() {
-        return specialist;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
-    }
-
-    public void setBalance(long balance) {
-        this.balance = balance;
-    }
-
-    public void setSpecialist(Specialist specialist) {
-        this.specialist = specialist;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
 }

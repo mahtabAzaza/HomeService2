@@ -1,6 +1,6 @@
 package DTO;
 
-public class SpecialistSignupDTO {
+public class SpecialistSignupDto {
 
     private String name;
     private String email;
@@ -11,7 +11,7 @@ public class SpecialistSignupDTO {
         return name;
     }
 
-    public void setName(String fullName) {
+    public void setName(String name) {
         this.name = name;
     }
 

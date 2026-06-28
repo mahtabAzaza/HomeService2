@@ -1,14 +1,14 @@
 package entity;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public class Manager {
-
-    String name;
-    String email;
-    String password;
-
-
-
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "managers")
+public class Manager extends User {
 }
-
-

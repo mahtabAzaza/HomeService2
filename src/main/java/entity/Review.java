@@ -1,82 +1,38 @@
 package entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "reviews")
-public class Review {
+public class Review extends BaseEntity<Long> {
 
-    // variables ---------------------
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewID;
-    private int score;
+    @Min(1)
+    @Max(5)
+    private Integer score;
+
+    // متن نظر (اختیاری)
     private String statement;
 
-    // relationships ------------------
     // مشتری که نظر را ثبت کرده
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
     // متخصصی که درباره او نظر داده شده
     @ManyToOne
     @JoinColumn(name = "specialist_id")
     private Specialist specialist;
+
+    // سفارشی که برای آن نظر داده شده
     @OneToOne
+    @JoinColumn(name = "order_id")
     private Order order;
-
-    // getter setter ------------------
-
-    public Long getOrderID() {
-        return reviewID;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public String getStatement() {
-        return statement;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public Specialist getSpecialist() {
-        return specialist;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public void setStatement(String statement) {
-        this.statement = statement;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public void setSpecialist(Specialist specialist) {
-        this.specialist = specialist;
-    }
-
-    public Long getReviewID() {
-        return reviewID;
-    }
-
-    public void setReviewID(Long reviewID) {
-        this.reviewID = reviewID;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
 }
