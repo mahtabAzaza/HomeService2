@@ -3,7 +3,7 @@ package service;
 import entity.Order;
 import entity.OrderStatus;
 import entity.Wallet;
-import repository.BaseRepository;
+
 import java.util.Objects;
 
 public class WalletService {

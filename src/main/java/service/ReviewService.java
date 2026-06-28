@@ -1,7 +1,7 @@
 package service;
 
 import entity.*;
-import repository.BaseRepository;
+
 import java.util.Objects;
 
 public class ReviewService {

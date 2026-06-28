@@ -6,7 +6,7 @@ public enum OrderStatus {
     WAITING_FOR_PROPOSAL,
 
     // مشتری یک پیشنهاد را انتخاب کرده، منتظر آمدن متخصص
-    WAITING_FOR_SPECIALIST_TO_COME,
+    WAITING_FOR_SPECIALIST,
 
     // متخصص آمده و کار شروع شده
     IN_PROGRESS,

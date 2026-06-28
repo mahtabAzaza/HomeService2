@@ -1,10 +1,9 @@
 package repository;
-
-
 import entity.Wallet;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WalletRepository extends
-        BaseRepository<Wallet,Long> {
+        JpaRepository<Wallet,Long> {
 
 
 }

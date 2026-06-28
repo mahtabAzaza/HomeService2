@@ -1,7 +1,9 @@
 package repository;
+import entity.Customer;
 import entity.Order;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface OrderRepository extends
-        BaseRepository<Order,Long> {
+        JpaRepository<Order,Long> {
 }

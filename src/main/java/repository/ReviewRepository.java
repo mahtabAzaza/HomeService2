@@ -1,7 +1,12 @@
 package repository;
 
+import entity.Customer;
+import entity.Review;
 import entity.Specialist;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface ReviewRepository extends
-        BaseRepository<Specialist,Long> {
+        JpaRepository <Review,Long>,
+        JpaSpecificationExecutor<Customer> {
 }

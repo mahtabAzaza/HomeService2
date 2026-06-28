@@ -1,9 +1,11 @@
 package repository;
 
 import entity.Customer;
+import entity.Manager;
 import entity.Specialist;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ManagerRepository extends
-        BaseRepository<Specialist,Long> {
-    Customer findByEmail(String email);
+        JpaRepository<Manager,Long> {
+    Manager findByEmail(String email);
 }

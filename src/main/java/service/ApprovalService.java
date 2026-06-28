@@ -2,7 +2,7 @@ package service;
 
 import entity.Specialist;
 import entity.SpecialistStatus;
-import repository.BaseRepository;
+
 import java.util.Objects;
 
 public class ApprovalService {
