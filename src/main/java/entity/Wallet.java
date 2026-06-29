@@ -13,7 +13,6 @@ import lombok.Setter;
 public class Wallet extends BaseEntity<Long> {
 
     private String ownerName;
-
     private Long balance;
 
     // کیف پول متخصص
@@ -23,4 +22,6 @@ public class Wallet extends BaseEntity<Long> {
     // کیف پول مشتری
     @OneToOne(mappedBy = "wallet")
     private Customer customer;
+
+
 }

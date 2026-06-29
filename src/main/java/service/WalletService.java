@@ -1,92 +1,56 @@
 package service;
 
-import entity.Order;
-import entity.OrderStatus;
-import entity.Wallet;
 
-import java.util.Objects;
 
+
+@Service
+@RequiredArgsConstructor
+@Transactional
 public class WalletService {
 
-    private final BaseRepository<Wallet, Long> walletRepository;
-    private final BaseRepository<Order, Long> orderRepository;
+    private final WalletRepository walletRepository;
+    private final OrderRepository orderRepository;
 
-    public WalletService(BaseRepository<Wallet, Long> walletRepository,
-                         BaseRepository<Order, Long> orderRepository) {
-        this.walletRepository = walletRepository;
-        this.orderRepository = orderRepository;
-    }
-
-    /**
-     * show balance
-     */
     public double showBalance(Long walletId) {
 
-        Wallet wallet = walletRepository.findById(walletId);
-
-        if (Objects.isNull(wallet)) {
-            throw new RuntimeException("Wallet not found");
-        }
+        Wallet wallet = walletRepository.findById(walletId)
+                .orElseThrow(() -> new WalletNotFoundException());
 
         return wallet.getBalance();
     }
 
-    /**
-     * charge wallet
-     */
     public void chargeWallet(Long walletId, double amount) {
 
-        Wallet wallet = walletRepository.findById(walletId);
-
-        if (Objects.isNull(wallet)) {
-            throw new RuntimeException("Wallet not found");
-        }
+        Wallet wallet = walletRepository.findById(walletId)
+                .orElseThrow(() -> new WalletNotFoundException());
 
         if (amount <= 0) {
-            throw new RuntimeException("Invalid amount");
+            throw new InvalidOperationException();
         }
-// /////////////////////////?? change price datatypes///
-        wallet.setBalance((long) (wallet.getBalance() + amount));
-// / //////////////////////////////////////////////////
-        walletRepository.update(wallet);
+
+        wallet.setBalance(wallet.getBalance() + amount);
     }
 
-    /**
-     * withdraw Money
-     */
     public void withdrawMoney(Long walletId, double amount) {
 
-        Wallet wallet = walletRepository.findById(walletId);
-
-        if (Objects.isNull(wallet)) {
-            throw new RuntimeException("Wallet not found");
-        }
+        Wallet wallet = walletRepository.findById(walletId)
+                .orElseThrow(() -> new WalletNotFoundException());
 
         if (amount <= 0) {
-            throw new RuntimeException("Invalid amount");
+            throw new InvalidOperationException();
         }
 
         if (wallet.getBalance() < amount) {
-            throw new RuntimeException("Insufficient balance");
+            throw new InsufficientBalanceException();
         }
-// ///////////////////////////////////////////////
-        wallet.setBalance((long) (wallet.getBalance() - amount));
-// /////////////////////////////
-        walletRepository.update(wallet);
+
+        wallet.setBalance(wallet.getBalance() - amount);
     }
-// / ///////////////////////////////////////////////
-    /**
-     * pay for order
-     *  کم کردن از مشتری
-     *  اضافه کردن به متخصص
-     */
+
     public void payForOrder(Long orderId) {
 
-        Order order = orderRepository.findById(orderId);
-
-        if (Objects.isNull(order)) {
-            throw new RuntimeException("Order not found");
-        }
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException());
 
         Wallet customerWallet = order.getCustomer().getWallet();
         Wallet specialistWallet = order.getSpecialist().getWallet();
@@ -94,16 +58,12 @@ public class WalletService {
         double price = order.getFinalPrice();
 
         if (customerWallet.getBalance() < price) {
-            throw new RuntimeException("Not enough balance");
+            throw new InsufficientBalanceException();
         }
-// /////////////////////change datatype
-        customerWallet.setBalance((long) (customerWallet.getBalance() - price));
-        specialistWallet.setBalance((long) (specialistWallet.getBalance() + price));
-// ///////////////////////
-        walletRepository.update(customerWallet);
-        walletRepository.update(specialistWallet);
+
+        customerWallet.setBalance(customerWallet.getBalance() - price);
+        specialistWallet.setBalance(specialistWallet.getBalance() + price);
 
         order.setOrderStatus(OrderStatus.PAID);
-        orderRepository.update(order);
     }
 }

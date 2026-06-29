@@ -1,94 +1,59 @@
 package service;
 
-import entity.Service;
-
-import java.util.List;
-import java.util.Objects;
-
+@Service
+@RequiredArgsConstructor
+@Transactional
 public class ServiceService {
 
-    private final BaseRepository<Service, Long> serviceRepository;
+    private final ServiceRepository serviceRepository;
 
-    public ServiceService(BaseRepository<Service, Long> serviceRepository) {
-        this.serviceRepository = serviceRepository;
-    }
-
-    /**
-     * Add a new service  (by manager)
-     */
+    // افزودن سرویس
     public void createService(Service service) {
 
-        if (Objects.isNull(service)) {
-            throw new RuntimeException("Service cannot be null");
+        if (service == null) {
+            throw new InvalidOperationException();
         }
 
-        if (service.getServiceName() == null || service.getServiceName().isEmpty()) {
-            throw new RuntimeException("Service name is required");
+        if (service.getServiceName() == null || service.getServiceName().isBlank()) {
+            throw new InvalidOperationException();
         }
 
         serviceRepository.save(service);
     }
 
-    /**
-     * Edit a service (by manager)
-     */
+    // ویرایش سرویس
     public void updateService(Service service) {
 
-        Service existing = serviceRepository.findById(service.getServiceId());
-
-        if (Objects.isNull(existing)) {
-            throw new RuntimeException("Service not found");
-        }
+        Service existing = serviceRepository.findById(service.getServiceId())
+                .orElseThrow(ServiceNotFoundException::new);
 
         existing.setServiceName(service.getServiceName());
         existing.setServiceDescription(service.getServiceDescription());
         existing.setServiceBasePrice(service.getServiceBasePrice());
         existing.setParentService(service.getParentService());
-
-        serviceRepository.update(existing);
     }
 
-    /**
-     * Delete a service  (by manager)
-     */
+    // حذف سرویس
     public void deleteService(Long id) {
 
-        Service service = serviceRepository.findById(id);
-
-        if (Objects.isNull(service)) {
-            throw new RuntimeException("Service not found");
+        if (!serviceRepository.existsById(id)) {
+            throw new ServiceNotFoundException();
         }
 
-        serviceRepository.delete(service);
+        serviceRepository.deleteById(id);
     }
 
-    /**
-     *Find all services
-     */
+    // نمایش همه سرویس‌ها
+    @Transactional(readOnly = true)
     public List<Service> getAllServices() {
         return serviceRepository.findAll();
     }
 
-    /**
-     * Find a service
-     */
+    // پیدا کردن سرویس با شناسه
+    @Transactional(readOnly = true)
     public Service getServiceById(Long id) {
-        return serviceRepository.findById(id);
+
+        return serviceRepository.findById(id)
+                .orElseThrow(ServiceNotFoundException::new);
     }
 }
-
-
-
-
-// void displayServiceTree() {
-//
-//    List<Service> services = serviceRepository.findAll();
-//
-//    for (Service service : services) {
-//
-//
-//        if (service.getParentService() == null) {
-//            printTree(service, 0);
-//        }
-//    }
-//}

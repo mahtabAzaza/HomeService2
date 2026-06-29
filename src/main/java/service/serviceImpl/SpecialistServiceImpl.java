@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import repository.*;
 import service.SpecialistService;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,13 +20,16 @@ public class SpecialistServiceImpl implements SpecialistService {
     private final SpecialistRepository specialistRepository;
     private final OrderRepository orderRepository;
     private final WalletRepository walletRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public SpecialistServiceImpl(SpecialistRepository specialistRepository,
                                  OrderRepository orderRepository,
-                                 WalletRepository walletRepository) {
+                                 WalletRepository walletRepository,
+                                 PasswordEncoder passwordEncoder) {
         this.specialistRepository = specialistRepository;
         this.orderRepository = orderRepository;
         this.walletRepository = walletRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -47,7 +52,7 @@ public class SpecialistServiceImpl implements SpecialistService {
         specialist.setFirstName(dto.getFirstName());
         specialist.setLastName(dto.getLastName());
         specialist.setEmail(dto.getEmail());
-        specialist.setPassword(dto.getPassword());
+        specialist.setPassword(passwordEncoder.encode(dto.getPassword()));
         specialist.setProfileImage(dto.getProfileImage());
         specialist.setRegistrationDate(LocalDateTime.now());
         specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
@@ -63,7 +68,7 @@ public class SpecialistServiceImpl implements SpecialistService {
 
         Specialist specialist = specialistRepository.findByEmail(email);
 
-        if (specialist == null || !specialist.getPassword().equals(password)) {
+        if (specialist == null || !passwordEncoder.matches(password, specialist.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
@@ -87,7 +92,7 @@ public class SpecialistServiceImpl implements SpecialistService {
         specialist.setFirstName(dto.getFirstName());
         specialist.setLastName(dto.getLastName());
         specialist.setEmail(dto.getEmail());
-        specialist.setPassword(dto.getPassword());
+        specialist.setPassword(passwordEncoder.encode(dto.getPassword()));
         specialist.setProfileImage(dto.getProfileImage());
 
         // بعد از ویرایش اطلاعات باید دوباره تایید شود

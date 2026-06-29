@@ -1,12 +1,11 @@
 package service;
 
 import entity.Specialist;
-
 import java.util.List;
 
 public interface ManagerService {
 
-    // تایید ثبت‌نام متخصص
+    // تایید ثبت ‌نام متخصص
     void approveSpecialist(Long specialistId);
 
     // حذف متخصص

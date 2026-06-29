@@ -16,7 +16,7 @@ public class ReviewService {
     }
 
     /**
-     * ثبت نظر مشتری برای سفارش انجام شده
+     * ثبت نظر مشتری برای سفارش پرداخت شده
      */
     public void addReview(Long orderId, int score, String statement) {
 

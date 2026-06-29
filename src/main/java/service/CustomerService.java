@@ -44,4 +44,7 @@ public interface CustomerService {
 
     // مشاهده موجودی کیف پول
     Long getWalletBalance(Long customerId);
+
+    // افزایش موجودی کیف پول
+    void chargeWallet(Long walletId, int amount);
 }
