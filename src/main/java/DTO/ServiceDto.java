@@ -1,0 +1,17 @@
+package DTO;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class ServiceDto {
+
+    private Long id;
+    private String serviceName;
+    private Long serviceBasePrice;
+    private String serviceDescription;
+    private Long parentServiceId;
+}

@@ -1,5 +1,13 @@
-
 package service;
+
+import entity.Specialist;
+import entity.SpecialistStatus;
+import exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import repository.SpecialistRepository;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -7,13 +15,10 @@ public class ApprovalService {
 
     private final SpecialistRepository specialistRepository;
 
-    /**
-     * Approve specialist by manager
-     */
     public void approveSpecialist(Long specialistId) {
 
         Specialist specialist = specialistRepository.findById(specialistId)
-                .orElseThrow(SpecialistNotFoundException::new);
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
         if (specialist.getStatus() == SpecialistStatus.APPROVED) {
             return;
@@ -22,13 +27,10 @@ public class ApprovalService {
         specialist.setStatus(SpecialistStatus.APPROVED);
     }
 
-    /**
-     * Put specialist back to waiting for approval
-     */
     public void sendToWaitingApproval(Long specialistId) {
 
         Specialist specialist = specialistRepository.findById(specialistId)
-                .orElseThrow(SpecialistNotFoundException::new);
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
         if (specialist.getStatus() == SpecialistStatus.WAITING_FOR_APPROVAL) {
             return;

@@ -1,7 +1,9 @@
 package service.serviceImpl;
 
+import DTO.SpecialistResponseDto;
 import DTO.SpecialistSignupDto;
 import entity.*;
+import mapper.SpecialistMapper;
 import exception.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ public class SpecialistServiceImpl implements SpecialistService {
     }
 
     @Override
-    public void signup(SpecialistSignupDto dto) {
+    public SpecialistResponseDto signup(SpecialistSignupDto dto) {
 
         if (specialistRepository.findByEmail(dto.getEmail()) != null) {
             throw new DuplicateEmailException("Email already in use");
@@ -60,6 +62,13 @@ public class SpecialistServiceImpl implements SpecialistService {
         specialist.setWallet(wallet);
 
         specialistRepository.save(specialist);
+        return SpecialistMapper.toDto(specialist);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Specialist findByEmail(String email) {
+        return specialistRepository.findByEmail(email);
     }
 
     @Override

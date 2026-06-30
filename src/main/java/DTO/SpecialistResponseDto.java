@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SpecialistDto {
+public class SpecialistResponseDto {
 
     private Long id;
     private String firstName;

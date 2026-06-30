@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="9460d2a1-71c0-4403-8bae-b89eb27d9271" />
+    <option name="activeSessionId" value="37722421-bb17-4c8e-9a3e-4490ac263758" />
     <option name="openSessionIds">
       <list>
-        <option value="9460d2a1-71c0-4403-8bae-b89eb27d9271" />
+        <option value="026d3148-dddf-4bfd-97c2-a6ea059d2bd9" />
+        <option value="37722421-bb17-4c8e-9a3e-4490ac263758" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
-        <entry key="9460d2a1-71c0-4403-8bae-b89eb27d9271" value="/sessions/14e13678-de4c-4b2e-8098-d030b3141a11" />
+        <entry key="026d3148-dddf-4bfd-97c2-a6ea059d2bd9" value="/sessions/14e13678-de4c-4b2e-8098-d030b3141a11" />
+        <entry key="37722421-bb17-4c8e-9a3e-4490ac263758" value="/sessions/8ccb84b0-388b-4dcb-84bb-cd944fede063" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
-        <entry key="9460d2a1-71c0-4403-8bae-b89eb27d9271" value="i have this project and i want to migrate it to sp" />
+        <entry key="026d3148-dddf-4bfd-97c2-a6ea059d2bd9" value="i have this project and i want to migrate it to sp" />
+        <entry key="37722421-bb17-4c8e-9a3e-4490ac263758" value="please check all classes in my project and note th" />
       </map>
     </option>
   </component>

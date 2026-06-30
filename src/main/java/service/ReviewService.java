@@ -1,52 +1,47 @@
 package service;
 
-import entity.*;
+import entity.Order;
+import entity.OrderStatus;
+import entity.Review;
+import exception.InvalidOperationException;
+import exception.NotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import repository.OrderRepository;
+import repository.ReviewRepository;
 
-import java.util.Objects;
-
+@Service
+@Transactional
 public class ReviewService {
 
-    private final BaseRepository<Review, Long> reviewRepository;
-    private final BaseRepository<Order, Long> orderRepository;
+    private final ReviewRepository reviewRepository;
+    private final OrderRepository orderRepository;
 
-    public ReviewService(BaseRepository<Review, Long> reviewRepository,
-                         BaseRepository<Order, Long> orderRepository) {
+    public ReviewService(ReviewRepository reviewRepository, OrderRepository orderRepository) {
         this.reviewRepository = reviewRepository;
         this.orderRepository = orderRepository;
     }
 
-    /**
-     * ثبت نظر مشتری برای سفارش پرداخت شده
-     */
     public void addReview(Long orderId, int score, String statement) {
 
-        // گرفتن سفارش
-        Order order = orderRepository.findById(orderId);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
 
-        if (Objects.isNull(order)) {
-            throw new RuntimeException("Order not found");
+        if (order.getOrderStatus() != OrderStatus.DONE && order.getOrderStatus() != OrderStatus.PAID) {
+            throw new InvalidOperationException("You can only review completed orders");
         }
 
-        // فقط سفارش‌های پرداخت شده قابل review هستند
-        if (order.getOrderStatus() != OrderStatus.PAID) {
-            throw new RuntimeException("You can only review paid orders");
-        }
-
-        // کنترل امتیاز
         if (score < 1 || score > 5) {
-            throw new RuntimeException("Rating must be between 1 to 5");
+            throw new InvalidOperationException("Rating must be between 1 and 5");
         }
 
-        // ساخت Review واقعی مطابق Entity
         Review review = new Review();
+        review.setOrder(order);
+        review.setCustomer(order.getCustomer());
+        review.setSpecialist(order.getSpecialist());
+        review.setScore(score);
+        review.setStatement(statement);
 
-        review.setOrder(order);                     // اتصال به سفارش
-        review.setCustomer(order.getCustomer());    // از خود Order گرفته میشه
-        review.setSpecialist(order.getSpecialist());// متخصص همان سفارش
-        review.setScore(score);                   // امتیاز
-        review.setStatement(statement);                 // متن نظر
-
-        // ذخیره
         reviewRepository.save(review);
     }
 }

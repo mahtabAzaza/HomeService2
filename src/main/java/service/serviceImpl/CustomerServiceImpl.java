@@ -1,7 +1,9 @@
 package service.serviceImpl;
 
+import DTO.CustomerResponseDto;
 import DTO.CustomerSignupDto;
 import entity.*;
+import mapper.CustomerMapper;
 import exception.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void signup(CustomerSignupDto dto) {
+    public CustomerResponseDto signup(CustomerSignupDto dto) {
 
         if (customerRepository.findByEmail(dto.getEmail()) != null) {
             throw new DuplicateEmailException("Email already in use");
@@ -64,6 +66,13 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setWallet(wallet);
 
         customerRepository.save(customer);
+        return CustomerMapper.toDto(customer);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Customer findByEmail(String email) {
+        return customerRepository.findByEmail(email);
     }
 
     @Override
@@ -219,7 +228,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public void chargeWallet(Long customerId, int amount) {
+    public void chargeWallet(Long customerId, Long amount) {
 
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
