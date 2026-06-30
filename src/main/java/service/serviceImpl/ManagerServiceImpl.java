@@ -4,17 +4,17 @@ import entity.Service;
 import entity.Specialist;
 import entity.SpecialistStatus;
 import exception.*;
-import org.springframework.stereotype.Service;
+//import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repository.ServiceRepository;
 import repository.SpecialistRepository;
 import service.ManagerService;
-
 import java.util.List;
 
-@Service
+// ?????
+@org.springframework.stereotype.Service
 @Transactional
-public class ManagerServiceImpl implements ManagerService {
+class ManagerServiceImpl implements ManagerService {
 
     private final SpecialistRepository specialistRepository;
     private final ServiceRepository serviceRepository;
