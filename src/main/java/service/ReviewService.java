@@ -28,11 +28,11 @@ public class ReviewService {
                 .orElseThrow(() -> new NotFoundException("Order not found"));
 
         if (order.getOrderStatus() != OrderStatus.DONE && order.getOrderStatus() != OrderStatus.PAID) {
-            throw new InvalidOperationException("You can only review completed orders");
+            throw new InvalidOperationException("You can only review paid orders");
         }
 
         if (score < 1 || score > 5) {
-            throw new InvalidOperationException("Rating must be between 1 and 5");
+            throw new InvalidOperationException("Rating must be between 1 to 5");
         }
 
         Review review = new Review();

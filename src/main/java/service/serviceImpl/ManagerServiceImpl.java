@@ -25,6 +25,7 @@ class ManagerServiceImpl implements ManagerService {
         this.serviceRepository = serviceRepository;
     }
 
+    // تایید متخصص
     @Override
     public void approveSpecialist(Long specialistId) {
 
@@ -34,6 +35,7 @@ class ManagerServiceImpl implements ManagerService {
         specialist.setStatus(SpecialistStatus.APPROVED);
     }
 
+    //حذف متخصص
     @Override
     public void deleteSpecialist(Long specialistId) {
 
@@ -43,6 +45,7 @@ class ManagerServiceImpl implements ManagerService {
         specialistRepository.delete(specialist);
     }
 
+    // ایجاد سرویس
     @Override
     public void createService(String name, String description, Long basePrice) {
 
@@ -55,6 +58,7 @@ class ManagerServiceImpl implements ManagerService {
         serviceRepository.save(service);
     }
 
+//    ایجاد زیر سرویس
     @Override
     public void addSubService(Long parentId, String name, String description, Long basePrice) {
 
@@ -79,6 +83,8 @@ class ManagerServiceImpl implements ManagerService {
         serviceRepository.save(subService);
     }
 
+
+    // ویرایش سرویس
     @Override
     public void updateService(Long serviceId, String name, String description, Long basePrice) {
 
@@ -90,6 +96,8 @@ class ManagerServiceImpl implements ManagerService {
         service.setServiceBasePrice(basePrice);
     }
 
+
+    // حذف زیرسرویس
     @Override
     public void removeSubService(Long serviceId) {
 
@@ -99,6 +107,8 @@ class ManagerServiceImpl implements ManagerService {
         serviceRepository.delete(service);
     }
 
+
+    // اضافه کرپن متخصص به زیر سرویس
     @Override
     public void addSpecialistToService(Long specialistId, Long serviceId) {
 
@@ -111,7 +121,11 @@ class ManagerServiceImpl implements ManagerService {
         if (!specialist.getServices().contains(service)) {
             specialist.getServices().add(service);
         }
+        // save repo
     }
+
+
+    // حذف کردن متخصص از زیر سرویس
 
     @Override
     public void removeSpecialistFromService(Long specialistId, Long serviceId) {
@@ -123,8 +137,10 @@ class ManagerServiceImpl implements ManagerService {
                 .orElseThrow(() -> new NotFoundException("Service not found"));
 
         specialist.getServices().remove(service);
+        // save
     }
 
+    // مشاهده متخصصان R
     @Override
     @Transactional(readOnly = true)
     public List<Specialist> getAllSpecialists() {

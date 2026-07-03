@@ -38,6 +38,8 @@ public class SpecialistController {
         return ResponseEntity.ok(dtos);
     }
 
+
+// ثبت پیشنهاد
     @PostMapping("/proposals")
     public ResponseEntity<Void> submitProposal(@RequestBody ProposalDto dto) {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());

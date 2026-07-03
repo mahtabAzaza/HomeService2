@@ -34,12 +34,12 @@ public abstract class User extends BaseEntity<Long> {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank
-    @Size(min = 8, message = "Password must be at least 8 characters")
-    @Pattern(
-            regexp = "^(?=.*[a-zA-Z])(?=.*\\d).+$",
-            message = "Password must contain both letters and numbers"
-    )
+//    @NotBlank
+//    @Size(min = 8, message = "Password must be at least 8 characters")
+//    @Pattern(
+//            regexp = "^(?=.*[a-zA-Z])(?=.*\\d).+$",
+//            message = "Password must contain both letters and numbers"
+//    )
     private String password;
 
     @Column(name = "registration_date", updatable = false)

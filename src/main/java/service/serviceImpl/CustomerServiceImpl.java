@@ -105,7 +105,8 @@ public class CustomerServiceImpl implements CustomerService {
     public List<entity.Service> getServices() {
         return serviceRepository.findAll();
     }
-
+// pagination
+    // print child-parent
     @Override
     public void placeOrder(Long customerId, Long serviceId, Long priceOffer,
                            LocalDateTime startDateTime, String address, String description) {

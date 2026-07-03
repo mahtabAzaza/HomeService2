@@ -1,5 +1,8 @@
 package DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +15,14 @@ public class CustomerSignupDto {
     private String firstName;
     private String lastName;
     private String email;
+
+   // at least 8 char and...
+   @NotBlank
+   @Size(min = 8, message = "Password must be at least 8 characters")
+   @Pattern(
+           regexp = "^(?=.*[a-zA-Z])(?=.*\\d).+$",
+           message = "Password must contain both letters and numbers"
+   )
     private String password;
     private byte[] profilePicture;
 }

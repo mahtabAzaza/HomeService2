@@ -34,6 +34,8 @@ public class SpecialistServiceImpl implements SpecialistService {
         this.passwordEncoder = passwordEncoder;
     }
 
+
+    // ثبت نام
     @Override
     public SpecialistResponseDto signup(SpecialistSignupDto dto) {
 
@@ -71,6 +73,8 @@ public class SpecialistServiceImpl implements SpecialistService {
         return specialistRepository.findByEmail(email);
     }
 
+
+    // ورود
     @Override
     @Transactional(readOnly = true)
     public Specialist login(String email, String password) {
@@ -88,6 +92,7 @@ public class SpecialistServiceImpl implements SpecialistService {
         return specialist;
     }
 
+    // ویرایش اطلاعات
     @Override
     public void updateProfile(Long specialistId, SpecialistSignupDto dto) {
 
@@ -98,16 +103,15 @@ public class SpecialistServiceImpl implements SpecialistService {
             throw new InvalidOperationException("Profile image must be under 300 KB");
         }
 
-        specialist.setFirstName(dto.getFirstName());
-        specialist.setLastName(dto.getLastName());
         specialist.setEmail(dto.getEmail());
         specialist.setPassword(passwordEncoder.encode(dto.getPassword()));
         specialist.setProfileImage(dto.getProfileImage());
 
         // بعد از ویرایش اطلاعات باید دوباره تایید شود
         specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
+        //
     }
-
+// دیدن سفارشات
     @Override
     @Transactional(readOnly = true)
     public List<Order> getAvailableOrders(Long specialistId) {
@@ -123,8 +127,11 @@ public class SpecialistServiceImpl implements SpecialistService {
                 specialist.getServices(),
                 OrderStatus.WAITING_FOR_PROPOSAL
         );
+
     }
 
+
+    // شروع کار
     @Override
     public void markOrderStarted(Long orderId) {
 
@@ -138,6 +145,8 @@ public class SpecialistServiceImpl implements SpecialistService {
         order.setOrderStatus(OrderStatus.IN_PROGRESS);
     }
 
+
+    // پایان کار
     @Override
     public void markOrderDone(Long orderId) {
 
@@ -151,6 +160,7 @@ public class SpecialistServiceImpl implements SpecialistService {
         order.setOrderStatus(OrderStatus.DONE);
     }
 
+    // مشاهده موجودی
     @Override
     @Transactional(readOnly = true)
     public Long getWalletBalance(Long specialistId) {
@@ -161,6 +171,9 @@ public class SpecialistServiceImpl implements SpecialistService {
         return specialist.getWallet().getBalance();
     }
 
+// سفارش باز
+
+    // برداشت
     @Override
     public void withdraw(Long specialistId, Long amount) {
 
