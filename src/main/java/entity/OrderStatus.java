@@ -5,7 +5,10 @@ public enum OrderStatus {
     // مشتری سفارش ثبت کرده، منتظر پیشنهاد متخصصان
     WAITING_FOR_PROPOSAL,
 
-    // مشتری یک پیشنهاد را انتخاب کرده، منتظر آمدن متخصص
+    // انتخاب یک پیشنهاد توسط مشتری
+        WAITING_FOR_SELECTION,
+
+    // در انتظار رسیدن متخصص
     WAITING_FOR_SPECIALIST,
 
     // متخصص آمده و کار شروع شده

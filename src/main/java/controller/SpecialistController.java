@@ -53,17 +53,7 @@ public class SpecialistController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/orders/{orderId}/start")
-    public ResponseEntity<Void> markStarted(@PathVariable Long orderId) {
-        specialistService.markOrderStarted(orderId);
-        return ResponseEntity.ok().build();
-    }
 
-    @PutMapping("/orders/{orderId}/done")
-    public ResponseEntity<Void> markDone(@PathVariable Long orderId) {
-        specialistService.markOrderDone(orderId);
-        return ResponseEntity.ok().build();
-    }
 
     @GetMapping("/wallet")
     public ResponseEntity<Long> getWalletBalance() {

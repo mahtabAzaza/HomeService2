@@ -14,4 +14,6 @@ public interface OrderRepository extends
     // specialist sees open orders they can submit proposals for
 // (orders in the services they work in)
     List<Order> findByServiceInAndOrderStatus(List<Service> services, OrderStatus status);
+
+    boolean existsBySpecialistIdAndOrderStatusIn(Long specialistId, List<OrderStatus> statuses);
 }

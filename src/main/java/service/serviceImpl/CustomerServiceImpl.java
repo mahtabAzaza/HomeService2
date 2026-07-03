@@ -163,13 +163,43 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new NotFoundException("Proposal not found"));
 
         if (order.getOrderStatus() != OrderStatus.WAITING_FOR_PROPOSAL) {
-            throw new InvalidOperationException("Order is not accepting selections");
+            throw new InvalidOperationException("no proposal yet");
         }
 
         order.setSpecialist(proposal.getSpecialist());
         order.setFinalPrice(proposal.getProposalPrice());
         order.setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST);
     }
+
+    // شروع کار
+    @Override
+    public void markOrderStarted(Long orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+
+        if (order.getOrderStatus() != OrderStatus.WAITING_FOR_SPECIALIST) {
+            throw new InvalidOperationException("Order is not in the correct state to start");
+        }
+
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+    }
+
+
+    // پایان کار
+    @Override
+    public void markOrderDone(Long orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+
+        if (order.getOrderStatus() != OrderStatus.IN_PROGRESS) {
+            throw new InvalidOperationException("Order has not been started yet");
+        }
+
+        order.setOrderStatus(OrderStatus.DONE);
+    }
+
 
     @Override
     public void payOrder(Long orderId) {

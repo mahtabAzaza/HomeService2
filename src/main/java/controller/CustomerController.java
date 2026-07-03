@@ -68,6 +68,18 @@ public class CustomerController {
         customerService.selectProposal(orderId, proposalId);
         return ResponseEntity.ok().build();
     }
+    @PutMapping("/orders/{orderId}/start")
+    public ResponseEntity<Void> markStarted(@PathVariable Long orderId) {
+        customerService.markOrderStarted(orderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/orders/{orderId}/done")
+    public ResponseEntity<Void> markDone(@PathVariable Long orderId) {
+        customerService.markOrderDone(orderId);
+        return ResponseEntity.ok().build();
+    }
+
 
     @PostMapping("/orders/{orderId}/pay")
     public ResponseEntity<Void> payOrder(@PathVariable Long orderId) {

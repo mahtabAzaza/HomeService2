@@ -120,8 +120,9 @@ class ManagerServiceImpl implements ManagerService {
 
         if (!specialist.getServices().contains(service)) {
             specialist.getServices().add(service);
+
         }
-        // save repo
+        specialistRepository.save(specialist);
     }
 
 
@@ -137,7 +138,8 @@ class ManagerServiceImpl implements ManagerService {
                 .orElseThrow(() -> new NotFoundException("Service not found"));
 
         specialist.getServices().remove(service);
-        // save
+        specialistRepository.save(specialist);
+        // save??
     }
 
     // مشاهده متخصصان R

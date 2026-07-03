@@ -42,7 +42,8 @@ public class ProposalServiceImpl implements ProposalService {
             throw new NotApprovedException("Specialist is not approved");
         }
 
-        if (order.getOrderStatus() != OrderStatus.WAITING_FOR_PROPOSAL) {
+        if (order.getOrderStatus() != OrderStatus.WAITING_FOR_PROPOSAL &&
+        order.getOrderStatus() != OrderStatus.WAITING_FOR_SELECTION) {
             throw new InvalidOperationException("Order is not accepting proposals");
         }
 

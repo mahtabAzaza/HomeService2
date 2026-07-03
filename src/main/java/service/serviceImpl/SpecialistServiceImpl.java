@@ -99,6 +99,14 @@ public class SpecialistServiceImpl implements SpecialistService {
         Specialist specialist = specialistRepository.findById(specialistId)
                 .orElseThrow(() -> new NotFoundException("Specialist not found"));
 
+        boolean hasOpenOrder = orderRepository.existsBySpecialistIdAndOrderStatusIn(
+                specialistId,
+                List.of(OrderStatus.WAITING_FOR_SPECIALIST, OrderStatus.IN_PROGRESS)
+        );
+        if (hasOpenOrder) {
+            throw new InvalidOperationException("Cannot update profile while you have an open order");
+        }
+
         if (dto.getProfileImage() != null && dto.getProfileImage().length > 300 * 1024) {
             throw new InvalidOperationException("Profile image must be under 300 KB");
         }
@@ -109,7 +117,6 @@ public class SpecialistServiceImpl implements SpecialistService {
 
         // بعد از ویرایش اطلاعات باید دوباره تایید شود
         specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
-        //
     }
 // دیدن سفارشات
     @Override
@@ -131,34 +138,7 @@ public class SpecialistServiceImpl implements SpecialistService {
     }
 
 
-    // شروع کار
-    @Override
-    public void markOrderStarted(Long orderId) {
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new NotFoundException("Order not found"));
-
-        if (order.getOrderStatus() != OrderStatus.WAITING_FOR_SPECIALIST) {
-            throw new InvalidOperationException("Order is not in the correct state to start");
-        }
-
-        order.setOrderStatus(OrderStatus.IN_PROGRESS);
-    }
-
-
-    // پایان کار
-    @Override
-    public void markOrderDone(Long orderId) {
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new NotFoundException("Order not found"));
-
-        if (order.getOrderStatus() != OrderStatus.IN_PROGRESS) {
-            throw new InvalidOperationException("Order has not been started yet");
-        }
-
-        order.setOrderStatus(OrderStatus.DONE);
-    }
 
     // مشاهده موجودی
     @Override

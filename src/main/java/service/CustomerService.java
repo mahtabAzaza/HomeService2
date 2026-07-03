@@ -30,6 +30,10 @@ public interface CustomerService {
     List<Proposal> getProposalsForOrder(Long orderId);
 
     void selectProposal(Long orderId, Long proposalId);
+    void markOrderStarted(Long orderId);
+
+    void markOrderDone(Long orderId);
+
 
     void payOrder(Long orderId);
 

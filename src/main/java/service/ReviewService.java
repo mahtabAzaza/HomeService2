@@ -44,4 +44,8 @@ public class ReviewService {
 
         reviewRepository.save(review);
     }
+
+    // ثبت امتیاز برای متخصص
+
+
 }
