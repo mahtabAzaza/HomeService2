@@ -1,7 +1,6 @@
 
-
-import DTO.CustomerSignupDto;
 import DTO.CustomerResponseDto;
+import DTO.CustomerSignupDto;
 import entity.*;
 import exception.*;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import repository.*;
 import service.serviceImpl.CustomerServiceImpl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,151 +23,511 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceImplTest {
 
-    // ===== MOCK DEPENDENCIES =====
-
-    @Mock
-    private CustomerRepository customerRepository;
-
-    @Mock
-    private ServiceRepository serviceRepository;
-
-    @Mock
-    private OrderRepository orderRepository;
-
-    @Mock
-    private ProposalRepository proposalRepository;
-
-    @Mock
-    private WalletRepository walletRepository;
-
-    @Mock
-    private ReviewRepository reviewRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    // ===== CLASS UNDER TEST =====
+    @Mock private CustomerRepository customerRepository;
+    @Mock private ServiceRepository serviceRepository;
+    @Mock private OrderRepository orderRepository;
+    @Mock private ProposalRepository proposalRepository;
+    @Mock private WalletRepository walletRepository;
+    @Mock private ReviewRepository reviewRepository;
+    @Mock private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private CustomerServiceImpl customerService;
 
     // =====================================================
-    // 1. SIGNUP TEST
+    // SIGNUP
     // =====================================================
 
     @Test
     void signup_shouldCreateCustomerSuccessfully() {
-
-        // 1. input DTO
         CustomerSignupDto dto = new CustomerSignupDto();
         dto.setEmail("test@mail.com");
         dto.setFirstName("Ali");
         dto.setLastName("Ahmadi");
-        dto.setPassword("123");
+        dto.setPassword("pass1234");
 
-        // 2. email does NOT exist
-        when(customerRepository.findByEmail(dto.getEmail()))
-                .thenReturn(null);
+        when(customerRepository.findByEmail(dto.getEmail())).thenReturn(null);
+        when(passwordEncoder.encode("pass1234")).thenReturn("encoded");
+        when(walletRepository.save(any(Wallet.class))).thenAnswer(i -> i.getArgument(0));
+        when(customerRepository.save(any(Customer.class))).thenAnswer(i -> i.getArgument(0));
 
-        // 3. encode password
-        when(passwordEncoder.encode("123"))
-                .thenReturn("encoded123");
-
-        // 4. wallet save (mock void save)
-        when(walletRepository.save(any(Wallet.class)))
-                .thenAnswer(i -> i.getArgument(0));
-
-        // 5. customer save
-        when(customerRepository.save(any(Customer.class)))
-                .thenAnswer(i -> i.getArgument(0));
-
-        // 6. call service
         CustomerResponseDto result = customerService.signup(dto);
 
-        // 7. verify repository calls happened
+        assertNotNull(result);
         verify(customerRepository).save(any(Customer.class));
         verify(walletRepository).save(any(Wallet.class));
+    }
 
-        // 8. result should NOT be null
-        assertNotNull(result);
+    @Test
+    void signup_shouldThrowException_whenEmailAlreadyInUse() {
+        CustomerSignupDto dto = new CustomerSignupDto();
+        dto.setEmail("taken@mail.com");
+
+        when(customerRepository.findByEmail("taken@mail.com")).thenReturn(new Customer());
+
+        assertThrows(DuplicateEmailException.class, () -> customerService.signup(dto));
+        verify(customerRepository, never()).save(any());
     }
 
     // =====================================================
-    // 2. LOGIN SUCCESS
+    // LOGIN
     // =====================================================
 
     @Test
     void login_shouldReturnCustomer_whenCredentialsAreCorrect() {
-
         Customer customer = new Customer();
         customer.setEmail("test@mail.com");
-        customer.setPassword("encoded123");
+        customer.setPassword("encoded");
 
-        // user exists
-        when(customerRepository.findByEmail("test@mail.com"))
-                .thenReturn(customer);
+        when(customerRepository.findByEmail("test@mail.com")).thenReturn(customer);
+        when(passwordEncoder.matches("raw", "encoded")).thenReturn(true);
 
-        // password matches
-        when(passwordEncoder.matches("123", "encoded123"))
-                .thenReturn(true);
-
-        Customer result = customerService.login("test@mail.com", "123");
+        Customer result = customerService.login("test@mail.com", "raw");
 
         assertEquals("test@mail.com", result.getEmail());
     }
 
-    // =====================================================
-    // 3. LOGIN FAIL
-    // =====================================================
-
     @Test
     void login_shouldThrowException_whenPasswordWrong() {
-
         Customer customer = new Customer();
-        customer.setPassword("encoded123");
+        customer.setPassword("encoded");
 
-        when(customerRepository.findByEmail("test@mail.com"))
-                .thenReturn(customer);
-
-        when(passwordEncoder.matches("wrong", "encoded123"))
-                .thenReturn(false);
+        when(customerRepository.findByEmail("test@mail.com")).thenReturn(customer);
+        when(passwordEncoder.matches("wrong", "encoded")).thenReturn(false);
 
         assertThrows(InvalidCredentialsException.class,
                 () -> customerService.login("test@mail.com", "wrong"));
     }
 
+    @Test
+    void login_shouldThrowException_whenUserNotFound() {
+        when(customerRepository.findByEmail("none@mail.com")).thenReturn(null);
+
+        assertThrows(InvalidCredentialsException.class,
+                () -> customerService.login("none@mail.com", "any"));
+    }
+
     // =====================================================
-    // 4. WALLET CHARGE
+    // FIND BY EMAIL
+    // =====================================================
+
+    @Test
+    void findByEmail_shouldReturnCustomer() {
+        Customer customer = new Customer();
+        customer.setEmail("test@mail.com");
+
+        when(customerRepository.findByEmail("test@mail.com")).thenReturn(customer);
+
+        Customer result = customerService.findByEmail("test@mail.com");
+
+        assertEquals("test@mail.com", result.getEmail());
+    }
+
+    // =====================================================
+    // UPDATE PROFILE
+    // =====================================================
+
+    @Test
+    void updateProfile_shouldUpdateCustomerFields() {
+        Customer customer = new Customer();
+        customer.setEmail("old@mail.com");
+
+        CustomerSignupDto dto = new CustomerSignupDto();
+        dto.setFirstName("Reza");
+        dto.setLastName("Karimi");
+        dto.setEmail("new@mail.com");
+        dto.setPassword("newpass1");
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(passwordEncoder.encode("newpass1")).thenReturn("encodedNew");
+
+        customerService.updateProfile(1L, dto);
+
+        assertEquals("new@mail.com", customer.getEmail());
+        assertEquals("encodedNew", customer.getPassword());
+    }
+
+    @Test
+    void updateProfile_shouldThrowException_whenCustomerNotFound() {
+        when(customerRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> customerService.updateProfile(99L, new CustomerSignupDto()));
+    }
+
+    // =====================================================
+    // GET SERVICES
+    // =====================================================
+
+    @Test
+    void getServices_shouldReturnAllServices() {
+        List<entity.Service> services = List.of(new entity.Service(), new entity.Service());
+        when(serviceRepository.findAll()).thenReturn(services);
+
+        List<entity.Service> result = customerService.getServices();
+
+        assertEquals(2, result.size());
+    }
+
+    // =====================================================
+    // PLACE ORDER
+    // =====================================================
+
+    @Test
+    void placeOrder_shouldCreateOrder_whenPriceIsValid() {
+        Customer customer = new Customer();
+        entity.Service service = new entity.Service();
+        service.setServiceBasePrice(100L);
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(serviceRepository.findById(1L)).thenReturn(Optional.of(service));
+        when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
+
+        customerService.placeOrder(1L, 1L, 150L, LocalDateTime.now(), "Tehran", "desc");
+
+        verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    void placeOrder_shouldThrowException_whenPriceBelowBase() {
+        Customer customer = new Customer();
+        entity.Service service = new entity.Service();
+        service.setServiceBasePrice(200L);
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(serviceRepository.findById(1L)).thenReturn(Optional.of(service));
+
+        assertThrows(InvalidOperationException.class,
+                () -> customerService.placeOrder(1L, 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
+    }
+
+    @Test
+    void placeOrder_shouldThrowException_whenCustomerNotFound() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> customerService.placeOrder(1L, 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
+    }
+
+    @Test
+    void placeOrder_shouldThrowException_whenServiceNotFound() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(new Customer()));
+        when(serviceRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> customerService.placeOrder(1L, 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
+    }
+
+    // =====================================================
+    // GET MY ORDERS
+    // =====================================================
+
+    @Test
+    void getMyOrders_shouldReturnOrders() {
+        Customer customer = new Customer();
+        List<Order> orders = List.of(new Order(), new Order());
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(orderRepository.findByCustomer(customer)).thenReturn(orders);
+
+        List<Order> result = customerService.getMyOrders(1L);
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getMyOrders_shouldThrowException_whenCustomerNotFound() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> customerService.getMyOrders(1L));
+    }
+
+    // =====================================================
+    // GET PROPOSALS FOR ORDER
+    // =====================================================
+
+    @Test
+    void getProposalsForOrder_sortByPrice_shouldReturnProposals() {
+        Order order = new Order();
+        List<Proposal> proposals = List.of(new Proposal());
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(proposalRepository.findByOrderOrderByProposalPriceAsc(order)).thenReturn(proposals);
+
+        List<Proposal> result = customerService.getProposalsForOrder(1L, "price");
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getProposalsForOrder_sortByScore_shouldReturnSortedByScoreDesc() {
+        Order order = new Order();
+
+        Specialist specialistA = new Specialist();
+        specialistA.setId(1L);
+        Specialist specialistB = new Specialist();
+        specialistB.setId(2L);
+
+        Proposal lowScoreProposal = new Proposal();
+        lowScoreProposal.setSpecialist(specialistA);
+
+        Proposal highScoreProposal = new Proposal();
+        highScoreProposal.setSpecialist(specialistB);
+
+        List<Proposal> unsorted = new ArrayList<>(List.of(lowScoreProposal, highScoreProposal));
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(proposalRepository.findByOrder(order)).thenReturn(unsorted);
+        when(reviewRepository.findAverageScoreBySpecialistId(1L)).thenReturn(2.0);
+        when(reviewRepository.findAverageScoreBySpecialistId(2L)).thenReturn(4.5);
+
+        List<Proposal> result = customerService.getProposalsForOrder(1L, "score");
+
+        // highScoreProposal (4.5) should come first
+        assertEquals(highScoreProposal, result.get(0));
+        assertEquals(lowScoreProposal, result.get(1));
+    }
+
+    @Test
+    void getProposalsForOrder_shouldThrowException_whenOrderNotFound() {
+        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> customerService.getProposalsForOrder(99L, "price"));
+    }
+
+    // =====================================================
+    // SELECT PROPOSAL
+    // =====================================================
+
+    @Test
+    void selectProposal_shouldSetSpecialistAndChangeStatus() {
+        Specialist specialist = new Specialist();
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.WAITING_FOR_PROPOSAL);
+
+        Proposal proposal = new Proposal();
+        proposal.setSpecialist(specialist);
+        proposal.setProposalPrice(500L);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(proposalRepository.findById(2L)).thenReturn(Optional.of(proposal));
+
+        customerService.selectProposal(1L, 2L);
+
+        assertEquals(OrderStatus.WAITING_FOR_SPECIALIST, order.getOrderStatus());
+        assertEquals(specialist, order.getSpecialist());
+        assertEquals(500L, order.getFinalPrice());
+    }
+
+    @Test
+    void selectProposal_shouldThrowException_whenOrderNotFound() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> customerService.selectProposal(1L, 2L));
+    }
+
+    // =====================================================
+    // MARK ORDER STARTED
+    // =====================================================
+
+    @Test
+    void markOrderStarted_shouldChangeStatusToInProgress() {
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        customerService.markOrderStarted(1L);
+
+        assertEquals(OrderStatus.IN_PROGRESS, order.getOrderStatus());
+    }
+
+    @Test
+    void markOrderStarted_shouldThrowException_whenWrongStatus() {
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.WAITING_FOR_PROPOSAL);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        assertThrows(InvalidOperationException.class, () -> customerService.markOrderStarted(1L));
+    }
+
+    // =====================================================
+    // MARK ORDER DONE
+    // =====================================================
+
+    @Test
+    void markOrderDone_shouldChangeStatusToDone() {
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        customerService.markOrderDone(1L);
+
+        assertEquals(OrderStatus.DONE, order.getOrderStatus());
+    }
+
+    @Test
+    void markOrderDone_shouldThrowException_whenWrongStatus() {
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.WAITING_FOR_PROPOSAL);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        assertThrows(InvalidOperationException.class, () -> customerService.markOrderDone(1L));
+    }
+
+    // =====================================================
+    // PAY ORDER
+    // =====================================================
+
+    @Test
+    void payOrder_shouldTransferFundsAndMarkPaid() {
+        Wallet customerWallet = new Wallet();
+        customerWallet.setBalance(1000L);
+
+        Wallet specialistWallet = new Wallet();
+        specialistWallet.setBalance(0L);
+
+        Customer customer = new Customer();
+        customer.setWallet(customerWallet);
+
+        Specialist specialist = new Specialist();
+        specialist.setWallet(specialistWallet);
+
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.DONE);
+        order.setFinalPrice(300L);
+        order.setCustomer(customer);
+        order.setSpecialist(specialist);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        customerService.payOrder(1L);
+
+        assertEquals(700L, customerWallet.getBalance());
+        assertEquals(300L, specialistWallet.getBalance());
+        assertEquals(OrderStatus.PAID, order.getOrderStatus());
+    }
+
+    @Test
+    void payOrder_shouldThrowException_whenInsufficientBalance() {
+        Wallet customerWallet = new Wallet();
+        customerWallet.setBalance(50L);
+
+        Customer customer = new Customer();
+        customer.setWallet(customerWallet);
+
+        Specialist specialist = new Specialist();
+        specialist.setWallet(new Wallet());
+
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.DONE);
+        order.setFinalPrice(300L);
+        order.setCustomer(customer);
+        order.setSpecialist(specialist);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        assertThrows(InsufficientBalanceException.class, () -> customerService.payOrder(1L));
+    }
+
+    @Test
+    void payOrder_shouldThrowException_whenOrderNotDone() {
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        assertThrows(InvalidOperationException.class, () -> customerService.payOrder(1L));
+    }
+
+    // =====================================================
+    // SUBMIT REVIEW
+    // =====================================================
+
+    @Test
+    void submitReview_shouldSaveReview() {
+        Customer customer = new Customer();
+        Specialist specialist = new Specialist();
+
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.DONE);
+        order.setCustomer(customer);
+        order.setSpecialist(specialist);
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(orderRepository.findById(2L)).thenReturn(Optional.of(order));
+        when(reviewRepository.save(any(Review.class))).thenAnswer(i -> i.getArgument(0));
+
+        customerService.submitReview(1L, 2L, 5, "Great work");
+
+        verify(reviewRepository).save(any(Review.class));
+    }
+
+    @Test
+    void submitReview_shouldThrowException_whenOrderNotCompleted() {
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(new Customer()));
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        assertThrows(InvalidOperationException.class,
+                () -> customerService.submitReview(1L, 1L, 4, "ok"));
+    }
+
+    // =====================================================
+    // GET WALLET BALANCE
+    // =====================================================
+
+    @Test
+    void getWalletBalance_shouldReturnBalance() {
+        Wallet wallet = new Wallet();
+        wallet.setBalance(250L);
+
+        Customer customer = new Customer();
+        customer.setWallet(wallet);
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+
+        Long balance = customerService.getWalletBalance(1L);
+
+        assertEquals(250L, balance);
+    }
+
+    @Test
+    void getWalletBalance_shouldThrowException_whenCustomerNotFound() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> customerService.getWalletBalance(1L));
+    }
+
+    // =====================================================
+    // CHARGE WALLET
     // =====================================================
 
     @Test
     void chargeWallet_shouldIncreaseBalance() {
-
         Wallet wallet = new Wallet();
         wallet.setBalance(100L);
 
         Customer customer = new Customer();
         customer.setWallet(wallet);
 
-        when(customerRepository.findById(1L))
-                .thenReturn(Optional.of(customer));
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
 
         customerService.chargeWallet(1L, 50L);
 
         assertEquals(150L, wallet.getBalance());
     }
 
-    // =====================================================
-    // 5. WALLET NOT FOUND CUSTOMER
-    // =====================================================
-
     @Test
     void chargeWallet_shouldThrowException_whenCustomerNotFound() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
 
-        when(customerRepository.findById(1L))
-                .thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class,
-                () -> customerService.chargeWallet(1L, 50L));
+        assertThrows(NotFoundException.class, () -> customerService.chargeWallet(1L, 50L));
     }
 }

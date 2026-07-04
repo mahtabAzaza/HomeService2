@@ -14,7 +14,7 @@ import java.util.List;
 // ?????
 @org.springframework.stereotype.Service
 @Transactional
-class ManagerServiceImpl implements ManagerService {
+public class ManagerServiceImpl implements ManagerService {
 
     private final SpecialistRepository specialistRepository;
     private final ServiceRepository serviceRepository;

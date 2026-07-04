@@ -15,7 +15,8 @@ import java.util.List;
 public class Specialist extends User {
 
     @Lob
-    @Column(name = "profile_image")
+    @Column(name = "profile_image"
+    ,nullable = true)
     private byte[] profileImage;
 
     @Enumerated(EnumType.STRING)

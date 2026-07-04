@@ -23,7 +23,7 @@ public class AuthController {
     }
 
 
-    // ثبت نام متخصص
+    // ثبت نام مشتری
     @PostMapping("/register/customer")
     public ResponseEntity<CustomerResponseDto> registerCustomer(
             @RequestBody CustomerSignupDto dto) {
@@ -32,7 +32,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // ثبت نام مشتری
+    // ثبت نام متخصص
     @PostMapping("/register/specialist")
     public ResponseEntity<SpecialistResponseDto> registerSpecialist(
             @RequestBody SpecialistSignupDto dto) {

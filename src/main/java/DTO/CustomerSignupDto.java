@@ -16,7 +16,7 @@ public class CustomerSignupDto {
     private String lastName;
     private String email;
 
-   // at least 8 char and...
+
    @NotBlank
    @Size(min = 8, message = "Password must be at least 8 characters")
    @Pattern(
