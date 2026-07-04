@@ -3,12 +3,14 @@ package service;
 import entity.Order;
 import entity.OrderStatus;
 import entity.Review;
+import entity.Specialist;
 import exception.InvalidOperationException;
 import exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repository.OrderRepository;
 import repository.ReviewRepository;
+import repository.SpecialistRepository;
 
 @Service
 @Transactional
@@ -16,10 +18,13 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final OrderRepository orderRepository;
+    private final SpecialistRepository specialistRepository;
 
-    public ReviewService(ReviewRepository reviewRepository, OrderRepository orderRepository) {
+    public ReviewService(ReviewRepository reviewRepository, OrderRepository orderRepository, SpecialistRepository specialistRepository) {
         this.reviewRepository = reviewRepository;
         this.orderRepository = orderRepository;
+        this.specialistRepository = specialistRepository;
+
     }
 
     public void addReview(Long orderId, int score, String statement) {
@@ -46,6 +51,10 @@ public class ReviewService {
     }
 
     // ثبت امتیاز برای متخصص
+ public void specialistRate (Long specialistId  ,Long orderId, int score  ) {
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("specialist not found"));
 
+ }
 
 }

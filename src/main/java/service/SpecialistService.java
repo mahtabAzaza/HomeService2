@@ -23,4 +23,5 @@ public interface SpecialistService {
     Long getWalletBalance(Long specialistId);
 
     void withdraw(Long specialistId, Long amount);
+    void score(Long specialistId);
 }

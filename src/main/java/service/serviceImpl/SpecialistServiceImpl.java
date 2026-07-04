@@ -151,8 +151,6 @@ public class SpecialistServiceImpl implements SpecialistService {
         return specialist.getWallet().getBalance();
     }
 
-// سفارش باز
-
     // برداشت
     @Override
     public void withdraw(Long specialistId, Long amount) {
@@ -167,5 +165,9 @@ public class SpecialistServiceImpl implements SpecialistService {
         }
 
         wallet.setBalance(wallet.getBalance() - amount);
+    }
+    // امتیاز متخصص
+    public void score(Long specialistId) {
+
     }
 }

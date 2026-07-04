@@ -56,8 +56,10 @@ public class CustomerController {
     }
 
     @GetMapping("/orders/{orderId}/proposals")
-    public ResponseEntity<List<ProposalDto>> getProposals(@PathVariable Long orderId) {
-        List<Proposal> proposals = customerService.getProposalsForOrder(orderId);
+    public ResponseEntity<List<ProposalDto>> getProposals(
+            @PathVariable Long orderId,
+            @RequestParam(defaultValue = "price") String sortBy) {
+        List<Proposal> proposals = customerService.getProposalsForOrder(orderId, sortBy);
         List<ProposalDto> dtos = proposals.stream().map(ProposalMapper::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }

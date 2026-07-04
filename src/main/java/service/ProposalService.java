@@ -11,6 +11,6 @@ public interface ProposalService {
     void submitProposal(Long specialistId, Long orderId, Long price,
                         LocalDateTime startDate, Integer duration);
 
-    // مشاهده پیشنهادهای یک سفارش (مرتب‌شده بر اساس قیمت)
-    List<Proposal> getProposalsForOrder(Long orderId);
+    // مشاهده پیشنهادهای یک سفارش (مرتب‌شده بر اساس قیمت یا امتیاز متخصص)
+    List<Proposal> getProposalsForOrder(Long orderId, String sortBy);
 }

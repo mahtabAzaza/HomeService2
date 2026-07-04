@@ -30,6 +30,7 @@ public class SpecialistController {
         this.proposalService = proposalService;
     }
 
+    // مشاهده سفارشات
     @GetMapping("/orders/available")
     public ResponseEntity<List<OrderDto>> getAvailableOrders() {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
@@ -39,7 +40,7 @@ public class SpecialistController {
     }
 
 
-// ثبت پیشنهاد
+    // ثبت پیشنهاد
     @PostMapping("/proposals")
     public ResponseEntity<Void> submitProposal(@RequestBody ProposalDto dto) {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
@@ -54,13 +55,14 @@ public class SpecialistController {
     }
 
 
-
+     // موجودی
     @GetMapping("/wallet")
     public ResponseEntity<Long> getWalletBalance() {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
         return ResponseEntity.ok(specialistService.getWalletBalance(current.getId()));
     }
 
+    // برداشت
     @PostMapping("/wallet/withdraw")
     public ResponseEntity<Void> withdraw(@RequestParam Long amount) {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
@@ -68,6 +70,7 @@ public class SpecialistController {
         return ResponseEntity.ok().build();
     }
 
+    // ویرایش اطلاعات
     @PutMapping("/profile")
     public ResponseEntity<Void> updateProfile(@RequestBody SpecialistSignupDto dto) {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());

@@ -27,7 +27,7 @@ public interface CustomerService {
 
     List<Order> getMyOrders(Long customerId);
 
-    List<Proposal> getProposalsForOrder(Long orderId);
+    List<Proposal> getProposalsForOrder(Long orderId, String sortBy);
 
     void selectProposal(Long orderId, Long proposalId);
     void markOrderStarted(Long orderId);

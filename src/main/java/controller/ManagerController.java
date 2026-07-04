@@ -24,8 +24,7 @@ public class ManagerController {
         this.serviceService = serviceService;
     }
 
-    // --- Specialist management ---
-
+    //               Specialist management        //
     @GetMapping("/specialists")
     public ResponseEntity<List<SpecialistResponseDto>> getAllSpecialists() {
         List<Specialist> specialists = managerService.getAllSpecialists();
@@ -61,19 +60,21 @@ public class ManagerController {
         return ResponseEntity.ok().build();
     }
 
-    // --- Service management ---
-
+    //               Service management                  //
+    // R دیدن همه سرویس ها
     @GetMapping("/services")
     public ResponseEntity<List<entity.Service>> getAllServices() {
         return ResponseEntity.ok(serviceService.getAllServices());
     }
 
+    // C اضافه کردن سرویس
     @PostMapping("/services")
     public ResponseEntity<Void> createService(@RequestBody ServiceDto dto) {
         managerService.createService(dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
         return ResponseEntity.ok().build();
     }
 
+    // C اضافه کردن زیر سرویس
     @PostMapping("/services/{parentId}/subservices")
     public ResponseEntity<Void> addSubService(@PathVariable Long parentId,
                                               @RequestBody ServiceDto dto) {
@@ -81,6 +82,7 @@ public class ManagerController {
         return ResponseEntity.ok().build();
     }
 
+    // U ویرایش سرویس
     @PutMapping("/services/{id}")
     public ResponseEntity<Void> updateService(@PathVariable Long id,
                                               @RequestBody ServiceDto dto) {
@@ -88,6 +90,8 @@ public class ManagerController {
         return ResponseEntity.ok().build();
     }
 
+
+    // D حذف سرویس
     @DeleteMapping("/services/{id}")
     public ResponseEntity<Void> deleteService(@PathVariable Long id) {
         managerService.removeSubService(id);

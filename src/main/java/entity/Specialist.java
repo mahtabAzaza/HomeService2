@@ -43,4 +43,7 @@ public class Specialist extends User {
     // هر متخصص می‌تواند در نهایت چند سفارش را انجام دهد
     @OneToMany(mappedBy = "specialist")
     private List<Order> orders;
+
+    // امتیاز متخصص
+    private int Score;
 }

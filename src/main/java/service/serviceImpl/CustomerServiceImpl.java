@@ -13,6 +13,7 @@ import service.CustomerService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -145,10 +146,22 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Proposal> getProposalsForOrder(Long orderId) {
+    public List<Proposal> getProposalsForOrder(Long orderId, String sortBy) {
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Order not found"));
+
+        if ("score".equalsIgnoreCase(sortBy)) {
+            List<Proposal> proposals = new ArrayList<>(proposalRepository.findByOrder(order));
+            proposals.sort((a, b) -> {
+                Double scoreA = reviewRepository.findAverageScoreBySpecialistId(a.getSpecialist().getId());
+                Double scoreB = reviewRepository.findAverageScoreBySpecialistId(b.getSpecialist().getId());
+                if (scoreA == null) scoreA = 0.0;
+                if (scoreB == null) scoreB = 0.0;
+                return Double.compare(scoreB, scoreA);
+            });
+            return proposals;
+        }
 
         return proposalRepository.findByOrderOrderByProposalPriceAsc(order);
     }
