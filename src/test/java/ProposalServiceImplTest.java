@@ -1,16 +1,18 @@
 
-import entity.*;
-import exception.*;
+import ir.HomeServiceApplication.entity.*;
+import ir.HomeServiceApplication.exception.InvalidOperationException;
+import ir.HomeServiceApplication.exception.NotApprovedException;
+import ir.HomeServiceApplication.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import repository.OrderRepository;
-import repository.ProposalRepository;
-import repository.ReviewRepository;
-import repository.SpecialistRepository;
-import service.serviceImpl.ProposalServiceImpl;
+import ir.HomeServiceApplication.repository.OrderRepository;
+import ir.HomeServiceApplication.repository.ProposalRepository;
+import ir.HomeServiceApplication.repository.ReviewRepository;
+import ir.HomeServiceApplication.repository.SpecialistRepository;
+import ir.HomeServiceApplication.service.serviceImpl.ProposalServiceImpl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,7 +39,7 @@ class ProposalServiceImplTest {
 
     @Test
     void submitProposal_shouldSaveProposal_whenOrderIsWaitingForProposal() {
-        entity.Service service = new entity.Service();
+        Service service = new Service();
 
         Specialist specialist = new Specialist();
         specialist.setStatus(SpecialistStatus.APPROVED);
@@ -58,7 +60,7 @@ class ProposalServiceImplTest {
 
     @Test
     void submitProposal_shouldSaveProposal_whenOrderIsWaitingForSelection() {
-        entity.Service service = new entity.Service();
+        Service service = new Service();
 
         Specialist specialist = new Specialist();
         specialist.setStatus(SpecialistStatus.APPROVED);
@@ -117,7 +119,7 @@ class ProposalServiceImplTest {
 
         Order order = new Order();
         order.setOrderStatus(OrderStatus.IN_PROGRESS);
-        order.setService(new entity.Service());
+        order.setService(new Service());
 
         when(specialistRepository.findById(1L)).thenReturn(Optional.of(specialist));
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
@@ -128,7 +130,7 @@ class ProposalServiceImplTest {
 
     @Test
     void submitProposal_shouldThrowException_whenSpecialistNotRegisteredForService() {
-        entity.Service orderService = new entity.Service();
+        Service orderService = new Service();
 
         Specialist specialist = new Specialist();
         specialist.setStatus(SpecialistStatus.APPROVED);

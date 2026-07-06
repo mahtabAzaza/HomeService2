@@ -1,16 +1,16 @@
 
-import DTO.CustomerResponseDto;
-import DTO.CustomerSignupDto;
-import entity.*;
-import exception.*;
+import ir.HomeServiceApplication.DTO.CustomerResponseDto;
+import ir.HomeServiceApplication.DTO.CustomerSignupDto;
+import ir.HomeServiceApplication.entity.*;
+import ir.HomeServiceApplication.exception.*;
+import ir.HomeServiceApplication.repository.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import repository.*;
-import service.serviceImpl.CustomerServiceImpl;
+import ir.HomeServiceApplication.service.serviceImpl.CustomerServiceImpl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -161,10 +161,10 @@ class CustomerServiceImplTest {
 
     @Test
     void getServices_shouldReturnAllServices() {
-        List<entity.Service> services = List.of(new entity.Service(), new entity.Service());
+        List<Service> services = List.of(new Service(), new Service());
         when(serviceRepository.findAll()).thenReturn(services);
 
-        List<entity.Service> result = customerService.getServices();
+        List<Service> result = customerService.getServices();
 
         assertEquals(2, result.size());
     }
@@ -176,7 +176,7 @@ class CustomerServiceImplTest {
     @Test
     void placeOrder_shouldCreateOrder_whenPriceIsValid() {
         Customer customer = new Customer();
-        entity.Service service = new entity.Service();
+        Service service = new Service();
         service.setServiceBasePrice(100L);
 
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
@@ -191,7 +191,7 @@ class CustomerServiceImplTest {
     @Test
     void placeOrder_shouldThrowException_whenPriceBelowBase() {
         Customer customer = new Customer();
-        entity.Service service = new entity.Service();
+        Service service = new Service();
         service.setServiceBasePrice(200L);
 
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));

@@ -1,17 +1,17 @@
 
-import entity.Service;
-import entity.Specialist;
-import entity.SpecialistStatus;
-import exception.InvalidOperationException;
-import exception.NotFoundException;
+import ir.HomeServiceApplication.entity.Service;
+import ir.HomeServiceApplication.entity.Specialist;
+import ir.HomeServiceApplication.entity.SpecialistStatus;
+import ir.HomeServiceApplication.exception.InvalidOperationException;
+import ir.HomeServiceApplication.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import repository.ServiceRepository;
-import repository.SpecialistRepository;
-import service.serviceImpl.ManagerServiceImpl;
+import ir.HomeServiceApplication.repository.ServiceRepository;
+import ir.HomeServiceApplication.repository.SpecialistRepository;
+import ir.HomeServiceApplication.service.serviceImpl.ManagerServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;

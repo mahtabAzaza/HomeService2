@@ -1,12 +1,12 @@
 
-import DTO.CustomerResponseDto;
-import DTO.CustomerSignupDto;
-import DTO.SpecialistResponseDto;
-import DTO.SpecialistSignupDto;
-import entity.Customer;
-import entity.Role;
-import entity.Specialist;
-import entity.SpecialistStatus;
+import ir.HomeServiceApplication.DTO.CustomerResponseDto;
+import ir.HomeServiceApplication.DTO.CustomerSignupDto;
+import ir.HomeServiceApplication.DTO.SpecialistResponseDto;
+import ir.HomeServiceApplication.DTO.SpecialistSignupDto;
+import ir.HomeServiceApplication.entity.Customer;
+import ir.HomeServiceApplication.entity.Role;
+import ir.HomeServiceApplication.entity.Specialist;
+import ir.HomeServiceApplication.entity.SpecialistStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,10 +14,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import repository.UserRepository;
-import service.CustomerService;
-import service.SpecialistService;
-import service.serviceImpl.AuthServiceImpl;
+import ir.HomeServiceApplication.repository.UserRepository;
+import ir.HomeServiceApplication.service.CustomerService;
+import ir.HomeServiceApplication.service.SpecialistService;
+import ir.HomeServiceApplication.service.serviceImpl.AuthServiceImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

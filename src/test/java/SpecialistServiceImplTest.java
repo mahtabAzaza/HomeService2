@@ -1,18 +1,18 @@
 
-import DTO.SpecialistResponseDto;
-import DTO.SpecialistSignupDto;
-import entity.*;
-import exception.*;
+import ir.HomeServiceApplication.DTO.SpecialistResponseDto;
+import ir.HomeServiceApplication.DTO.SpecialistSignupDto;
+import ir.HomeServiceApplication.entity.*;
+import ir.HomeServiceApplication.exception.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import repository.OrderRepository;
-import repository.SpecialistRepository;
-import repository.WalletRepository;
-import service.serviceImpl.SpecialistServiceImpl;
+import ir.HomeServiceApplication.repository.OrderRepository;
+import ir.HomeServiceApplication.repository.SpecialistRepository;
+import ir.HomeServiceApplication.repository.WalletRepository;
+import ir.HomeServiceApplication.service.serviceImpl.SpecialistServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
