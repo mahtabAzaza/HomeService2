@@ -121,11 +121,11 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public void placeOrder(Long customerId, Long serviceId, Long priceOffer,
+    public void placeOrder(String email, Long serviceId, Long priceOffer,
                            LocalDateTime startDateTime, String address, String description) {
 
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        Customer customer = customerRepository.findByEmail(email);
+        if (customer == null) throw new NotFoundException("Customer not found");
 
         ir.HomeServiceApplication.entity.Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new NotFoundException("Service not found"));

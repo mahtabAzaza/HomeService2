@@ -19,7 +19,7 @@ public interface CustomerService {
 
     List<Service> getServices();
 
-    void placeOrder(Long customerId, Long serviceId, Long priceOffer,
+    void placeOrder(String email, Long serviceId, Long priceOffer,
                     LocalDateTime startDateTime, String address, String description);
 
     List<Order> getMyOrders(Long customerId);

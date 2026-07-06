@@ -2,6 +2,7 @@ package ir.HomeServiceApplication.controller;
 
 import ir.HomeServiceApplication.DTO.CustomerSignupDto;
 import ir.HomeServiceApplication.DTO.OrderDto;
+import ir.HomeServiceApplication.DTO.PlaceOrderRequest;
 import ir.HomeServiceApplication.DTO.ProposalDto;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.mapper.OrderMapper;
@@ -30,10 +31,9 @@ public class CustomerController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<Void> placeOrder(@RequestBody OrderDto dto) {
-        Customer current = customerService.findByEmail(UserContext.getCurrentEmail());
+    public ResponseEntity<Void> placeOrder(@RequestBody PlaceOrderRequest dto) {
         customerService.placeOrder(
-                current.getId(),
+                UserContext.getCurrentEmail(),
                 dto.getServiceId(),
                 dto.getPriceOffer(),
                 dto.getOrderStartDateTime(),

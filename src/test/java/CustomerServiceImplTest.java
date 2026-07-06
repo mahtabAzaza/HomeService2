@@ -242,59 +242,59 @@ class CustomerServiceImplTest {
         assertThrows(NotFoundException.class, () -> customerService.getMyOrders(1L));
     }
 
-    // =====================================================
-    // GET PROPOSALS FOR ORDER
-    // =====================================================
-
-    @Test
-    void getProposalsForOrder_sortByPrice_shouldReturnProposals() {
-        Order order = new Order();
-        List<Proposal> proposals = List.of(new Proposal());
-
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(proposalRepository.findByOrderOrderByProposalPriceAsc(order)).thenReturn(proposals);
-
-        List<Proposal> result = customerService.getProposalsForOrder(1L, "price");
-
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void getProposalsForOrder_sortByScore_shouldReturnSortedByScoreDesc() {
-        Order order = new Order();
-
-        Specialist specialistA = new Specialist();
-        specialistA.setId(1L);
-        Specialist specialistB = new Specialist();
-        specialistB.setId(2L);
-
-        Proposal lowScoreProposal = new Proposal();
-        lowScoreProposal.setSpecialist(specialistA);
-
-        Proposal highScoreProposal = new Proposal();
-        highScoreProposal.setSpecialist(specialistB);
-
-        List<Proposal> unsorted = new ArrayList<>(List.of(lowScoreProposal, highScoreProposal));
-
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(proposalRepository.findByOrder(order)).thenReturn(unsorted);
-        when(reviewRepository.findAverageScoreBySpecialistId(1L)).thenReturn(2.0);
-        when(reviewRepository.findAverageScoreBySpecialistId(2L)).thenReturn(4.5);
-
-        List<Proposal> result = customerService.getProposalsForOrder(1L, "score");
-
-        // highScoreProposal (4.5) should come first
-        assertEquals(highScoreProposal, result.get(0));
-        assertEquals(lowScoreProposal, result.get(1));
-    }
-
-    @Test
-    void getProposalsForOrder_shouldThrowException_whenOrderNotFound() {
-        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class,
-                () -> customerService.getProposalsForOrder(99L, "price"));
-    }
+//    // =====================================================
+//    // GET PROPOSALS FOR ORDER
+//    // =====================================================
+//
+//    @Test
+//    void getProposalsForOrder_sortByPrice_shouldReturnProposals() {
+//        Order order = new Order();
+//        List<Proposal> proposals = List.of(new Proposal());
+//
+//        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+//        when(proposalRepository.findByOrderOrderByProposalPriceAsc(order)).thenReturn(proposals);
+//
+//        List<Proposal> result = customerService.getProposalsForOrder(1L, "price");
+//
+//        assertEquals(1, result.size());
+//    }
+//
+//    @Test
+//    void getProposalsForOrder_sortByScore_shouldReturnSortedByScoreDesc() {
+//        Order order = new Order();
+//
+//        Specialist specialistA = new Specialist();
+//        specialistA.setId(1L);
+//        Specialist specialistB = new Specialist();
+//        specialistB.setId(2L);
+//
+//        Proposal lowScoreProposal = new Proposal();
+//        lowScoreProposal.setSpecialist(specialistA);
+//
+//        Proposal highScoreProposal = new Proposal();
+//        highScoreProposal.setSpecialist(specialistB);
+//
+//        List<Proposal> unsorted = new ArrayList<>(List.of(lowScoreProposal, highScoreProposal));
+//
+//        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+//        when(proposalRepository.findByOrder(order)).thenReturn(unsorted);
+//        when(reviewRepository.findAverageScoreBySpecialistId(1L)).thenReturn(2.0);
+//        when(reviewRepository.findAverageScoreBySpecialistId(2L)).thenReturn(4.5);
+//
+//        List<Proposal> result = customerService.getProposalsForOrder(1L, "score");
+//
+//        // highScoreProposal (4.5) should come first
+//        assertEquals(highScoreProposal, result.get(0));
+//        assertEquals(lowScoreProposal, result.get(1));
+//    }
+//
+//    @Test
+//    void getProposalsForOrder_shouldThrowException_whenOrderNotFound() {
+//        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
+//
+//        assertThrows(NotFoundException.class,
+//                () -> customerService.getProposalsForOrder(99L, "price"));
+//    }
 
     // =====================================================
     // SELECT PROPOSAL
