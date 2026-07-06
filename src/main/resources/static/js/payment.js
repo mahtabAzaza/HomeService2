@@ -1,6 +1,7 @@
 /* -------------------- تایمر -------------------- */
 
 let timeLeft = 600; // 10 دقیقه = 600 ثانیه
+let timerExpired = false;
 
 const timerElement = document.getElementById("timer");
 
@@ -9,7 +10,9 @@ function startTimer() {
 
         if (timeLeft <= 0) {
             clearInterval(interval);
-            alert("Time is up! Payment expired.");
+            timerExpired = true;
+            timerElement.textContent = "Time is up! Payment expired.";
+            document.getElementById("payBtn").disabled = true;
             return;
         }
 
@@ -17,7 +20,7 @@ function startTimer() {
         let seconds = timeLeft % 60;
 
         timerElement.textContent =
-            `Time left:$ {minutes}: $ {seconds < 10 ? "0" : ""} $ {seconds}`;
+            `Time left: ${minutes}:${seconds <10? "0" : ""}${seconds}`;
 
         timeLeft--;
 
@@ -39,18 +42,33 @@ function loadCaptcha() {
 
 function submitPayment() {
 
+    if (timerExpired) {
+        alert("Payment time has expired.");
+        return;
+    }
+
+    const amountDisplay = document.getElementById("amountDisplay");
     const cardNumber = document.getElementById("cardNumber").value;
     const cvv2 = document.getElementById("cvv2").value;
     const expiry = document.getElementById("expiry").value;
     const password = document.getElementById("password").value;
     const captcha = document.getElementById("captchaInput").value;
 
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("orderId");
+
+    if (!orderId) {
+        alert("Invalid payment link: missing order ID.");
+        return;
+    }
+
     const data = {
         cardNumber,
         cvv2,
         expiry,
         password,
-        captcha
+        captcha,
+        orderId: parseInt(orderId)
     };
 
     fetch("/wallet/charge", {
@@ -75,6 +93,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     startTimer();
     loadCaptcha();
+
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("orderId");
+    if (orderId) {
+        document.getElementById("amountDisplay").textContent =
+            "Order ID: " + orderId;
+    }
 
     document.getElementById("payBtn")
         .addEventListener("click", submitPayment);
