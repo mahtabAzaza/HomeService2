@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Page</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef2f5;
+        }
+
+        .container {
+            width: 400px;
+            margin: 80px auto;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #f6e8cb;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #timer {
+            text-align: center;
+            font-weight: bold;
+            color: red;
+            margin-bottom: 15px;
+        }
+        #countdownDisplay {
+            text-align: center;
+            font-weight: bold;
+            color: red;
+            margin-bottom: 15px;
+        }
+
+
+
+        #amountDisplay {
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .captcha-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        #captchaImage {
+            width: 120px;
+            height: 40px;
+            border: 1px solid #937b49;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Wallet Charge</h2>
+
+    <!-- تایمر -->
+    <div id="timer">Time left: 10:00
+
+    </div>
+    <section id="timeLeft"></section>
+
+    <!-- مبلغ سفارش -->
+    <div id="amountDisplay"> </div>
+
+    <!-- شماره کارت -->
+
+    <input type="text" id="cardNumber" placeholder="Card Number">
+
+    <!-- CVV2 -->
+    <input type="text" id="cvv2" placeholder="CVV2">
+
+    <!-- تاریخ انقضا -->
+    <input type="text" id="expiry" placeholder="Expiry Date (MM/YY)">
+
+    <!-- رمز دوم -->
+    <input type="password" id="password" placeholder="Second Password">
+
+    <!-- کپچا -->
+    <div class="captcha-box">
+
+        <img id="captchaImage" alt="captcha">
+
+        <input type="text" id="captchaInput" placeholder="Enter captcha">
+
+    </div>
+
+    <!-- دکمه پرداخت -->
+    <button id="payBtn">Pay</button>
+
+</div>
+
+<script src="/js/payment.js"></script>
+
+</body>
+</html>
