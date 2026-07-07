@@ -36,6 +36,7 @@ class SpecialistServiceImplTest {
     // SIGNUP
     // =====================================================
 
+    // Creates a specialist, encodes the password, saves a new wallet, and returns the response DTO
     @Test
     void signup_shouldCreateSpecialistSuccessfully() {
         SpecialistSignupDto dto = new SpecialistSignupDto();
@@ -57,6 +58,7 @@ class SpecialistServiceImplTest {
         verify(walletRepository).save(any(Wallet.class));
     }
 
+    // Throws and never calls save when the email is already registered to another specialist
     @Test
     void signup_shouldThrowException_whenEmailAlreadyInUse() {
         SpecialistSignupDto dto = new SpecialistSignupDto();
@@ -68,6 +70,7 @@ class SpecialistServiceImplTest {
         verify(specialistRepository, never()).save(any());
     }
 
+    // Throws when the profile image byte array exceeds the 300 KB size limit
     @Test
     void signup_shouldThrowException_whenProfileImageTooLarge() {
         SpecialistSignupDto dto = new SpecialistSignupDto();
@@ -83,6 +86,7 @@ class SpecialistServiceImplTest {
     // FIND BY EMAIL
     // =====================================================
 
+    // Returns the specialist whose email matches the given string
     @Test
     void findByEmail_shouldReturnSpecialist() {
         Specialist specialist = new Specialist();
@@ -99,6 +103,7 @@ class SpecialistServiceImplTest {
     // LOGIN
     // =====================================================
 
+    // Returns the specialist when the email/password match and the account is APPROVED
     @Test
     void login_shouldReturnSpecialist_whenCredentialsCorrect() {
         Specialist specialist = new Specialist();
@@ -114,6 +119,7 @@ class SpecialistServiceImplTest {
         assertEquals("spec@mail.com", result.getEmail());
     }
 
+    // Throws when the raw password does not match the stored encoded password
     @Test
     void login_shouldThrowException_whenPasswordWrong() {
         Specialist specialist = new Specialist();
@@ -127,6 +133,7 @@ class SpecialistServiceImplTest {
                 () -> specialistService.login("spec@mail.com", "wrong"));
     }
 
+    // Throws when no specialist exists with the given email
     @Test
     void login_shouldThrowException_whenSpecialistNotFound() {
         when(specialistRepository.findByEmail("none@mail.com")).thenReturn(null);
@@ -135,6 +142,7 @@ class SpecialistServiceImplTest {
                 () -> specialistService.login("none@mail.com", "any"));
     }
 
+    // Throws even when credentials are correct if the specialist is still awaiting approval
     @Test
     void login_shouldThrowException_whenNotApproved() {
         Specialist specialist = new Specialist();
@@ -152,6 +160,7 @@ class SpecialistServiceImplTest {
     // UPDATE PROFILE
     // =====================================================
 
+    // Updates the specialist's fields and resets status back to WAITING_FOR_APPROVAL
     @Test
     void updateProfile_shouldUpdateSpecialistAndResetStatus() {
         Specialist specialist = new Specialist();
@@ -173,6 +182,7 @@ class SpecialistServiceImplTest {
         assertEquals(SpecialistStatus.WAITING_FOR_APPROVAL, specialist.getStatus());
     }
 
+    // Throws when the given specialist ID does not exist in the repository
     @Test
     void updateProfile_shouldThrowException_whenSpecialistNotFound() {
         when(specialistRepository.findById(99L)).thenReturn(Optional.empty());
@@ -181,6 +191,7 @@ class SpecialistServiceImplTest {
                 () -> specialistService.updateProfile(99L, new SpecialistSignupDto()));
     }
 
+    // Throws when the specialist has an active or in-progress order that blocks profile changes
     @Test
     void updateProfile_shouldThrowException_whenHasOpenOrder() {
         Specialist specialist = new Specialist();
@@ -192,6 +203,7 @@ class SpecialistServiceImplTest {
                 () -> specialistService.updateProfile(1L, new SpecialistSignupDto()));
     }
 
+    // Throws when the new profile image byte array exceeds the 300 KB size limit
     @Test
     void updateProfile_shouldThrowException_whenProfileImageTooLarge() {
         Specialist specialist = new Specialist();
@@ -210,6 +222,7 @@ class SpecialistServiceImplTest {
     // GET AVAILABLE ORDERS
     // =====================================================
 
+    // Returns orders with WAITING_FOR_PROPOSAL status that match the specialist's registered services
     @Test
     void getAvailableOrders_shouldReturnOrders_whenApproved() {
         Specialist specialist = new Specialist();
@@ -227,6 +240,7 @@ class SpecialistServiceImplTest {
         assertEquals(1, result.size());
     }
 
+    // Throws when the specialist is still waiting for approval and cannot see available orders
     @Test
     void getAvailableOrders_shouldThrowException_whenNotApproved() {
         Specialist specialist = new Specialist();
@@ -237,6 +251,7 @@ class SpecialistServiceImplTest {
         assertThrows(NotApprovedException.class, () -> specialistService.getAvailableOrders(1L));
     }
 
+    // Throws when the given specialist ID does not exist in the repository
     @Test
     void getAvailableOrders_shouldThrowException_whenSpecialistNotFound() {
         when(specialistRepository.findById(1L)).thenReturn(Optional.empty());
@@ -248,6 +263,7 @@ class SpecialistServiceImplTest {
     // GET WALLET BALANCE
     // =====================================================
 
+    // Returns the balance from the specialist's associated wallet
     @Test
     void getWalletBalance_shouldReturnBalance() {
         Wallet wallet = new Wallet();
@@ -263,6 +279,7 @@ class SpecialistServiceImplTest {
         assertEquals(500L, balance);
     }
 
+    // Throws when the given specialist ID does not exist in the repository
     @Test
     void getWalletBalance_shouldThrowException_whenSpecialistNotFound() {
         when(specialistRepository.findById(1L)).thenReturn(Optional.empty());
@@ -274,6 +291,7 @@ class SpecialistServiceImplTest {
     // WITHDRAW
     // =====================================================
 
+    // Subtracts the withdrawal amount from the specialist's wallet balance
     @Test
     void withdraw_shouldDecreaseBalance() {
         Wallet wallet = new Wallet();
@@ -289,6 +307,7 @@ class SpecialistServiceImplTest {
         assertEquals(200L, wallet.getBalance());
     }
 
+    // Throws when the withdrawal amount exceeds the specialist's current wallet balance
     @Test
     void withdraw_shouldThrowException_whenInsufficientBalance() {
         Wallet wallet = new Wallet();
@@ -302,6 +321,7 @@ class SpecialistServiceImplTest {
         assertThrows(InsufficientBalanceException.class, () -> specialistService.withdraw(1L, 200L));
     }
 
+    // Throws when the given specialist ID does not exist in the repository
     @Test
     void withdraw_shouldThrowException_whenSpecialistNotFound() {
         when(specialistRepository.findById(1L)).thenReturn(Optional.empty());

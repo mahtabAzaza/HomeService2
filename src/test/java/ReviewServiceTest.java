@@ -31,6 +31,7 @@ class ReviewServiceTest {
     // ADD REVIEW
     // =====================================================
 
+    // Saves a review when the order is in DONE status
     @Test
     void addReview_shouldSaveReview_whenOrderIsDone() {
         Customer customer = new Customer();
@@ -49,6 +50,7 @@ class ReviewServiceTest {
         verify(reviewRepository).save(any(Review.class));
     }
 
+    // Saves a review when the order is in PAID status
     @Test
     void addReview_shouldSaveReview_whenOrderIsPaid() {
         Customer customer = new Customer();
@@ -67,6 +69,7 @@ class ReviewServiceTest {
         verify(reviewRepository).save(any(Review.class));
     }
 
+    // Throws when the order has not been completed or paid yet
     @Test
     void addReview_shouldThrowException_whenOrderNotDoneOrPaid() {
         Order order = new Order();
@@ -77,6 +80,7 @@ class ReviewServiceTest {
         assertThrows(InvalidOperationException.class, () -> reviewService.addReview(1L, 4, "ok"));
     }
 
+    // Throws when the review score is below the allowed minimum (0)
     @Test
     void addReview_shouldThrowException_whenScoreTooLow() {
         Order order = new Order();
@@ -89,6 +93,7 @@ class ReviewServiceTest {
         assertThrows(InvalidOperationException.class, () -> reviewService.addReview(1L, 0, "bad"));
     }
 
+    // Throws when the review score exceeds the allowed maximum (6)
     @Test
     void addReview_shouldThrowException_whenScoreTooHigh() {
         Order order = new Order();
@@ -101,6 +106,7 @@ class ReviewServiceTest {
         assertThrows(InvalidOperationException.class, () -> reviewService.addReview(1L, 6, "too high"));
     }
 
+    // Throws when the given order ID does not exist in the repository
     @Test
     void addReview_shouldThrowException_whenOrderNotFound() {
         when(orderRepository.findById(99L)).thenReturn(Optional.empty());

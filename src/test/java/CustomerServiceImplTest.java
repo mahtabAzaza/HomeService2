@@ -38,6 +38,7 @@ class CustomerServiceImplTest {
     // SIGNUP
     // =====================================================
 
+    // Creates a customer, encodes the password, saves a new wallet, and returns the response DTO
     @Test
     void signup_shouldCreateCustomerSuccessfully() {
         CustomerSignupDto dto = new CustomerSignupDto();
@@ -58,6 +59,7 @@ class CustomerServiceImplTest {
         verify(walletRepository).save(any(Wallet.class));
     }
 
+    // Throws and never calls save when the email is already registered to another customer
     @Test
     void signup_shouldThrowException_whenEmailAlreadyInUse() {
         CustomerSignupDto dto = new CustomerSignupDto();
@@ -73,6 +75,7 @@ class CustomerServiceImplTest {
     // LOGIN
     // =====================================================
 
+    // Returns the customer when the email exists and the raw password matches the encoded one
     @Test
     void login_shouldReturnCustomer_whenCredentialsAreCorrect() {
         Customer customer = new Customer();
@@ -87,6 +90,7 @@ class CustomerServiceImplTest {
         assertEquals("test@mail.com", result.getEmail());
     }
 
+    // Throws when the raw password does not match the stored encoded password
     @Test
     void login_shouldThrowException_whenPasswordWrong() {
         Customer customer = new Customer();
@@ -99,6 +103,7 @@ class CustomerServiceImplTest {
                 () -> customerService.login("test@mail.com", "wrong"));
     }
 
+    // Throws when no customer exists with the given email
     @Test
     void login_shouldThrowException_whenUserNotFound() {
         when(customerRepository.findByEmail("none@mail.com")).thenReturn(null);
@@ -111,6 +116,7 @@ class CustomerServiceImplTest {
     // FIND BY EMAIL
     // =====================================================
 
+    // Returns the customer whose email matches the given string
     @Test
     void findByEmail_shouldReturnCustomer() {
         Customer customer = new Customer();
@@ -127,6 +133,7 @@ class CustomerServiceImplTest {
     // UPDATE PROFILE
     // =====================================================
 
+    // Updates the customer's email and encodes and sets the new password
     @Test
     void updateProfile_shouldUpdateCustomerFields() {
         Customer customer = new Customer();
@@ -147,6 +154,7 @@ class CustomerServiceImplTest {
         assertEquals("encodedNew", customer.getPassword());
     }
 
+    // Throws when the given customer ID does not exist in the repository
     @Test
     void updateProfile_shouldThrowException_whenCustomerNotFound() {
         when(customerRepository.findById(99L)).thenReturn(Optional.empty());
@@ -159,6 +167,7 @@ class CustomerServiceImplTest {
     // GET SERVICES
     // =====================================================
 
+    // Returns the full list of services from the repository
     @Test
     void getServices_shouldReturnAllServices() {
         List<Service> services = List.of(new Service(), new Service());
@@ -173,6 +182,7 @@ class CustomerServiceImplTest {
     // PLACE ORDER
     // =====================================================
 
+    // Creates and saves an order when the customer's offered price meets the service's base price
     @Test
     void placeOrder_shouldCreateOrder_whenPriceIsValid() {
         Customer customer = new Customer();
@@ -188,6 +198,7 @@ class CustomerServiceImplTest {
         verify(orderRepository).save(any(Order.class));
     }
 
+    // Throws when the offered price is lower than the service's minimum base price
     @Test
     void placeOrder_shouldThrowException_whenPriceBelowBase() {
         Customer customer = new Customer();
@@ -201,6 +212,7 @@ class CustomerServiceImplTest {
                 () -> customerService.placeOrder(1L, 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
     }
 
+    // Throws when the given customer ID does not exist in the repository
     @Test
     void placeOrder_shouldThrowException_whenCustomerNotFound() {
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());
@@ -209,6 +221,7 @@ class CustomerServiceImplTest {
                 () -> customerService.placeOrder(1L, 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
     }
 
+    // Throws when the given service ID does not exist in the repository
     @Test
     void placeOrder_shouldThrowException_whenServiceNotFound() {
         when(customerRepository.findById(1L)).thenReturn(Optional.of(new Customer()));
@@ -222,6 +235,7 @@ class CustomerServiceImplTest {
     // GET MY ORDERS
     // =====================================================
 
+    // Returns all orders that belong to the given customer
     @Test
     void getMyOrders_shouldReturnOrders() {
         Customer customer = new Customer();
@@ -235,6 +249,7 @@ class CustomerServiceImplTest {
         assertEquals(2, result.size());
     }
 
+    // Throws when the given customer ID does not exist in the repository
     @Test
     void getMyOrders_shouldThrowException_whenCustomerNotFound() {
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());
@@ -300,6 +315,7 @@ class CustomerServiceImplTest {
     // SELECT PROPOSAL
     // =====================================================
 
+    // Assigns the proposal's specialist to the order, sets final price, and changes status to WAITING_FOR_SPECIALIST
     @Test
     void selectProposal_shouldSetSpecialistAndChangeStatus() {
         Specialist specialist = new Specialist();
@@ -320,6 +336,7 @@ class CustomerServiceImplTest {
         assertEquals(500L, order.getFinalPrice());
     }
 
+    // Throws when the given order ID does not exist in the repository
     @Test
     void selectProposal_shouldThrowException_whenOrderNotFound() {
         when(orderRepository.findById(1L)).thenReturn(Optional.empty());
@@ -331,6 +348,7 @@ class CustomerServiceImplTest {
     // MARK ORDER STARTED
     // =====================================================
 
+    // Changes order status from WAITING_FOR_SPECIALIST to IN_PROGRESS
     @Test
     void markOrderStarted_shouldChangeStatusToInProgress() {
         Order order = new Order();
@@ -343,6 +361,7 @@ class CustomerServiceImplTest {
         assertEquals(OrderStatus.IN_PROGRESS, order.getOrderStatus());
     }
 
+    // Throws when the order is not in WAITING_FOR_SPECIALIST status
     @Test
     void markOrderStarted_shouldThrowException_whenWrongStatus() {
         Order order = new Order();
@@ -357,6 +376,7 @@ class CustomerServiceImplTest {
     // MARK ORDER DONE
     // =====================================================
 
+    // Changes order status from IN_PROGRESS to DONE
     @Test
     void markOrderDone_shouldChangeStatusToDone() {
         Order order = new Order();
@@ -369,6 +389,7 @@ class CustomerServiceImplTest {
         assertEquals(OrderStatus.DONE, order.getOrderStatus());
     }
 
+    // Throws when the order is not in IN_PROGRESS status
     @Test
     void markOrderDone_shouldThrowException_whenWrongStatus() {
         Order order = new Order();
@@ -383,6 +404,7 @@ class CustomerServiceImplTest {
     // PAY ORDER
     // =====================================================
 
+    // Deducts the final price from the customer's wallet, credits the specialist, and marks the order PAID
     @Test
     void payOrder_shouldTransferFundsAndMarkPaid() {
         Wallet customerWallet = new Wallet();
@@ -412,6 +434,7 @@ class CustomerServiceImplTest {
         assertEquals(OrderStatus.PAID, order.getOrderStatus());
     }
 
+    // Throws when the customer's wallet balance is less than the order's final price
     @Test
     void payOrder_shouldThrowException_whenInsufficientBalance() {
         Wallet customerWallet = new Wallet();
@@ -434,6 +457,7 @@ class CustomerServiceImplTest {
         assertThrows(InsufficientBalanceException.class, () -> customerService.payOrder(1L));
     }
 
+    // Throws when the order has not reached DONE status yet
     @Test
     void payOrder_shouldThrowException_whenOrderNotDone() {
         Order order = new Order();
@@ -448,6 +472,7 @@ class CustomerServiceImplTest {
     // SUBMIT REVIEW
     // =====================================================
 
+    // Saves a review for a completed order linked to the given customer
     @Test
     void submitReview_shouldSaveReview() {
         Customer customer = new Customer();
@@ -467,6 +492,7 @@ class CustomerServiceImplTest {
         verify(reviewRepository).save(any(Review.class));
     }
 
+    // Throws when the order is still IN_PROGRESS and has not been completed yet
     @Test
     void submitReview_shouldThrowException_whenOrderNotCompleted() {
         Order order = new Order();
@@ -483,6 +509,7 @@ class CustomerServiceImplTest {
     // GET WALLET BALANCE
     // =====================================================
 
+    // Returns the balance from the customer's associated wallet
     @Test
     void getWalletBalance_shouldReturnBalance() {
         Wallet wallet = new Wallet();
@@ -498,6 +525,7 @@ class CustomerServiceImplTest {
         assertEquals(250L, balance);
     }
 
+    // Throws when the given customer ID does not exist in the repository
     @Test
     void getWalletBalance_shouldThrowException_whenCustomerNotFound() {
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());
@@ -509,6 +537,7 @@ class CustomerServiceImplTest {
     // CHARGE WALLET
     // =====================================================
 
+    // Adds the given amount to the customer's wallet balance
     @Test
     void chargeWallet_shouldIncreaseBalance() {
         Wallet wallet = new Wallet();
@@ -524,6 +553,7 @@ class CustomerServiceImplTest {
         assertEquals(150L, wallet.getBalance());
     }
 
+    // Throws when the given customer ID does not exist in the repository
     @Test
     void chargeWallet_shouldThrowException_whenCustomerNotFound() {
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());

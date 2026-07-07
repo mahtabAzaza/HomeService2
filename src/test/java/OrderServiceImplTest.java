@@ -33,6 +33,7 @@ class OrderServiceImplTest {
     // GET ORDERS BY CUSTOMER
     // =====================================================
 
+    // Returns all orders that belong to the given customer
     @Test
     void getOrdersByCustomer_shouldReturnOrders() {
         Customer customer = new Customer();
@@ -46,6 +47,7 @@ class OrderServiceImplTest {
         assertEquals(2, result.size());
     }
 
+    // Throws when the given customer ID does not exist in the repository
     @Test
     void getOrdersByCustomer_shouldThrowException_whenCustomerNotFound() {
         when(customerRepository.findById(99L)).thenReturn(Optional.empty());
@@ -57,6 +59,7 @@ class OrderServiceImplTest {
     // GET ORDERS BY SPECIALIST
     // =====================================================
 
+    // Returns all orders that are assigned to the given specialist
     @Test
     void getOrdersBySpecialist_shouldReturnOrders() {
         Specialist specialist = new Specialist();
@@ -70,6 +73,7 @@ class OrderServiceImplTest {
         assertEquals(1, result.size());
     }
 
+    // Throws when the given specialist ID does not exist in the repository
     @Test
     void getOrdersBySpecialist_shouldThrowException_whenSpecialistNotFound() {
         when(specialistRepository.findById(99L)).thenReturn(Optional.empty());

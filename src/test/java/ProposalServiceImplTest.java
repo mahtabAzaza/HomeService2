@@ -37,6 +37,7 @@ class ProposalServiceImplTest {
     // SUBMIT PROPOSAL
     // =====================================================
 
+    // Saves a proposal when the order is in WAITING_FOR_PROPOSAL status and the specialist is registered for the service
     @Test
     void submitProposal_shouldSaveProposal_whenOrderIsWaitingForProposal() {
         Service service = new Service();
@@ -58,6 +59,7 @@ class ProposalServiceImplTest {
         verify(proposalRepository).save(any(Proposal.class));
     }
 
+    // Saves a proposal when the order is in WAITING_FOR_SELECTION status (already has at least one proposal)
     @Test
     void submitProposal_shouldSaveProposal_whenOrderIsWaitingForSelection() {
         Service service = new Service();
@@ -79,6 +81,7 @@ class ProposalServiceImplTest {
         verify(proposalRepository).save(any(Proposal.class));
     }
 
+    // Throws when the given specialist ID does not exist in the repository
     @Test
     void submitProposal_shouldThrowException_whenSpecialistNotFound() {
         when(specialistRepository.findById(1L)).thenReturn(Optional.empty());
@@ -87,6 +90,7 @@ class ProposalServiceImplTest {
                 () -> proposalService.submitProposal(1L, 1L, 500L, LocalDateTime.now(), 3));
     }
 
+    // Throws when the given order ID does not exist in the repository
     @Test
     void submitProposal_shouldThrowException_whenOrderNotFound() {
         Specialist specialist = new Specialist();
@@ -99,6 +103,7 @@ class ProposalServiceImplTest {
                 () -> proposalService.submitProposal(1L, 1L, 500L, LocalDateTime.now(), 3));
     }
 
+    // Throws when the specialist account is still awaiting manager approval
     @Test
     void submitProposal_shouldThrowException_whenSpecialistNotApproved() {
         Specialist specialist = new Specialist();
@@ -111,6 +116,7 @@ class ProposalServiceImplTest {
                 () -> proposalService.submitProposal(1L, 1L, 500L, LocalDateTime.now(), 3));
     }
 
+    // Throws when the order is IN_PROGRESS and no longer accepts new proposals
     @Test
     void submitProposal_shouldThrowException_whenOrderNotAcceptingProposals() {
         Specialist specialist = new Specialist();
@@ -128,6 +134,7 @@ class ProposalServiceImplTest {
                 () -> proposalService.submitProposal(1L, 1L, 500L, LocalDateTime.now(), 3));
     }
 
+    // Throws when the specialist is not registered for the service the order belongs to
     @Test
     void submitProposal_shouldThrowException_whenSpecialistNotRegisteredForService() {
         Service orderService = new Service();
@@ -151,6 +158,7 @@ class ProposalServiceImplTest {
     // GET PROPOSALS FOR ORDER
     // =====================================================
 
+    // Returns proposals for the order sorted by price ascending
     @Test
     void getProposalsForOrder_sortByPrice_shouldReturnList() {
         Order order = new Order();
@@ -164,6 +172,7 @@ class ProposalServiceImplTest {
         assertEquals(1, result.size());
     }
 
+    // Returns proposals sorted by specialist average review score, highest first
     @Test
     void getProposalsForOrder_sortByScore_shouldReturnHighestScoreFirst() {
         Order order = new Order();
@@ -192,6 +201,7 @@ class ProposalServiceImplTest {
         assertEquals(proposalA, result.get(1));
     }
 
+    // Treats a null average score as 0 so specialists with no reviews rank last when sorting by score
     @Test
     void getProposalsForOrder_sortByScore_shouldHandleNullScoreAsZero() {
         Order order = new Order();
@@ -219,6 +229,7 @@ class ProposalServiceImplTest {
         assertEquals(proposalB, result.get(0));
     }
 
+    // Throws when the given order ID does not exist in the repository
     @Test
     void getProposalsForOrder_shouldThrowException_whenOrderNotFound() {
         when(orderRepository.findById(99L)).thenReturn(Optional.empty());

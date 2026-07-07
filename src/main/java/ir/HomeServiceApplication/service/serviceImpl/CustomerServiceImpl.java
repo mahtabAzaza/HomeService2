@@ -141,6 +141,7 @@ public class CustomerServiceImpl implements CustomerService {
         order.setOrderStartDateTime(startDateTime);
         order.setAddress(address);
         order.setOrderDescription(description);
+        order.setOrderSubmitDateTime(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.WAITING_FOR_PROPOSAL);
 
         orderRepository.save(order);

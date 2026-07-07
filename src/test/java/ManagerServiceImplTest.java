@@ -33,6 +33,7 @@ class ManagerServiceImplTest {
     // APPROVE SPECIALIST
     // =====================================================
 
+    // Changes the specialist's status from WAITING_FOR_APPROVAL to APPROVED
     @Test
     void approveSpecialist_shouldSetStatusToApproved() {
         Specialist specialist = new Specialist();
@@ -45,6 +46,7 @@ class ManagerServiceImplTest {
         assertEquals(SpecialistStatus.APPROVED, specialist.getStatus());
     }
 
+    // Throws when the given specialist ID does not exist in the repository
     @Test
     void approveSpecialist_shouldThrowException_whenNotFound() {
         when(specialistRepository.findById(99L)).thenReturn(Optional.empty());
@@ -56,6 +58,7 @@ class ManagerServiceImplTest {
     // DELETE SPECIALIST
     // =====================================================
 
+    // Finds the specialist by ID and deletes them from the repository
     @Test
     void deleteSpecialist_shouldDeleteSpecialist() {
         Specialist specialist = new Specialist();
@@ -67,6 +70,7 @@ class ManagerServiceImplTest {
         verify(specialistRepository).delete(specialist);
     }
 
+    // Throws when the given specialist ID does not exist in the repository
     @Test
     void deleteSpecialist_shouldThrowException_whenNotFound() {
         when(specialistRepository.findById(99L)).thenReturn(Optional.empty());
@@ -78,6 +82,7 @@ class ManagerServiceImplTest {
     // CREATE SERVICE
     // =====================================================
 
+    // Builds a new Service entity from the given name, description, and price and saves it
     @Test
     void createService_shouldSaveService() {
         when(serviceRepository.save(any(Service.class))).thenAnswer(i -> i.getArgument(0));
@@ -91,6 +96,7 @@ class ManagerServiceImplTest {
     // ADD SUB-SERVICE
     // =====================================================
 
+    // Creates and saves a sub-service linked to the given parent service
     @Test
     void addSubService_shouldSaveSubService() {
         Service parent = new Service();
@@ -105,6 +111,7 @@ class ManagerServiceImplTest {
         verify(serviceRepository).save(any(Service.class));
     }
 
+    // Throws when a sub-service with the same name already exists under the parent
     @Test
     void addSubService_shouldThrowException_whenDuplicateName() {
         Service parent = new Service();
@@ -118,6 +125,7 @@ class ManagerServiceImplTest {
                 () -> managerService.addSubService(1L, "Plumbing", "desc", 100L));
     }
 
+    // Throws when the given parent service ID does not exist in the repository
     @Test
     void addSubService_shouldThrowException_whenParentNotFound() {
         when(serviceRepository.findById(99L)).thenReturn(Optional.empty());
@@ -130,6 +138,7 @@ class ManagerServiceImplTest {
     // UPDATE SERVICE
     // =====================================================
 
+    // Updates the service name, description, and base price to the new values
     @Test
     void updateService_shouldUpdateFields() {
         Service service = new Service();
@@ -144,6 +153,7 @@ class ManagerServiceImplTest {
         assertEquals(200L, service.getServiceBasePrice());
     }
 
+    // Throws when the given service ID does not exist in the repository
     @Test
     void updateService_shouldThrowException_whenNotFound() {
         when(serviceRepository.findById(99L)).thenReturn(Optional.empty());
@@ -156,6 +166,7 @@ class ManagerServiceImplTest {
     // REMOVE SUB-SERVICE
     // =====================================================
 
+    // Finds the sub-service by ID and deletes it from the repository
     @Test
     void removeSubService_shouldDeleteService() {
         Service service = new Service();
@@ -167,6 +178,7 @@ class ManagerServiceImplTest {
         verify(serviceRepository).delete(service);
     }
 
+    // Throws when the given sub-service ID does not exist in the repository
     @Test
     void removeSubService_shouldThrowException_whenNotFound() {
         when(serviceRepository.findById(99L)).thenReturn(Optional.empty());
@@ -178,6 +190,7 @@ class ManagerServiceImplTest {
     // ADD SPECIALIST TO SERVICE
     // =====================================================
 
+    // Adds the service to the specialist's service list and saves the specialist
     @Test
     void addSpecialistToService_shouldAddService() {
         Specialist specialist = new Specialist();
@@ -194,6 +207,7 @@ class ManagerServiceImplTest {
         verify(specialistRepository).save(specialist);
     }
 
+    // Does not add the same service twice if the specialist is already registered for it
     @Test
     void addSpecialistToService_shouldNotAddDuplicate() {
         Service service = new Service();
@@ -216,6 +230,7 @@ class ManagerServiceImplTest {
     // REMOVE SPECIALIST FROM SERVICE
     // =====================================================
 
+    // Removes the service from the specialist's service list and saves the specialist
     @Test
     void removeSpecialistFromService_shouldRemoveService() {
         Service service = new Service();
@@ -238,6 +253,7 @@ class ManagerServiceImplTest {
     // GET ALL SPECIALISTS
     // =====================================================
 
+    // Returns the full list of specialists from the repository
     @Test
     void getAllSpecialists_shouldReturnAll() {
         List<Specialist> specialists = List.of(new Specialist(), new Specialist());

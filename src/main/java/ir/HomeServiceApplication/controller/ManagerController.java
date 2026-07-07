@@ -1,6 +1,7 @@
 package ir.HomeServiceApplication.controller;
 
 import ir.HomeServiceApplication.DTO.ServiceDto;
+import ir.HomeServiceApplication.DTO.ServiceResponseDto;
 import ir.HomeServiceApplication.DTO.SpecialistResponseDto;
 import ir.HomeServiceApplication.entity.Specialist;
 import ir.HomeServiceApplication.entity.Service;
@@ -60,6 +61,11 @@ public class ManagerController {
         managerService.removeSpecialistFromService(specialistId, serviceId);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/test")
+    public String test() {
+        return "OK";
+    }
+
 
     //               Service management                  //
     // R دیدن همه سرویس ها
@@ -70,7 +76,7 @@ public class ManagerController {
 
     // C اضافه کردن سرویس
     @PostMapping("/services")
-    public ResponseEntity<Void> createService(@RequestBody ServiceDto dto) {
+    public ResponseEntity<ServiceResponseDto> createService(@RequestBody ServiceDto dto) {
         managerService.createService(dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
         return ResponseEntity.ok().build();
     }
@@ -78,7 +84,7 @@ public class ManagerController {
     // C اضافه کردن زیر سرویس
     @PostMapping("/services/{parentId}/subservices")
     public ResponseEntity<Void> addSubService(@PathVariable Long parentId,
-                                              @RequestBody ServiceDto dto) {
+          @RequestBody ServiceDto dto) {
         managerService.addSubService(parentId, dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
         return ResponseEntity.ok().build();
     }

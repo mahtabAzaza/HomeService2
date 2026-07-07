@@ -20,10 +20,12 @@ public class Order extends BaseEntity<Long> {
     private Long priceOffer;
 
     private LocalDateTime orderStartDateTime;
+    private LocalDateTime orderSubmitDateTime;
 
     private String address;
 
     private Long finalPrice;
+
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;

@@ -36,6 +36,7 @@ class AuthServiceImplTest {
     // REGISTER CUSTOMER
     // =====================================================
 
+    // Delegates to CustomerService.signup and returns the resulting DTO
     @Test
     void registerCustomer_shouldReturnResponse() {
         CustomerSignupDto dto = new CustomerSignupDto();
@@ -53,6 +54,7 @@ class AuthServiceImplTest {
     // REGISTER SPECIALIST
     // =====================================================
 
+    // Delegates to SpecialistService.signup and returns the resulting DTO
     @Test
     void registerSpecialist_shouldReturnResponse() {
         SpecialistSignupDto dto = new SpecialistSignupDto();
@@ -70,6 +72,7 @@ class AuthServiceImplTest {
     // LOAD USER BY USERNAME
     // =====================================================
 
+    // Throws UsernameNotFoundException when the email does not exist in the repository
     @Test
     void loadUserByUsername_shouldThrowException_whenUserNotFound() {
         when(userRepository.findByEmail("none@mail.com")).thenReturn(null);
@@ -78,6 +81,7 @@ class AuthServiceImplTest {
                 () -> authService.loadUserByUsername("none@mail.com"));
     }
 
+    // Throws UsernameNotFoundException when the specialist account is still awaiting approval
     @Test
     void loadUserByUsername_shouldThrowException_whenSpecialistNotApproved() {
         Specialist specialist = new Specialist();
@@ -92,6 +96,7 @@ class AuthServiceImplTest {
                 () -> authService.loadUserByUsername("spec@mail.com"));
     }
 
+    // Returns a UserDetails object with the correct username and encoded password for a customer
     @Test
     void loadUserByUsername_shouldReturnUserDetails_whenCustomer() {
         Customer customer = new Customer();
@@ -107,6 +112,7 @@ class AuthServiceImplTest {
         assertEquals("encoded", result.getPassword());
     }
 
+    // Returns a UserDetails object for a specialist whose status is APPROVED
     @Test
     void loadUserByUsername_shouldReturnUserDetails_whenApprovedSpecialist() {
         Specialist specialist = new Specialist();

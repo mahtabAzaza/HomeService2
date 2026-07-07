@@ -1,5 +1,6 @@
 package ir.HomeServiceApplication.service;
 
+import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.entity.Specialist;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface ManagerService {
 
     // ایجاد خدمت اصلی (بدون والد)
     void createService(String name, String description, Long basePrice);
-
+//    Service createService(String name, String description, Long basePrice);
     // افزودن زیرخدمت (با والد)
     void addSubService(Long parentId, String name, String description, Long basePrice);
 

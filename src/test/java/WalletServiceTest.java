@@ -30,6 +30,7 @@ class WalletServiceTest {
     // SHOW BALANCE
     // =====================================================
 
+    // Returns the current balance for a valid wallet ID
     @Test
     void showBalance_shouldReturnBalance() {
         Wallet wallet = new Wallet();
@@ -42,6 +43,7 @@ class WalletServiceTest {
         assertEquals(750L, result);
     }
 
+    // Throws when the given wallet ID does not exist in the repository
     @Test
     void showBalance_shouldThrowException_whenWalletNotFound() {
         when(walletRepository.findById(99L)).thenReturn(Optional.empty());
@@ -53,6 +55,7 @@ class WalletServiceTest {
     // CHARGE WALLET
     // =====================================================
 
+    // Adds the given amount to the existing wallet balance
     @Test
     void chargeWallet_shouldIncreaseBalance() {
         Wallet wallet = new Wallet();
@@ -65,6 +68,7 @@ class WalletServiceTest {
         assertEquals(300L, wallet.getBalance());
     }
 
+    // Throws when the charge amount is zero or negative
     @Test
     void chargeWallet_shouldThrowException_whenAmountNotPositive() {
         Wallet wallet = new Wallet();
@@ -76,6 +80,7 @@ class WalletServiceTest {
         assertThrows(InvalidOperationException.class, () -> walletService.chargeWallet(1L, -50L));
     }
 
+    // Throws when the given wallet ID does not exist in the repository
     @Test
     void chargeWallet_shouldThrowException_whenWalletNotFound() {
         when(walletRepository.findById(99L)).thenReturn(Optional.empty());
@@ -87,6 +92,7 @@ class WalletServiceTest {
     // WITHDRAW MONEY
     // =====================================================
 
+    // Subtracts the given amount from the existing wallet balance
     @Test
     void withdrawMoney_shouldDecreaseBalance() {
         Wallet wallet = new Wallet();
@@ -99,6 +105,7 @@ class WalletServiceTest {
         assertEquals(300L, wallet.getBalance());
     }
 
+    // Throws when the withdrawal amount is greater than the current wallet balance
     @Test
     void withdrawMoney_shouldThrowException_whenInsufficientBalance() {
         Wallet wallet = new Wallet();
@@ -109,6 +116,7 @@ class WalletServiceTest {
         assertThrows(InsufficientBalanceException.class, () -> walletService.withdrawMoney(1L, 200L));
     }
 
+    // Throws when the withdrawal amount is zero or negative
     @Test
     void withdrawMoney_shouldThrowException_whenAmountNotPositive() {
         Wallet wallet = new Wallet();
@@ -119,6 +127,7 @@ class WalletServiceTest {
         assertThrows(InvalidOperationException.class, () -> walletService.withdrawMoney(1L, 0L));
     }
 
+    // Throws when the given wallet ID does not exist in the repository
     @Test
     void withdrawMoney_shouldThrowException_whenWalletNotFound() {
         when(walletRepository.findById(99L)).thenReturn(Optional.empty());
@@ -130,6 +139,7 @@ class WalletServiceTest {
     // PAY FOR ORDER
     // =====================================================
 
+    // Deducts the order price from the customer's wallet, credits the specialist, and marks the order PAID
     @Test
     void payForOrder_shouldTransferFundsAndMarkPaid() {
         Wallet customerWallet = new Wallet();
@@ -158,6 +168,7 @@ class WalletServiceTest {
         assertEquals(OrderStatus.PAID, order.getOrderStatus());
     }
 
+    // Throws when the customer's wallet balance is less than the order's final price
     @Test
     void payForOrder_shouldThrowException_whenInsufficientBalance() {
         Wallet customerWallet = new Wallet();
@@ -179,6 +190,7 @@ class WalletServiceTest {
         assertThrows(InsufficientBalanceException.class, () -> walletService.payForOrder(1L));
     }
 
+    // Throws when the given order ID does not exist in the repository
     @Test
     void payForOrder_shouldThrowException_whenOrderNotFound() {
         when(orderRepository.findById(99L)).thenReturn(Optional.empty());
