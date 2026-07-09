@@ -8,6 +8,7 @@ import ir.HomeServiceApplication.exception.*;
 import ir.HomeServiceApplication.mapper.CustomerMapper;
 
 import ir.HomeServiceApplication.repository.*;
+import ir.HomeServiceApplication.service.SpecialistRatingService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,6 @@ import ir.HomeServiceApplication.service.CustomerService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +31,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final WalletRepository walletRepository;
     private final ReviewRepository reviewRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SpecialistRatingService ratingService;
 
     public CustomerServiceImpl(CustomerRepository customerRepository,
                                ServiceRepository serviceRepository,
@@ -38,7 +39,8 @@ public class CustomerServiceImpl implements CustomerService {
                                ProposalRepository proposalRepository,
                                WalletRepository walletRepository,
                                ReviewRepository reviewRepository,
-                               PasswordEncoder passwordEncoder) {
+                               PasswordEncoder passwordEncoder,
+                               SpecialistRatingService ratingService) {
         this.customerRepository = customerRepository;
         this.serviceRepository = serviceRepository;
         this.orderRepository = orderRepository;
@@ -46,6 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
         this.walletRepository = walletRepository;
         this.reviewRepository = reviewRepository;
         this.passwordEncoder = passwordEncoder;
+        this.ratingService = ratingService;
     }
 
     @Override
@@ -237,9 +240,10 @@ public class CustomerServiceImpl implements CustomerService {
             throw new InvalidOperationException("Order has not been started yet");
         }
 
-        // ثبت زمان واقعی پایان کار برای محاسبه تاخیر در مرحله پرداخت
+        // ثبت زمان واقعی پایان کار و بررسی تاخیر
         order.setCompletionTime(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.DONE);
+        ratingService.applyLateDeliveryPenalty(order);
     }
 
 
@@ -263,29 +267,6 @@ public class CustomerServiceImpl implements CustomerService {
         customerWallet.setBalance(customerWallet.getBalance() - price);
         specialistWallet.setBalance(specialistWallet.getBalance() + (price * 70 / 100));
         order.setOrderStatus(OrderStatus.PAID);
-
-//        // بررسی تاخیر: اگر کار دیرتر از زمان پیشنهادی متخصص تمام شده، امتیاز کسر می‌شود
-//        Proposal selected = order.getSelectedProposal();
-//        if (selected != null && order.getCompletionTime() != null) {
-//
-//            // زمان پیشنهادی پایان کار = زمان شروع پیشنهادی + مدت زمان (ساعت)
-//            LocalDateTime suggestedEnd = selected.getStartDate().plusHours(selected.getDuration());
-//
-//            if (order.getCompletionTime().isAfter(suggestedEnd)) {
-//
-//                long hoursLate = ChronoUnit.HOURS.between(suggestedEnd, order.getCompletionTime());
-//
-//                Specialist specialist = order.getSpecialist();
-//
-//                // به ازای هر ساعت تاخیر، ۱ امتیاز کسر می‌شود
-//                specialist.setScore(specialist.getScore() - (int) hoursLate);
-//
-//                // اگر امتیاز منفی شد، حساب متخصص غیرفعال می‌شود
-//                if (specialist.getScore() < 0) {
-//                    specialist.setStatus(SpecialistStatus.DEACTIVATED);
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -310,9 +291,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         reviewRepository.save(review);
 
-        // امتیاز کلی متخصص به‌روز می‌شود (برای تشخیص منفی شدن امتیاز)
-        Specialist specialist = order.getSpecialist();
-        specialist.setScore(specialist.getScore() + score);
+        ratingService.applyReviewScore(order.getSpecialist(), score);
     }
 
     @Override

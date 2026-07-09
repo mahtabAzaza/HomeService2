@@ -13,8 +13,8 @@ public interface ManagerService {
     void deleteSpecialist(Long specialistId);
 
     // ایجاد خدمت اصلی (بدون والد)
-    void createService(String name, String description, Long basePrice);
-//    Service createService(String name, String description, Long basePrice);
+//    void createService(String name, String description, Long basePrice);
+    Service createService(String name, String description, Long basePrice);
     // افزودن زیرخدمت (با والد)
     void addSubService(Long parentId, String name, String description, Long basePrice);
 

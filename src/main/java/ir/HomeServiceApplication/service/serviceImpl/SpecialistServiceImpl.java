@@ -118,6 +118,7 @@ public class SpecialistServiceImpl implements SpecialistService {
         }
 
         specialist.setEmail(dto.getEmail());
+
         specialist.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         if (dto.getProfileImage() != null) {
@@ -145,9 +146,6 @@ public class SpecialistServiceImpl implements SpecialistService {
         );
 
     }
-
-
-
 
     // مشاهده موجودی
     @Override

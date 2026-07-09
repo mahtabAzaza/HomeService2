@@ -48,20 +48,8 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     // ایجاد سرویس
-    @Override
-    public void createService(String name, String description, Long basePrice) {
-
-        Service service = new Service();
-        service.setServiceName(name);
-        service.setServiceDescription(description);
-        service.setServiceBasePrice(basePrice);
-        service.setParentService(null);
-
-        serviceRepository.save(service);
-    }
-
 //    @Override
-//    public Service createService(String name, String description, Long basePrice) {
+//    public void createService(String name, String description, Long basePrice) {
 //
 //        Service service = new Service();
 //        service.setServiceName(name);
@@ -69,8 +57,20 @@ public class ManagerServiceImpl implements ManagerService {
 //        service.setServiceBasePrice(basePrice);
 //        service.setParentService(null);
 //
-//        return serviceRepository.save(service);
+//        serviceRepository.save(service);
 //    }
+
+    @Override
+    public Service createService(String name, String description, Long basePrice) {
+
+        Service service = new Service();
+        service.setServiceName(name);
+        service.setServiceDescription(description);
+        service.setServiceBasePrice(basePrice);
+        service.setParentService(null);
+
+        return serviceRepository.save(service);
+    }
 
 //    ایجاد زیر سرویس
     @Override
