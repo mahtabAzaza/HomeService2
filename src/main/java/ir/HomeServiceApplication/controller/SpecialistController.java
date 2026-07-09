@@ -3,6 +3,7 @@ package ir.HomeServiceApplication.controller;
 import ir.HomeServiceApplication.DTO.OrderDto;
 import ir.HomeServiceApplication.DTO.ProposalDto;
 import ir.HomeServiceApplication.DTO.SpecialistSignupDto;
+import jakarta.validation.Valid;
 import ir.HomeServiceApplication.entity.Order;
 import ir.HomeServiceApplication.entity.Specialist;
 import ir.HomeServiceApplication.mapper.OrderMapper;
@@ -40,7 +41,7 @@ public class SpecialistController {
 
     // ثبت پیشنهاد
     @PostMapping("/proposals")
-    public ResponseEntity<Void> submitProposal(@RequestBody ProposalDto dto) {
+    public ResponseEntity<Void> submitProposal(@Valid @RequestBody ProposalDto dto) {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
         proposalService.submitProposal(
                 current.getId(),
@@ -70,7 +71,7 @@ public class SpecialistController {
 
     // ویرایش اطلاعات
     @PutMapping("/profile")
-    public ResponseEntity<Void> updateProfile(@RequestBody SpecialistSignupDto dto) {
+    public ResponseEntity<Void> updateProfile(@Valid @RequestBody SpecialistSignupDto dto) {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
         specialistService.updateProfile(current.getId(), dto);
         return ResponseEntity.ok().build();

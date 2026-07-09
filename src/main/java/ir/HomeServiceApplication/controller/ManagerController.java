@@ -3,9 +3,11 @@ package ir.HomeServiceApplication.controller;
 import ir.HomeServiceApplication.DTO.ServiceDto;
 import ir.HomeServiceApplication.DTO.ServiceResponseDto;
 import ir.HomeServiceApplication.DTO.SpecialistResponseDto;
+import jakarta.validation.Valid;
 import ir.HomeServiceApplication.entity.Specialist;
 import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.mapper.SpecialistMapper;
+import jakarta.annotation.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ir.HomeServiceApplication.service.ManagerService;
@@ -76,15 +78,16 @@ public class ManagerController {
 
     // C اضافه کردن سرویس
     @PostMapping("/services")
-    public ResponseEntity<ServiceResponseDto> createService(@RequestBody ServiceDto dto) {
+    public ResponseEntity<ServiceResponseDto> createService(@Valid @RequestBody ServiceDto dto) {
         managerService.createService(dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
+
         return ResponseEntity.ok().build();
     }
 
     // C اضافه کردن زیر سرویس
     @PostMapping("/services/{parentId}/subservices")
     public ResponseEntity<Void> addSubService(@PathVariable Long parentId,
-          @RequestBody ServiceDto dto) {
+          @Valid @RequestBody ServiceDto dto) {
         managerService.addSubService(parentId, dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
         return ResponseEntity.ok().build();
     }
@@ -92,7 +95,7 @@ public class ManagerController {
     // U ویرایش سرویس
     @PutMapping("/services/{id}")
     public ResponseEntity<Void> updateService(@PathVariable Long id,
-                                              @RequestBody ServiceDto dto) {
+                                              @Valid @RequestBody ServiceDto dto) {
         managerService.updateService(id, dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
         return ResponseEntity.ok().build();
     }

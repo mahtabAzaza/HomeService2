@@ -4,6 +4,7 @@ import ir.HomeServiceApplication.DTO.CustomerSignupDto;
 import ir.HomeServiceApplication.DTO.OrderDto;
 import ir.HomeServiceApplication.DTO.PlaceOrderRequest;
 import ir.HomeServiceApplication.DTO.ProposalDto;
+import jakarta.validation.Valid;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.mapper.OrderMapper;
 import ir.HomeServiceApplication.mapper.ProposalMapper;
@@ -31,7 +32,7 @@ public class CustomerController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<Void> placeOrder(@RequestBody PlaceOrderRequest dto) {
+    public ResponseEntity<Void> placeOrder(@Valid @RequestBody PlaceOrderRequest dto) {
         customerService.placeOrder(
                 UserContext.getCurrentEmail(),
                 dto.getServiceId(),
@@ -108,7 +109,7 @@ public class CustomerController {
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<Void> updateProfile(@RequestBody CustomerSignupDto dto) {
+    public ResponseEntity<Void> updateProfile(@Valid @RequestBody CustomerSignupDto dto) {
         Customer current = customerService.findByEmail(UserContext.getCurrentEmail());
         customerService.updateProfile(current.getId(), dto);
         return ResponseEntity.ok().build();
