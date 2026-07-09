@@ -16,14 +16,10 @@ import java.util.List;
 public class Order extends BaseEntity<Long> {
 
     private String orderDescription;
-
     private Long priceOffer;
-
     private LocalDateTime orderStartDateTime;
     private LocalDateTime orderSubmitDateTime;
-
     private String address;
-
     private Long finalPrice;
 
 

@@ -22,10 +22,10 @@ public class Specialist extends User {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private SpecialistStatus status;
-
+    // ??? map by wallet
     // هر متخصص یک کیف پول دارد
     @OneToOne
-    @JoinColumn(name = "wallet_id")
+    @JoinColumn(name = "wallet_id" )
     private Wallet wallet;
 
     // هر متخصص می‌تواند چند پیشنهاد ثبت کند
