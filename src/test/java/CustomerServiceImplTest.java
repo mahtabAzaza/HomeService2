@@ -4,6 +4,7 @@ import ir.HomeServiceApplication.DTO.CustomerSignupDto;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.exception.*;
 import ir.HomeServiceApplication.repository.*;
+import ir.HomeServiceApplication.service.SpecialistRatingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,6 +31,7 @@ class CustomerServiceImplTest {
     @Mock private WalletRepository walletRepository;
     @Mock private ReviewRepository reviewRepository;
     @Mock private PasswordEncoder passwordEncoder;
+    @Mock private SpecialistRatingService ratingService;
 
     @InjectMocks
     private CustomerServiceImpl customerService;
@@ -167,15 +169,20 @@ class CustomerServiceImplTest {
     // GET SERVICES
     // =====================================================
 
-    // Returns the full list of services from the repository
+    // Returns only root services (those with no parent service)
     @Test
-    void getServices_shouldReturnAllServices() {
-        List<Service> services = List.of(new Service(), new Service());
-        when(serviceRepository.findAll()).thenReturn(services);
+    void getServices_shouldReturnRootServicesOnly() {
+        Service root1 = new Service();
+        Service root2 = new Service();
+        Service child = new Service();
+        child.setParentService(root1);
+
+        when(serviceRepository.findAll()).thenReturn(List.of(root1, root2, child));
 
         List<Service> result = customerService.getServices();
 
         assertEquals(2, result.size());
+        assertFalse(result.contains(child));
     }
 
     // =====================================================
@@ -189,11 +196,11 @@ class CustomerServiceImplTest {
         Service service = new Service();
         service.setServiceBasePrice(100L);
 
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(customerRepository.findByEmail("test@mail.com")).thenReturn(customer);
         when(serviceRepository.findById(1L)).thenReturn(Optional.of(service));
         when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
-        customerService.placeOrder(1L, 1L, 150L, LocalDateTime.now(), "Tehran", "desc");
+        customerService.placeOrder("test@mail.com", 1L, 150L, LocalDateTime.now(), "Tehran", "desc");
 
         verify(orderRepository).save(any(Order.class));
     }
@@ -201,34 +208,33 @@ class CustomerServiceImplTest {
     // Throws when the offered price is lower than the service's minimum base price
     @Test
     void placeOrder_shouldThrowException_whenPriceBelowBase() {
-        Customer customer = new Customer();
         Service service = new Service();
         service.setServiceBasePrice(200L);
 
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(customerRepository.findByEmail("test@mail.com")).thenReturn(new Customer());
         when(serviceRepository.findById(1L)).thenReturn(Optional.of(service));
 
         assertThrows(InvalidOperationException.class,
-                () -> customerService.placeOrder(1L, 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
+                () -> customerService.placeOrder("test@mail.com", 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
     }
 
-    // Throws when the given customer ID does not exist in the repository
+    // Throws when no customer exists with the given email
     @Test
     void placeOrder_shouldThrowException_whenCustomerNotFound() {
-        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
+        when(customerRepository.findByEmail("missing@mail.com")).thenReturn(null);
 
         assertThrows(NotFoundException.class,
-                () -> customerService.placeOrder(1L, 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
+                () -> customerService.placeOrder("missing@mail.com", 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
     }
 
     // Throws when the given service ID does not exist in the repository
     @Test
     void placeOrder_shouldThrowException_whenServiceNotFound() {
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(new Customer()));
+        when(customerRepository.findByEmail("test@mail.com")).thenReturn(new Customer());
         when(serviceRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
-                () -> customerService.placeOrder(1L, 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
+                () -> customerService.placeOrder("test@mail.com", 1L, 100L, LocalDateTime.now(), "Tehran", "desc"));
     }
 
     // =====================================================
@@ -257,59 +263,61 @@ class CustomerServiceImplTest {
         assertThrows(NotFoundException.class, () -> customerService.getMyOrders(1L));
     }
 
-//    // =====================================================
-//    // GET PROPOSALS FOR ORDER
-//    // =====================================================
-//
-//    @Test
-//    void getProposalsForOrder_sortByPrice_shouldReturnProposals() {
-//        Order order = new Order();
-//        List<Proposal> proposals = List.of(new Proposal());
-//
-//        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-//        when(proposalRepository.findByOrderOrderByProposalPriceAsc(order)).thenReturn(proposals);
-//
-//        List<Proposal> result = customerService.getProposalsForOrder(1L, "price");
-//
-//        assertEquals(1, result.size());
-//    }
-//
-//    @Test
-//    void getProposalsForOrder_sortByScore_shouldReturnSortedByScoreDesc() {
-//        Order order = new Order();
-//
-//        Specialist specialistA = new Specialist();
-//        specialistA.setId(1L);
-//        Specialist specialistB = new Specialist();
-//        specialistB.setId(2L);
-//
-//        Proposal lowScoreProposal = new Proposal();
-//        lowScoreProposal.setSpecialist(specialistA);
-//
-//        Proposal highScoreProposal = new Proposal();
-//        highScoreProposal.setSpecialist(specialistB);
-//
-//        List<Proposal> unsorted = new ArrayList<>(List.of(lowScoreProposal, highScoreProposal));
-//
-//        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-//        when(proposalRepository.findByOrder(order)).thenReturn(unsorted);
-//        when(reviewRepository.findAverageScoreBySpecialistId(1L)).thenReturn(2.0);
-//        when(reviewRepository.findAverageScoreBySpecialistId(2L)).thenReturn(4.5);
-//
-//        List<Proposal> result = customerService.getProposalsForOrder(1L, "score");
-//
-//        // highScoreProposal (4.5) should come first
-//        assertEquals(highScoreProposal, result.get(0));
-//        assertEquals(lowScoreProposal, result.get(1));
-//    }
-//
-//    @Test
-//    void getProposalsForOrder_shouldThrowException_whenOrderNotFound() {
-//        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
-//
-//        assertThrows(NotFoundException.class,
-//                () -> customerService.getProposalsForOrder(99L, "price"));
-//    }
+    // =====================================================
+    // GET PROPOSALS FOR ORDER
+    // =====================================================
+
+    // Returns proposals sorted by price ascending when sortBy is PRICE
+    @Test
+    void getProposalsForOrder_sortByPrice_shouldReturnProposals() {
+        Order order = new Order();
+        List<Proposal> proposals = List.of(new Proposal());
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(proposalRepository.findByOrderOrderByProposalPriceAsc(order)).thenReturn(proposals);
+
+        List<Proposal> result = customerService.getProposalsForOrder(1L, ProposalSortByType.PRICE);
+
+        assertEquals(1, result.size());
+    }
+
+    // Returns proposals sorted by specialist score descending when sortBy is SCORE
+    @Test
+    void getProposalsForOrder_sortByScore_shouldReturnSortedByScoreDesc() {
+        Order order = new Order();
+
+        Specialist specialistA = new Specialist();
+        specialistA.setId(1L);
+        Specialist specialistB = new Specialist();
+        specialistB.setId(2L);
+
+        Proposal lowScoreProposal = new Proposal();
+        lowScoreProposal.setSpecialist(specialistA);
+
+        Proposal highScoreProposal = new Proposal();
+        highScoreProposal.setSpecialist(specialistB);
+
+        List<Proposal> unsorted = new ArrayList<>(List.of(lowScoreProposal, highScoreProposal));
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(proposalRepository.findByOrder(order)).thenReturn(unsorted);
+        when(reviewRepository.findAverageScoreBySpecialistId(1L)).thenReturn(2.0);
+        when(reviewRepository.findAverageScoreBySpecialistId(2L)).thenReturn(4.5);
+
+        List<Proposal> result = customerService.getProposalsForOrder(1L, ProposalSortByType.SCORE);
+
+        assertEquals(highScoreProposal, result.get(0));
+        assertEquals(lowScoreProposal, result.get(1));
+    }
+
+    // Throws when the given order ID does not exist in the repository
+    @Test
+    void getProposalsForOrder_shouldThrowException_whenOrderNotFound() {
+        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> customerService.getProposalsForOrder(99L, ProposalSortByType.PRICE));
+    }
 
     // =====================================================
     // SELECT PROPOSAL
@@ -348,11 +356,15 @@ class CustomerServiceImplTest {
     // MARK ORDER STARTED
     // =====================================================
 
-    // Changes order status from WAITING_FOR_SPECIALIST to IN_PROGRESS
+    // Changes order status from WAITING_FOR_SPECIALIST to IN_PROGRESS when proposal start time has passed
     @Test
     void markOrderStarted_shouldChangeStatusToInProgress() {
+        Proposal proposal = new Proposal();
+        proposal.setStartDate(LocalDateTime.now().minusHours(1));
+
         Order order = new Order();
         order.setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST);
+        order.setSelectedProposal(proposal);
 
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
 
@@ -372,11 +384,26 @@ class CustomerServiceImplTest {
         assertThrows(InvalidOperationException.class, () -> customerService.markOrderStarted(1L));
     }
 
+    // Throws when the specialist has not arrived yet (proposal start time is in the future)
+    @Test
+    void markOrderStarted_shouldThrowException_whenTooEarly() {
+        Proposal proposal = new Proposal();
+        proposal.setStartDate(LocalDateTime.now().plusHours(2));
+
+        Order order = new Order();
+        order.setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST);
+        order.setSelectedProposal(proposal);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        assertThrows(InvalidOperationException.class, () -> customerService.markOrderStarted(1L));
+    }
+
     // =====================================================
     // MARK ORDER DONE
     // =====================================================
 
-    // Changes order status from IN_PROGRESS to DONE
+    // Changes order status from IN_PROGRESS to DONE and calls late delivery penalty check
     @Test
     void markOrderDone_shouldChangeStatusToDone() {
         Order order = new Order();
@@ -387,6 +414,7 @@ class CustomerServiceImplTest {
         customerService.markOrderDone(1L);
 
         assertEquals(OrderStatus.DONE, order.getOrderStatus());
+        verify(ratingService).applyLateDeliveryPenalty(order);
     }
 
     // Throws when the order is not in IN_PROGRESS status
@@ -404,7 +432,7 @@ class CustomerServiceImplTest {
     // PAY ORDER
     // =====================================================
 
-    // Deducts the final price from the customer's wallet, credits the specialist, and marks the order PAID
+    // Deducts the full price from the customer's wallet, credits 70% to the specialist, and marks the order PAID
     @Test
     void payOrder_shouldTransferFundsAndMarkPaid() {
         Wallet customerWallet = new Wallet();
@@ -430,7 +458,7 @@ class CustomerServiceImplTest {
         customerService.payOrder(1L);
 
         assertEquals(700L, customerWallet.getBalance());
-        assertEquals(300L, specialistWallet.getBalance());
+        assertEquals(210L, specialistWallet.getBalance()); // 300 * 70% = 210
         assertEquals(OrderStatus.PAID, order.getOrderStatus());
     }
 
@@ -472,9 +500,9 @@ class CustomerServiceImplTest {
     // SUBMIT REVIEW
     // =====================================================
 
-    // Saves a review for a completed order linked to the given customer
+    // Saves a review and applies the score to the specialist's rating
     @Test
-    void submitReview_shouldSaveReview() {
+    void submitReview_shouldSaveReviewAndUpdateScore() {
         Customer customer = new Customer();
         Specialist specialist = new Specialist();
 
@@ -490,6 +518,7 @@ class CustomerServiceImplTest {
         customerService.submitReview(1L, 2L, 5, "Great work");
 
         verify(reviewRepository).save(any(Review.class));
+        verify(ratingService).applyReviewScore(specialist, 5);
     }
 
     // Throws when the order is still IN_PROGRESS and has not been completed yet
