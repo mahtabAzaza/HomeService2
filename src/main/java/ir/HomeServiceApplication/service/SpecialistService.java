@@ -19,6 +19,8 @@ public interface SpecialistService {
 
     List<Order> getAvailableOrders(Long specialistId);
 
+    List<Order> getOrderHistory(Long specialistId);
+
 
     Long getWalletBalance(Long specialistId);
 

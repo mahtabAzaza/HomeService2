@@ -3,6 +3,9 @@ package ir.HomeServiceApplication.controller;
 import ir.HomeServiceApplication.DTO.ServiceDto;
 import ir.HomeServiceApplication.DTO.ServiceResponseDto;
 import ir.HomeServiceApplication.DTO.SpecialistResponseDto;
+import ir.HomeServiceApplication.DTO.UserFilterDto;
+import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
+import ir.HomeServiceApplication.entity.Role;
 import jakarta.validation.Valid;
 import ir.HomeServiceApplication.entity.Specialist;
 import ir.HomeServiceApplication.entity.Service;
@@ -63,6 +66,26 @@ public class ManagerController {
         managerService.removeSpecialistFromService(specialistId, serviceId);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/users/search")
+    public ResponseEntity<List<UserSearchResponseDto>> searchUsers(
+            @RequestParam(required = false) Role role,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String serviceName,
+            @RequestParam(required = false) Integer minScore,
+            @RequestParam(required = false) Integer maxScore) {
+
+        UserFilterDto filter = new UserFilterDto();
+        filter.setRole(role);
+        filter.setFirstName(firstName);
+        filter.setLastName(lastName);
+        filter.setServiceName(serviceName);
+        filter.setMinScore(minScore);
+        filter.setMaxScore(maxScore);
+
+        return ResponseEntity.ok(managerService.searchUsers(filter));
+    }
+
     @GetMapping("/test")
     public String test() {
         return "OK";

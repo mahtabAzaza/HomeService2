@@ -1,17 +1,24 @@
 package ir.HomeServiceApplication.service.serviceImpl;
 
+import ir.HomeServiceApplication.DTO.UserFilterDto;
+import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
 import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.entity.Specialist;
 import ir.HomeServiceApplication.entity.SpecialistStatus;
+import ir.HomeServiceApplication.entity.User;
+import ir.HomeServiceApplication.specification.UserSpecification;
 
 //import org.springframework.stereotype.Service;
 import ir.HomeServiceApplication.exception.InvalidOperationException;
 import ir.HomeServiceApplication.exception.NotFoundException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import ir.HomeServiceApplication.repository.ServiceRepository;
 import ir.HomeServiceApplication.repository.SpecialistRepository;
+import ir.HomeServiceApplication.repository.UserRepository;
 import ir.HomeServiceApplication.service.ManagerService;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // ?????
 @org.springframework.stereotype.Service
@@ -20,11 +27,14 @@ public class ManagerServiceImpl implements ManagerService {
 
     private final SpecialistRepository specialistRepository;
     private final ServiceRepository serviceRepository;
+    private final UserRepository userRepository;
 
     public ManagerServiceImpl(SpecialistRepository specialistRepository,
-                              ServiceRepository serviceRepository) {
+                              ServiceRepository serviceRepository,
+                              UserRepository userRepository) {
         this.specialistRepository = specialistRepository;
         this.serviceRepository = serviceRepository;
+        this.userRepository = userRepository;
     }
 
     // تایید متخصص
@@ -161,5 +171,42 @@ public class ManagerServiceImpl implements ManagerService {
     @Transactional(readOnly = true)
     public List<Specialist> getAllSpecialists() {
         return specialistRepository.findAll();
+    }
+
+    // جستجو و فیلتر کاربران
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserSearchResponseDto> searchUsers(UserFilterDto filter) {
+        Specification<User> spec = Specification
+                .where(UserSpecification.hasRole(filter.getRole()))
+                .and(UserSpecification.firstNameContains(filter.getFirstName()))
+                .and(UserSpecification.lastNameContains(filter.getLastName()))
+                .and(UserSpecification.hasServiceNamed(filter.getServiceName()))
+                .and(UserSpecification.scoreAtLeast(filter.getMinScore()))
+                .and(UserSpecification.scoreAtMost(filter.getMaxScore()));
+
+        return userRepository.findAll(spec).stream()
+                .map(this::toSearchResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    private UserSearchResponseDto toSearchResponseDto(User user) {
+        UserSearchResponseDto dto = new UserSearchResponseDto();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole().name());
+
+        if (user instanceof Specialist specialist) {
+            dto.setStatus(specialist.getStatus() != null ? specialist.getStatus().name() : null);
+            dto.setScore(specialist.getScore());
+            if (specialist.getServices() != null) {
+                dto.setServices(specialist.getServices().stream()
+                        .map(s -> s.getServiceName())
+                        .collect(Collectors.toList()));
+            }
+        }
+        return dto;
     }
 }

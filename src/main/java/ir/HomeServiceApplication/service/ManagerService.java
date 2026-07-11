@@ -1,5 +1,7 @@
 package ir.HomeServiceApplication.service;
 
+import ir.HomeServiceApplication.DTO.UserFilterDto;
+import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
 import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.entity.Specialist;
 import java.util.List;
@@ -32,4 +34,7 @@ public interface ManagerService {
 
     // مشاهده همه متخصصان
     List<Specialist> getAllSpecialists();
+
+    // جستجو و فیلتر کاربران
+    List<UserSearchResponseDto> searchUsers(UserFilterDto filter);
 }

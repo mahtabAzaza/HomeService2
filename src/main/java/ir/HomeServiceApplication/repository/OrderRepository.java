@@ -16,4 +16,7 @@ public interface OrderRepository extends
     List<Order> findByServiceInAndOrderStatus(List<Service> services, OrderStatus status);
 
     boolean existsBySpecialistIdAndOrderStatusIn(Long specialistId, List<OrderStatus> statuses);
+
+    // تاریخچه سفارشاتی که متخصص برای آن‌ها پیشنهاد داده
+    List<Order> findByProposalsSpecialistId(Long specialistId);
 }

@@ -29,11 +29,20 @@ public class SpecialistController {
         this.proposalService = proposalService;
     }
 
-    // مشاهده سفارشات
+    // مشاهده سفارشات موجود
     @GetMapping("/orders/available")
     public ResponseEntity<List<OrderDto>> getAvailableOrders() {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
         List<Order> orders = specialistService.getAvailableOrders(current.getId());
+        List<OrderDto> dtos = orders.stream().map(OrderMapper::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+    // تاریخچه سفارشاتی که متخصص برای آن‌ها پیشنهاد داده
+    @GetMapping("/orders/history")
+    public ResponseEntity<List<OrderDto>> getOrderHistory() {
+        Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
+        List<Order> orders = specialistService.getOrderHistory(current.getId());
         List<OrderDto> dtos = orders.stream().map(OrderMapper::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }

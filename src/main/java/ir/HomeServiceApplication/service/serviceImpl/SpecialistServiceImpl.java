@@ -173,6 +173,20 @@ public class SpecialistServiceImpl implements SpecialistService {
 
         wallet.setBalance(wallet.getBalance() - amount);
     }
+    // تاریخچه سفارشات
+    @Override
+    @Transactional(readOnly = true)
+    public List<Order> getOrderHistory(Long specialistId) {
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist not found"));
+
+        if (specialist.getStatus() != SpecialistStatus.APPROVED) {
+            throw new NotApprovedException("Your account is not approved yet");
+        }
+
+        return orderRepository.findByProposalsSpecialistId(specialistId);
+    }
+
     // امتیاز متخصص
     public void score(Long specialistId) {
 
