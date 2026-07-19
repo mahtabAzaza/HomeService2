@@ -2,6 +2,7 @@ package ir.HomeServiceApplication.service;
 
 import ir.HomeServiceApplication.DTO.CustomerResponseDto;
 import ir.HomeServiceApplication.DTO.CustomerSignupDto;
+import ir.HomeServiceApplication.DTO.ServiceResponseDto;
 import ir.HomeServiceApplication.entity.*;
 
 import java.time.LocalDateTime;
@@ -16,8 +17,6 @@ public interface CustomerService {
     Customer findByEmail(String email);
 
     void updateProfile(Long customerId, CustomerSignupDto dto);
-
-    List<Service> getServices();
 
     void placeOrder(String email, Long serviceId, Long priceOffer,
                     LocalDateTime startDateTime, String address, String description);

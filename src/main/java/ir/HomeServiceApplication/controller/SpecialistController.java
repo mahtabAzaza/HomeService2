@@ -3,6 +3,7 @@ package ir.HomeServiceApplication.controller;
 import ir.HomeServiceApplication.DTO.OrderDto;
 import ir.HomeServiceApplication.DTO.ProposalDto;
 import ir.HomeServiceApplication.DTO.SpecialistSignupDto;
+import ir.HomeServiceApplication.DTO.WalletTransactionDto;
 import jakarta.validation.Valid;
 import ir.HomeServiceApplication.entity.Order;
 import ir.HomeServiceApplication.entity.Specialist;
@@ -63,11 +64,32 @@ public class SpecialistController {
     }
 
 
+    // میانگین امتیاز
+    @GetMapping("/score")
+    public ResponseEntity<Double> getAverageScore() {
+        Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
+        return ResponseEntity.ok(specialistService.getAverageScore(current.getId()));
+    }
+
+    // امتیاز یک سفارش خاص
+    @GetMapping("/orders/{orderId}/score")
+    public ResponseEntity<Integer> getOrderScore(@PathVariable Long orderId) {
+        Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
+        return ResponseEntity.ok(specialistService.getOrderScore(current.getId(), orderId));
+    }
+
      // موجودی
     @GetMapping("/wallet")
     public ResponseEntity<Long> getWalletBalance() {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
         return ResponseEntity.ok(specialistService.getWalletBalance(current.getId()));
+    }
+
+    // سابقه تراکنش‌های کیف پول
+    @GetMapping("/wallet/transactions")
+    public ResponseEntity<List<WalletTransactionDto>> getWalletTransactions() {
+        Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
+        return ResponseEntity.ok(specialistService.getWalletTransactions(current.getId()));
     }
 
     // برداشت

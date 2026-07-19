@@ -4,7 +4,7 @@ import ir.HomeServiceApplication.DTO.CustomerSignupDto;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.exception.*;
 import ir.HomeServiceApplication.repository.*;
-import ir.HomeServiceApplication.service.SpecialistRatingService;
+import ir.HomeServiceApplication.service.SpecialistScoreService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,7 +31,7 @@ class CustomerServiceImplTest {
     @Mock private WalletRepository walletRepository;
     @Mock private ReviewRepository reviewRepository;
     @Mock private PasswordEncoder passwordEncoder;
-    @Mock private SpecialistRatingService ratingService;
+    @Mock private SpecialistScoreService ratingService;
 
     @InjectMocks
     private CustomerServiceImpl customerService;

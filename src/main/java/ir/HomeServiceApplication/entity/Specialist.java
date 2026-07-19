@@ -14,9 +14,8 @@ import java.util.List;
 @Table(name = "specialists")
 public class Specialist extends User {
 
-    @Lob
-    @Column(name = "profile_image"
-    ,nullable = true)
+
+    @Column(name = "profile_image", columnDefinition = "bytea")
     private byte[] profileImage;
 
     @Enumerated(EnumType.STRING)
@@ -46,5 +45,5 @@ public class Specialist extends User {
     private List<Order> orders;
 
     // امتیاز متخصص
-    private int Score;
+    private int score;
 }

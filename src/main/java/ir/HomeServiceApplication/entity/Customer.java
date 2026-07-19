@@ -14,8 +14,8 @@ import java.util.List;
 @Table(name = "customers")
 public class Customer extends User {
 
-    @Lob
-    @Column(name = "profile_picture")
+
+    @Column(name = "profile_picture", columnDefinition = "bytea")
     private byte[] profilePicture;
 
     // هر مشتری یک کیف پول دارد

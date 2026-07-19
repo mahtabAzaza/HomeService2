@@ -80,10 +80,11 @@ public class CustomerController {
     }
 
 
+
     @PostMapping("/orders/{orderId}/pay")
-    public ResponseEntity<Void> payOrder(@PathVariable Long orderId) {
+    public ResponseEntity<?> payOrder(@PathVariable Long orderId) {
         customerService.payOrder(orderId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Payment successful");
     }
 
     @PostMapping("/orders/{orderId}/review")

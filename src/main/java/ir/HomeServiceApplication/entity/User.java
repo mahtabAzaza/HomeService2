@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,11 +18,11 @@ public abstract class User extends BaseEntity<Long> {
     public static final String TABLE_NAME = "users";
 
     @NotBlank
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @NotBlank
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @NotBlank
@@ -39,9 +37,6 @@ public abstract class User extends BaseEntity<Long> {
 //            message = "Password must contain both letters and numbers"
 //    )
     private String password;
-
-    @Column(name = "registration_date", updatable = false)
-    private LocalDateTime registrationDate;
 
     @Enumerated(EnumType.STRING)
     private Role role;

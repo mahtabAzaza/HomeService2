@@ -12,7 +12,7 @@ import java.time.temporal.ChronoUnit;
 
 @Service
 @Transactional
-public class SpecialistRatingService {
+public class SpecialistScoreService {
 
     // وقتی مشتری نظر می‌دهد، امتیاز متخصص افزایش می‌یابد
     public void applyReviewScore(Specialist specialist, int score) {

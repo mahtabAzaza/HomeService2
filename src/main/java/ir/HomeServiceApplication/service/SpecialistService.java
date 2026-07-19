@@ -2,6 +2,7 @@ package ir.HomeServiceApplication.service;
 
 import ir.HomeServiceApplication.DTO.SpecialistResponseDto;
 import ir.HomeServiceApplication.DTO.SpecialistSignupDto;
+import ir.HomeServiceApplication.DTO.WalletTransactionDto;
 import ir.HomeServiceApplication.entity.Order;
 import ir.HomeServiceApplication.entity.Specialist;
 
@@ -21,8 +22,13 @@ public interface SpecialistService {
 
     List<Order> getOrderHistory(Long specialistId);
 
+    Double getAverageScore(Long specialistId);
+
+    Integer getOrderScore(Long specialistId, Long orderId);
 
     Long getWalletBalance(Long specialistId);
+
+    List<WalletTransactionDto> getWalletTransactions(Long specialistId);
 
     void withdraw(Long specialistId, Long amount);
     void score(Long specialistId);

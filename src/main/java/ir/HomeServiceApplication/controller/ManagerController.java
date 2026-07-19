@@ -6,6 +6,7 @@ import ir.HomeServiceApplication.DTO.SpecialistResponseDto;
 import ir.HomeServiceApplication.DTO.UserFilterDto;
 import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
 import ir.HomeServiceApplication.entity.Role;
+import ir.HomeServiceApplication.service.CustomerService;
 import jakarta.validation.Valid;
 import ir.HomeServiceApplication.entity.Specialist;
 import ir.HomeServiceApplication.entity.Service;
@@ -31,7 +32,7 @@ public class ManagerController {
         this.serviceService = serviceService;
     }
 
-    //               Specialist management        //
+    // Specialist management
     @GetMapping("/specialists")
     public ResponseEntity<List<SpecialistResponseDto>> getAllSpecialists() {
         List<Specialist> specialists = managerService.getAllSpecialists();
@@ -42,9 +43,9 @@ public class ManagerController {
     }
 
     @PutMapping("/specialists/{id}/approve")
-    public ResponseEntity<Void> approveSpecialist(@PathVariable Long id) {
+    public ResponseEntity<String> approveSpecialist(@PathVariable Long id) {
         managerService.approveSpecialist(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("specialist approved Successfully");
     }
 
     @DeleteMapping("/specialists/{id}")
@@ -66,6 +67,7 @@ public class ManagerController {
         managerService.removeSpecialistFromService(specialistId, serviceId);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/users/search")
     public ResponseEntity<List<UserSearchResponseDto>> searchUsers(
             @RequestParam(required = false) Role role,
@@ -94,10 +96,15 @@ public class ManagerController {
 
     //               Service management                  //
     // R دیدن همه سرویس ها
-    @GetMapping("/services")
-    public ResponseEntity<List<Service>> getAllServices() {
-        return ResponseEntity.ok(serviceService.getAllServices());
-    }
+//    @GetMapping("/services")
+//    public ResponseEntity<List<Service>> getAllServices() {
+//        return ResponseEntity.ok(serviceService.getAllServices());
+
+    /// /    }
+//    @GetMapping
+//    public ResponseEntity<List<ServiceResponseDto>> getAllServices() {
+//        return ResponseEntity.ok(CustomerService.getAllServices());
+//    }
 
     // C اضافه کردن سرویس
     @PostMapping("/services")
@@ -110,15 +117,15 @@ public class ManagerController {
     // C اضافه کردن زیر سرویس
     @PostMapping("/services/{parentId}/subservices")
     public ResponseEntity<Void> addSubService(@PathVariable Long parentId,
-          @Valid @RequestBody ServiceDto dto) {
+                                              @Valid @RequestBody ServiceDto dto) {
         managerService.addSubService(parentId, dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
         return ResponseEntity.ok().build();
     }
 
     // U ویرایش سرویس
     @PutMapping("/services/{id}")
-    public ResponseEntity<Void> updateService(@PathVariable Long id,
-                                              @Valid @RequestBody ServiceDto dto) {
+    public ResponseEntity<List<ServiceResponseDto>> updateService(@PathVariable Long id,
+                                                                  @Valid @RequestBody ServiceDto dto) {
         managerService.updateService(id, dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
         return ResponseEntity.ok().build();
     }

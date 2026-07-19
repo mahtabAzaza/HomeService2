@@ -8,9 +8,9 @@ import ir.HomeServiceApplication.repository.OrderRepository;
 import ir.HomeServiceApplication.service.WalletService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class PaymentController {
@@ -62,5 +62,18 @@ public class PaymentController {
         walletService.payForOrder(order.getId());
 
         return ResponseEntity.ok("Payment successful. Order is now PAID.");
+    }
+
+
+    @Controller
+    public class PaymentPageController {
+
+        @GetMapping("/customer/payment")
+        public String paymentPage(@RequestParam Long orderId, Model model) {
+
+            model.addAttribute("orderId", orderId);
+
+            return "payment";
+        }
     }
 }

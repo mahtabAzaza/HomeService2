@@ -3,12 +3,14 @@ package ir.HomeServiceApplication.service.serviceImpl;
 import ir.HomeServiceApplication.DTO.CustomerResponseDto;
 import ir.HomeServiceApplication.DTO.CustomerSignupDto;
 
+import ir.HomeServiceApplication.DTO.ServiceResponseDto;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.exception.*;
 import ir.HomeServiceApplication.mapper.CustomerMapper;
 
+import ir.HomeServiceApplication.mapper.ServiceMapper;
 import ir.HomeServiceApplication.repository.*;
-import ir.HomeServiceApplication.service.SpecialistRatingService;
+import ir.HomeServiceApplication.service.SpecialistScoreService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +33,8 @@ public class CustomerServiceImpl implements CustomerService {
     private final WalletRepository walletRepository;
     private final ReviewRepository reviewRepository;
     private final PasswordEncoder passwordEncoder;
-    private final SpecialistRatingService ratingService;
-
+    private final SpecialistScoreService ratingService;
+    // ?
     public CustomerServiceImpl(CustomerRepository customerRepository,
                                ServiceRepository serviceRepository,
                                OrderRepository orderRepository,
@@ -40,7 +42,7 @@ public class CustomerServiceImpl implements CustomerService {
                                WalletRepository walletRepository,
                                ReviewRepository reviewRepository,
                                PasswordEncoder passwordEncoder,
-                               SpecialistRatingService ratingService) {
+                               SpecialistScoreService ratingService) {
         this.customerRepository = customerRepository;
         this.serviceRepository = serviceRepository;
         this.orderRepository = orderRepository;
@@ -69,7 +71,6 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setEmail(dto.getEmail());
         customer.setPassword(passwordEncoder.encode(dto.getPassword()));
         customer.setProfilePicture(dto.getProfilePicture());
-        customer.setRegistrationDate(LocalDateTime.now());
         customer.setRole(Role.CUSTOMER);
         customer.setWallet(wallet);
 
@@ -108,19 +109,23 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setPassword(passwordEncoder.encode(dto.getPassword()));
     }
 
-    @Override
-    @Transactional(readOnly = true)
+//    @Override
+//    @Transactional(readOnly = true)
+//
+//
 //    public List<ir.HomeServiceApplication.entity.Service> getServices() {
-//        return serviceRepository.findAll();
+//
+//        return serviceRepository.findAll()
+//                .stream()
+//                .filter(s -> s.getParentService() == null)
+//                .toList();
 //    }
-
-    public List<ir.HomeServiceApplication.entity.Service> getServices() {
-
-        return serviceRepository.findAll()
-                .stream()
-                .filter(s -> s.getParentService() == null)
-                .toList();
-    }
+//    public List<ServiceResponseDto> getAllServices() {
+//        return serviceRepository.findAll()
+//                .stream()
+//                .map(ServiceMapper::toResponseDto)
+//                .toList();
+//    }
 
 
     @Override
@@ -260,8 +265,11 @@ public class CustomerServiceImpl implements CustomerService {
         Wallet specialistWallet = order.getSpecialist().getWallet();
         Long price = order.getFinalPrice();
         if (customerWallet.getBalance() < price) {
-            throw new InsufficientBalanceException("Not enough balance in wallet");
+            throw new InsufficientBalanceException(
+                    "Not enough balance. Please charge your wallet: /customer/payment?orderId=" + orderId
+            );
         }
+
 
         // ۷۰٪ مبلغ به کیف پول متخصص واریز می‌شود، ۳۰٪ کارمزد سیستم است
         customerWallet.setBalance(customerWallet.getBalance() - price);
