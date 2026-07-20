@@ -15,13 +15,8 @@ import java.util.List;
 public class Service extends BaseEntity<Long> {
 
     private String serviceName;
-
     private Long serviceBasePrice;
-
     private String serviceDescription;
-
-    // دسته‌بندی کلی خدمت
-    private String serviceCategory;
 
     // هر سفارش مربوط به یک خدمت است
     @OneToMany(mappedBy = "service")

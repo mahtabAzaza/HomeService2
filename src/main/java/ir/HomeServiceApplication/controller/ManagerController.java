@@ -1,10 +1,7 @@
 package ir.HomeServiceApplication.controller;
 
-import ir.HomeServiceApplication.DTO.ServiceDto;
-import ir.HomeServiceApplication.DTO.ServiceResponseDto;
-import ir.HomeServiceApplication.DTO.SpecialistResponseDto;
-import ir.HomeServiceApplication.DTO.UserFilterDto;
-import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
+
+import ir.HomeServiceApplication.DTO.*;
 import ir.HomeServiceApplication.entity.Role;
 import ir.HomeServiceApplication.service.CustomerService;
 import jakarta.validation.Valid;
@@ -100,7 +97,7 @@ public class ManagerController {
 //    public ResponseEntity<List<Service>> getAllServices() {
 //        return ResponseEntity.ok(serviceService.getAllServices());
 
-    /// /    }
+    // / /    }
 //    @GetMapping
 //    public ResponseEntity<List<ServiceResponseDto>> getAllServices() {
 //        return ResponseEntity.ok(CustomerService.getAllServices());
@@ -108,7 +105,7 @@ public class ManagerController {
 
     // C اضافه کردن سرویس
     @PostMapping("/services")
-    public ResponseEntity<ServiceResponseDto> createService(@Valid @RequestBody ServiceDto dto) {
+    public ResponseEntity<ServiceResponseDto> createService(@Valid @RequestBody ServiceResponseDto dto) {
         managerService.createService(dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
 
         return ResponseEntity.ok().build();
@@ -117,7 +114,7 @@ public class ManagerController {
     // C اضافه کردن زیر سرویس
     @PostMapping("/services/{parentId}/subservices")
     public ResponseEntity<Void> addSubService(@PathVariable Long parentId,
-                                              @Valid @RequestBody ServiceDto dto) {
+                                              @Valid @RequestBody ServiceResponseDto dto) {
         managerService.addSubService(parentId, dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
         return ResponseEntity.ok().build();
     }
@@ -125,7 +122,7 @@ public class ManagerController {
     // U ویرایش سرویس
     @PutMapping("/services/{id}")
     public ResponseEntity<List<ServiceResponseDto>> updateService(@PathVariable Long id,
-                                                                  @Valid @RequestBody ServiceDto dto) {
+                                                                  @Valid @RequestBody ServiceResponseDto dto) {
         managerService.updateService(id, dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
         return ResponseEntity.ok().build();
     }

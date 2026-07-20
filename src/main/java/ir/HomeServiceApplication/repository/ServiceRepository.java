@@ -15,5 +15,5 @@ public interface ServiceRepository extends
 
     @EntityGraph(attributePaths = "childServices")
     Page<Service> findByParentServiceIsNull(Pageable pageable);
-
+    boolean existsByParentServiceAndServiceName(Service parentService, String serviceName);
 }

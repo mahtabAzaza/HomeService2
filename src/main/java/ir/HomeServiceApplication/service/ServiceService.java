@@ -1,9 +1,13 @@
 package ir.HomeServiceApplication.service;
 
+import ir.HomeServiceApplication.DTO.ServiceResponseDto;
 import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.exception.InvalidOperationException;
 import ir.HomeServiceApplication.exception.NotFoundException;
+import ir.HomeServiceApplication.mapper.ServiceMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import ir.HomeServiceApplication.repository.ServiceRepository;
 
@@ -15,6 +19,7 @@ import java.util.List;
 public class ServiceService {
 
     private final ServiceRepository serviceRepository;
+    private final ServiceMapper serviceMapper;
 
 //    public void createService(Service service) {
 //
@@ -50,8 +55,10 @@ public class ServiceService {
 //    }
 
     @Transactional(readOnly = true)
-    public List<Service> getAllServices() {
-        return serviceRepository.findAll();
+    public Page<ServiceResponseDto> getAllParentServices(Pageable pageable) {
+
+        return serviceRepository.findByParentServiceIsNull(pageable)
+                .map(serviceMapper::toResponseDto);
     }
 
     @Transactional(readOnly = true)

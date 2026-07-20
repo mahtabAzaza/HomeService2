@@ -89,13 +89,9 @@ public class ManagerServiceImpl implements ManagerService {
         Service parent = serviceRepository.findById(parentId)
                 .orElseThrow(() -> new NotFoundException("Parent service not found"));
 
-        // نام زیرخدمت نباید تکراری در همان والد باشد
-        List<Service> siblings = serviceRepository.findByParentService(parent);
-        boolean duplicate = siblings.stream()
-                .anyMatch(s -> s.getServiceName().equals(name));
-
-        if (duplicate) {
-            throw new InvalidOperationException("A sub-service with this name already exists under the same parent");
+        if (serviceRepository.existsByParentServiceAndServiceName(parent, name)) {
+            throw new InvalidOperationException(
+                    "A sub-service with this name already exists under the same parent");
         }
 
         Service subService = new Service();
