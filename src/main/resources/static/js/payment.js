@@ -1,107 +1,113 @@
-/* -------------------- تایمر -------------------- */
+/* -------------------- STATE -------------------- */
 
-let timeLeft = 600; // 10 دقیقه = 600 ثانیه
+let timeLeft = 600;
 let timerExpired = false;
+const token = new URLSearchParams(window.location.search).get("token");
 
-const timerElement = document.getElementById("timer");
+/* -------------------- TIMER -------------------- */
 
 function startTimer() {
+    const timerEl = document.getElementById("timer");
     const interval = setInterval(() => {
-
         if (timeLeft <= 0) {
             clearInterval(interval);
             timerExpired = true;
-            timerElement.textContent = "Time is up! Payment expired.";
+            timerEl.textContent = "Time is up! Payment expired.";
             document.getElementById("payBtn").disabled = true;
             return;
         }
-
-        let minutes = Math.floor(timeLeft / 60);
-        let seconds = timeLeft % 60;
-
-        timerElement.textContent =
-            `Time left: ${minutes}:${seconds <10? "0" : ""}${seconds}`;
-
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        timerEl.textContent = `Time left: ${m}:${s < 10 ? "0" : ""}${s}`;
         timeLeft--;
-
     }, 1000);
 }
 
-/* -------------------- CAPTCHA -------------------- */
+/* -------------------- SESSION / CAPTCHA -------------------- */
 
-function loadCaptcha() {
-    fetch("/captcha")
-        .then(response => response.blob())
-        .then(imageBlob => {
-            const imageURL = URL.createObjectURL(imageBlob);
-            document.getElementById("captchaImage").src = imageURL;
-        });
+function loadSession() {
+    if (!token) {
+        setStatus("Invalid payment link: missing token.", "red");
+        return;
+    }
+
+    fetch("/payments/" + token)
+        .then(res => {
+            if (!res.ok) return res.text().then(t => { throw new Error(t); });
+            return res.json();
+        })
+        .then(data => {
+            document.getElementById("captchaImage").src =
+                "data:image/png;base64," + data.captchaImage;
+            document.getElementById("captchaInput").value = "";
+            document.getElementById("amountDisplay").textContent =
+                "Amount: " + data.amount;
+            document.getElementById("payBtn").disabled = timerExpired;
+        })
+        .catch(err => setStatus(err.message || "Failed to load session.", "red"));
+}
+
+/* -------------------- HELPERS -------------------- */
+
+function setStatus(msg, color) {
+    const el = document.getElementById("statusMsg");
+    el.textContent = msg;
+    el.style.color = color || "#333";
 }
 
 /* -------------------- PAYMENT SUBMIT -------------------- */
 
 function submitPayment() {
-
     if (timerExpired) {
-        alert("Payment time has expired.");
+        setStatus("Payment time has expired.", "red");
+        return;
+    }
+    if (!token) {
+        setStatus("Invalid payment link.", "red");
         return;
     }
 
-    const amountDisplay = document.getElementById("amountDisplay");
-    const cardNumber = document.getElementById("cardNumber").value;
-    const cvv2 = document.getElementById("cvv2").value;
-    const expiry = document.getElementById("expiry").value;
-    const password = document.getElementById("password").value;
-    const captcha = document.getElementById("captchaInput").value;
+    const cardNumber = document.getElementById("cardNumber").value.trim();
+    const cvv2       = document.getElementById("cvv2").value.trim();
+    const expiry     = document.getElementById("expiry").value.trim();
+    const password   = document.getElementById("password").value;
+    const captcha    = document.getElementById("captchaInput").value.trim();
 
-    const params = new URLSearchParams(window.location.search);
-    const orderId = params.get("orderId");
-
-    if (!orderId) {
-        alert("Invalid payment link: missing order ID.");
+    if (!cardNumber || !cvv2 || !expiry || !password || !captcha) {
+        setStatus("Please fill in all fields.", "red");
         return;
     }
 
-    const data = {
-        cardNumber,
-        cvv2,
-        expiry,
-        password,
-        captcha,
-        orderId: parseInt(orderId)
-    };
+    document.getElementById("payBtn").disabled = true;
+    setStatus("Processing...", "#555");
 
-    fetch("/wallet/charge", {
+    fetch("/payments/" + encodeURIComponent(token), {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardNumber, cvv2, expiry, password, captcha })
     })
-        .then(res => res.text())
-        .then(result => {
-            alert(result);
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+            if (ok) {
+                setStatus("Wallet charged successfully!", "green");
+            } else {
+                setStatus(data.message || JSON.stringify(data), "red");
+                document.getElementById("payBtn").disabled = false;
+                loadSession();
+            }
         })
-        .catch(error => {
-            alert("Error: " + error);
+        .catch(() => {
+            setStatus("Network error. Please try again.", "red");
+            document.getElementById("payBtn").disabled = false;
         });
 }
 
 /* -------------------- INIT -------------------- */
 
 document.addEventListener("DOMContentLoaded", function () {
-
     startTimer();
-    loadCaptcha();
+    loadSession();
 
-    const params = new URLSearchParams(window.location.search);
-    const orderId = params.get("orderId");
-    if (orderId) {
-        document.getElementById("amountDisplay").textContent =
-            "Order ID: " + orderId;
-    }
-
-    document.getElementById("payBtn")
-        .addEventListener("click", submitPayment);
-
+    document.getElementById("captchaImage").addEventListener("click", loadSession);
+    document.getElementById("payBtn").addEventListener("click", submitPayment);
 });

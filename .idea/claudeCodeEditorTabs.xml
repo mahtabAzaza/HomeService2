@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="37722421-bb17-4c8e-9a3e-4490ac263758" />
+    <option name="activeSessionId" value="ce52b1b5-2259-4d6c-9efe-66abafdd870b" />
     <option name="openSessionIds">
       <list>
-        <option value="026d3148-dddf-4bfd-97c2-a6ea059d2bd9" />
-        <option value="37722421-bb17-4c8e-9a3e-4490ac263758" />
+        <option value="ce52b1b5-2259-4d6c-9efe-66abafdd870b" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
-        <entry key="026d3148-dddf-4bfd-97c2-a6ea059d2bd9" value="/sessions/14e13678-de4c-4b2e-8098-d030b3141a11" />
-        <entry key="37722421-bb17-4c8e-9a3e-4490ac263758" value="/sessions/8ccb84b0-388b-4dcb-84bb-cd944fede063" />
+        <entry key="ce52b1b5-2259-4d6c-9efe-66abafdd870b" value="/sessions/d14aa481-1024-4c3b-9f3c-eda9987fc321" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
-        <entry key="026d3148-dddf-4bfd-97c2-a6ea059d2bd9" value="i have this project and i want to migrate it to sp" />
-        <entry key="37722421-bb17-4c8e-9a3e-4490ac263758" value="please check all classes in my project and note th" />
+        <entry key="12858a04-e39c-406e-b8d6-cbaf8bc5a7c5" value="localhost:60903/sessions/new?workingDir=D%3A%2Fmaktabsharif%2FFinal+project%2FHomeService-Maven%2FHomeServices&amp;panelId=12858a04-e39c-406e-b8d6-cbaf8bc5a7c5&amp;theme=dark&amp;pair=C6lK-omrr6MQfHHuCy0Q3VZw_DOahlR2" />
+        <entry key="c7d3c390-e424-4534-814c-2a0e9fb99369" value="why we need an outh controller and why login metho" />
+        <entry key="ce52b1b5-2259-4d6c-9efe-66abafdd870b" value="سلام" />
+        <entry key="eb21c4e4-e574-48f7-ba24-7e739e3f0705" value="localhost:60903/settings/general?workingDir=D%3A%2Fmaktabsharif%2FFinal+project%2FHomeService-Maven%2FHomeServices&amp;panelId=eb21c4e4-e574-48f7-ba24-7e739e3f0705&amp;theme=dark&amp;pair=C6lK-omrr6MQfHHuCy0Q3VZw_DOahlR2" />
       </map>
     </option>
   </component>

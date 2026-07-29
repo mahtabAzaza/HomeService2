@@ -10,8 +10,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ir.HomeServiceApplication.repository.OrderRepository;
+import ir.HomeServiceApplication.repository.ReviewRepository;
 import ir.HomeServiceApplication.repository.SpecialistRepository;
 import ir.HomeServiceApplication.repository.WalletRepository;
+import ir.HomeServiceApplication.repository.WalletTransactionRepository;
 import ir.HomeServiceApplication.service.serviceImpl.SpecialistServiceImpl;
 
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ class SpecialistServiceImplTest {
     @Mock private SpecialistRepository specialistRepository;
     @Mock private OrderRepository orderRepository;
     @Mock private WalletRepository walletRepository;
+    @Mock private WalletTransactionRepository walletTransactionRepository;
+    @Mock private ReviewRepository reviewRepository;
     @Mock private PasswordEncoder passwordEncoder;
 
     @InjectMocks

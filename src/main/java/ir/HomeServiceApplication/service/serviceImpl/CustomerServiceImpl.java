@@ -10,13 +10,12 @@ import ir.HomeServiceApplication.mapper.CustomerMapper;
 
 import ir.HomeServiceApplication.mapper.ServiceMapper;
 import ir.HomeServiceApplication.repository.*;
+import ir.HomeServiceApplication.service.CustomerService;
 import ir.HomeServiceApplication.service.SpecialistScoreService;
+import ir.HomeServiceApplication.service.WalletService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import ir.HomeServiceApplication.service.CustomerService;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,7 +33,8 @@ public class CustomerServiceImpl implements CustomerService {
     private final ReviewRepository reviewRepository;
     private final PasswordEncoder passwordEncoder;
     private final SpecialistScoreService ratingService;
-    // ?
+    private final WalletService walletService;
+
     public CustomerServiceImpl(CustomerRepository customerRepository,
                                ServiceRepository serviceRepository,
                                OrderRepository orderRepository,
@@ -42,7 +42,8 @@ public class CustomerServiceImpl implements CustomerService {
                                WalletRepository walletRepository,
                                ReviewRepository reviewRepository,
                                PasswordEncoder passwordEncoder,
-                               SpecialistScoreService ratingService) {
+                               SpecialistScoreService ratingService,
+                               WalletService walletService) {
         this.customerRepository = customerRepository;
         this.serviceRepository = serviceRepository;
         this.orderRepository = orderRepository;
@@ -51,6 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
         this.reviewRepository = reviewRepository;
         this.passwordEncoder = passwordEncoder;
         this.ratingService = ratingService;
+        this.walletService = walletService;
     }
 
     @Override
@@ -128,8 +130,9 @@ public class CustomerServiceImpl implements CustomerService {
 //    }
 
 
+
     @Override
-    public void placeOrder(String email, Long serviceId, Long priceOffer,
+    public Order placeOrder(String email, Long serviceId, Long priceOffer,
                            LocalDateTime startDateTime, String address, String description) {
 
         Customer customer = customerRepository.findByEmail(email);
@@ -152,7 +155,7 @@ public class CustomerServiceImpl implements CustomerService {
         order.setOrderSubmitDateTime(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.WAITING_FOR_PROPOSAL);
 
-        orderRepository.save(order);
+        return orderRepository.save(order);
     }
 
     @Override
@@ -261,20 +264,20 @@ public class CustomerServiceImpl implements CustomerService {
         if (order.getOrderStatus() != OrderStatus.DONE) {
             throw new InvalidOperationException("Order must be completed before payment");
         }
-        Wallet customerWallet = order.getCustomer().getWallet();
-        Wallet specialistWallet = order.getSpecialist().getWallet();
+
         Long price = order.getFinalPrice();
-        if (customerWallet.getBalance() < price) {
+        Long currentBalance = order.getCustomer().getWallet().getBalance();
+
+        if (currentBalance < price) {
             throw new InsufficientBalanceException(
-                    "Not enough balance. Please charge your wallet: /customer/payment?orderId=" + orderId
+                    currentBalance,
+                    price,
+                    "/payment.html?orderId=" + orderId
             );
         }
 
-
-        // ۷۰٪ مبلغ به کیف پول متخصص واریز می‌شود، ۳۰٪ کارمزد سیستم است
-        customerWallet.setBalance(customerWallet.getBalance() - price);
-        specialistWallet.setBalance(specialistWallet.getBalance() + (price * 70 / 100));
-        order.setOrderStatus(OrderStatus.PAID);
+        // ۷۰٪ مبلغ به کیف پول متخصص واریز می‌شود - تراکنش‌ها هم ثبت می‌شوند
+        walletService.payForOrder(orderId);
     }
 
     @Override
@@ -319,7 +322,6 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
 
-        Wallet wallet = customer.getWallet();
-        wallet.setBalance(wallet.getBalance() + amount);
+        walletService.chargeWallet(customer.getWallet().getId(), amount);
     }
 }

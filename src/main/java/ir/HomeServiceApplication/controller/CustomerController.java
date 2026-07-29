@@ -1,17 +1,18 @@
 package ir.HomeServiceApplication.controller;
 
-import ir.HomeServiceApplication.DTO.CustomerSignupDto;
-import ir.HomeServiceApplication.DTO.OrderDto;
-import ir.HomeServiceApplication.DTO.PlaceOrderRequest;
-import ir.HomeServiceApplication.DTO.ProposalDto;
+import ir.HomeServiceApplication.DTO.*;
 import jakarta.validation.Valid;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.mapper.OrderMapper;
 import ir.HomeServiceApplication.mapper.ProposalMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ir.HomeServiceApplication.security.UserContext;
 import ir.HomeServiceApplication.service.CustomerService;
+import ir.HomeServiceApplication.service.ServiceService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,28 +22,40 @@ import java.util.stream.Collectors;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final ServiceService serviceService;
 
-    public CustomerController(CustomerService customerService) {
+
+
+    public CustomerController(CustomerService customerService, ServiceService serviceService) {
         this.customerService = customerService;
+        this.serviceService = serviceService;
+
     }
 
     @GetMapping("/services")
-    public ResponseEntity<List<Service>> getServices() {
-        return ResponseEntity.ok(customerService.getServices());
+    public ResponseEntity<Page<ServiceResponseDto>> getServices(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return ResponseEntity.ok(serviceService.getAllParentServices(pageable));
     }
 
-    @PostMapping("/orders")
-    public ResponseEntity<Void> placeOrder(@Valid @RequestBody PlaceOrderRequest dto) {
-        customerService.placeOrder(
-                UserContext.getCurrentEmail(),
-                dto.getServiceId(),
-                dto.getPriceOffer(),
-                dto.getOrderStartDateTime(),
-                dto.getAddress(),
-                dto.getOrderDescription()
-        );
-        return ResponseEntity.ok().build();
-    }
+@PostMapping("/orders")
+public ResponseEntity<OrderDto> placeOrder(@Valid @RequestBody PlaceOrderRequest dto) {
+
+    Order order = customerService.placeOrder(
+            UserContext.getCurrentEmail(),
+            dto.getServiceId(),
+            dto.getPriceOffer(),
+            dto.getOrderStartDateTime(),
+            dto.getAddress(),
+            dto.getOrderDescription()
+    );
+
+    return ResponseEntity.ok(OrderMapper.toDto(order));
+}
 
     @GetMapping("/orders")
     public ResponseEntity<List<OrderDto>> getMyOrders() {
@@ -55,7 +68,7 @@ public class CustomerController {
     @GetMapping("/orders/{orderId}/proposals")
     public ResponseEntity<List<ProposalDto>> getProposals(
             @PathVariable Long orderId,
-            @RequestParam(defaultValue = "price") ProposalSortByType sortBy) {
+            @RequestParam(defaultValue = "PRICE") ProposalSortByType sortBy) {
         List<Proposal> proposals = customerService.getProposalsForOrder(orderId, sortBy);
         List<ProposalDto> dtos = proposals.stream().map(ProposalMapper::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
@@ -100,13 +113,6 @@ public class CustomerController {
     public ResponseEntity<Long> getWalletBalance() {
         Customer current = customerService.findByEmail(UserContext.getCurrentEmail());
         return ResponseEntity.ok(customerService.getWalletBalance(current.getId()));
-    }
-
-    @PostMapping("/wallet/charge")
-    public ResponseEntity<Void> chargeWallet(@RequestParam Long amount) {
-        Customer current = customerService.findByEmail(UserContext.getCurrentEmail());
-        customerService.chargeWallet(current.getId(), amount);
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/profile")

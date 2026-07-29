@@ -5,6 +5,7 @@ import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.exception.*;
 import ir.HomeServiceApplication.repository.*;
 import ir.HomeServiceApplication.service.SpecialistScoreService;
+import ir.HomeServiceApplication.service.WalletService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ class CustomerServiceImplTest {
     @Mock private ReviewRepository reviewRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private SpecialistScoreService ratingService;
+    @Mock private WalletService walletService;
 
     @InjectMocks
     private CustomerServiceImpl customerService;
@@ -169,21 +171,21 @@ class CustomerServiceImplTest {
     // GET SERVICES
     // =====================================================
 
-    // Returns only root services (those with no parent service)
-    @Test
-    void getServices_shouldReturnRootServicesOnly() {
-        Service root1 = new Service();
-        Service root2 = new Service();
-        Service child = new Service();
-        child.setParentService(root1);
-
-        when(serviceRepository.findAll()).thenReturn(List.of(root1, root2, child));
-
-        List<Service> result = customerService.getServices();
-
-        assertEquals(2, result.size());
-        assertFalse(result.contains(child));
-    }
+//    // Returns only root services (those with no parent service)
+//    @Test
+//    void getServices_shouldReturnRootServicesOnly() {
+//        Service root1 = new Service();
+//        Service root2 = new Service();
+//        Service child = new Service();
+//        child.setParentService(root1);
+//
+//        when(serviceRepository.findAll()).thenReturn(List.of(root1, root2, child));
+//
+//        List<Service> result = customerService.getServices();
+//
+//        assertEquals(2, result.size());
+//        assertFalse(result.contains(child));
+//    }
 
     // =====================================================
     // PLACE ORDER

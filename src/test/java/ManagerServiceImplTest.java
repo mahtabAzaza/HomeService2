@@ -103,7 +103,7 @@ class ManagerServiceImplTest {
         parent.setServiceName("Home Services");
 
         when(serviceRepository.findById(1L)).thenReturn(Optional.of(parent));
-        when(serviceRepository.findByParentService(parent)).thenReturn(new ArrayList<>());
+        when(serviceRepository.existsByParentServiceAndServiceName(parent, "Plumbing")).thenReturn(false);
         when(serviceRepository.save(any(Service.class))).thenAnswer(i -> i.getArgument(0));
 
         managerService.addSubService(1L, "Plumbing", "Fix pipes", 100L);
@@ -115,11 +115,9 @@ class ManagerServiceImplTest {
     @Test
     void addSubService_shouldThrowException_whenDuplicateName() {
         Service parent = new Service();
-        Service existing = new Service();
-        existing.setServiceName("Plumbing");
 
         when(serviceRepository.findById(1L)).thenReturn(Optional.of(parent));
-        when(serviceRepository.findByParentService(parent)).thenReturn(List.of(existing));
+        when(serviceRepository.existsByParentServiceAndServiceName(parent, "Plumbing")).thenReturn(true);
 
         assertThrows(InvalidOperationException.class,
                 () -> managerService.addSubService(1L, "Plumbing", "desc", 100L));

@@ -1,5 +1,6 @@
 package ir.HomeServiceApplication.exception;
 
+import ir.HomeServiceApplication.DTO.InsufficientBalanceResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -34,7 +35,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
-    public ResponseEntity<String> handleInsufficientBalance(InsufficientBalanceException ex) {
+    public ResponseEntity<?> handleInsufficientBalance(InsufficientBalanceException ex) {
+        if (ex.getChargeUrl() != null) {
+            InsufficientBalanceResponseDto dto = new InsufficientBalanceResponseDto(
+                    "Insufficient balance. Please charge your wallet.",
+                    ex.getCurrentBalance(),
+                    ex.getRequiredAmount(),
+                    ex.getRequiredAmount() - ex.getCurrentBalance(),
+                    ex.getChargeUrl()
+            );
+            return new ResponseEntity<>(dto, HttpStatus.PAYMENT_REQUIRED);
+        }
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

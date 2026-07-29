@@ -18,8 +18,10 @@ public interface CustomerService {
 
     void updateProfile(Long customerId, CustomerSignupDto dto);
 
-    void placeOrder(String email, Long serviceId, Long priceOffer,
+
+        Order placeOrder(String email, Long serviceId, Long priceOffer,
                     LocalDateTime startDateTime, String address, String description);
+
 
     List<Order> getMyOrders(Long customerId);
 

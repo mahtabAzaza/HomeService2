@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment Page</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,9 +10,9 @@
         }
 
         .container {
-            width: 400px;
-            margin: 80px auto;
-            padding: 20px;
+            width: 420px;
+            margin: 60px auto;
+            padding: 28px;
             border-radius: 12px;
             background-color: #f6e8cb;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
@@ -21,57 +20,65 @@
 
         h2 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
         }
 
         #timer {
             text-align: center;
             font-weight: bold;
+            font-size: 15px;
             color: red;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
-        #countdownDisplay {
-            text-align: center;
-            font-weight: bold;
-            color: red;
-            margin-bottom: 15px;
-        }
-
-
 
         #amountDisplay {
             text-align: center;
             font-size: 14px;
             color: #555;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
         }
 
-        input {
+        input[type="text"],
+        input[type="password"] {
             width: 100%;
             padding: 10px;
-            margin: 8px 0;
+            margin: 7px 0;
             border: 1px solid #ccc;
             border-radius: 6px;
             box-sizing: border-box;
+            font-size: 14px;
         }
 
         .captcha-box {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin: 10px 0;
+            margin: 10px 0 6px;
         }
 
         #captchaImage {
-            width: 120px;
-            height: 40px;
+            width: 130px;
+            height: 44px;
             border: 1px solid #937b49;
             border-radius: 4px;
+            cursor: pointer;
+            object-fit: contain;
         }
 
-        button {
+        #captchaInput {
+            flex: 1;
+        }
+
+        .refresh-hint {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        #payBtn {
             width: 100%;
             padding: 12px;
+            margin-top: 10px;
             background-color: #28a745;
             color: white;
             border: none;
@@ -80,53 +87,62 @@
             font-size: 16px;
         }
 
-        button:hover {
+        #payBtn:hover:not(:disabled) {
             background-color: #218838;
+        }
+
+        #payBtn:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        #statusMsg {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
         }
     </style>
 </head>
-
 <body>
 
 <div class="container">
 
-    <h2>Wallet Charge</h2>
+    <h2>Payment</h2>
 
-    <!-- تایمر -->
-    <div id="timer">Time left: </div>
-    <section id="timeLeft"></section>
+    <!-- تایمر ۱۰ دقیقه‌ای — JS مقدار آن را تنظیم می‌کند -->
+    <div id="timer">Loading...</div>
 
     <!-- مبلغ سفارش -->
-    <div id="amountDisplay"> </div>
+    <div id="amountDisplay"></div>
 
     <!-- شماره کارت -->
-
-    <input type="text" id="cardNumber" placeholder="Card Number">
+    <input type="text" id="cardNumber" placeholder="Card Number" maxlength="19">
 
     <!-- CVV2 -->
-    <input type="text" id="cvv2" placeholder="CVV2">
+    <input type="text" id="cvv2" placeholder="CVV2" maxlength="4">
 
     <!-- تاریخ انقضا -->
-    <input type="text" id="expiry" placeholder="Expiry Date (MM/YY)">
+    <input type="text" id="expiry" placeholder="Expiry Date (MM/YY)" maxlength="5">
 
     <!-- رمز دوم -->
     <input type="password" id="password" placeholder="Second Password">
 
-    <!-- کپچا -->
+    <!-- کپچا — کلیک روی تصویر برای رفرش -->
     <div class="captcha-box">
-
-        <img id="captchaImage" alt="captcha">
-
-        <input type="text" id="captchaInput" placeholder="Enter captcha">
-
+        <img id="captchaImage" alt="captcha" title="Click to refresh captcha">
+        <input type="text" id="captchaInput" placeholder="Enter captcha code">
     </div>
+    <div class="refresh-hint">Click the captcha image to refresh</div>
 
     <!-- دکمه پرداخت -->
-    <button id="payBtn">Pay</button>
+    <button id="payBtn" disabled>Pay</button>
+
+    <!-- پیام وضعیت -->
+    <div id="statusMsg"></div>
 
 </div>
 
 <script src="/js/payment.js"></script>
-
 </body>
 </html>

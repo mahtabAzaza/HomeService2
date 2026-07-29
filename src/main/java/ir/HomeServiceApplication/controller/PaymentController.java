@@ -1,79 +1,50 @@
 package ir.HomeServiceApplication.controller;
 
+import ir.HomeServiceApplication.DTO.PaymentLinkResponseDto;
 import ir.HomeServiceApplication.DTO.PaymentRequestDto;
-import ir.HomeServiceApplication.entity.Order;
-import ir.HomeServiceApplication.entity.OrderStatus;
-import ir.HomeServiceApplication.exception.NotFoundException;
-import ir.HomeServiceApplication.repository.OrderRepository;
-import ir.HomeServiceApplication.service.WalletService;
-import jakarta.servlet.http.HttpSession;
+import ir.HomeServiceApplication.DTO.PaymentResultDto;
+import ir.HomeServiceApplication.DTO.PaymentSessionResponseDto;
+import ir.HomeServiceApplication.entity.PaymentSession;
+import ir.HomeServiceApplication.mapper.PaymentMapper;
+import ir.HomeServiceApplication.service.PaymentService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/payments")
 public class PaymentController {
 
-    private final WalletService walletService;
-    private final OrderRepository orderRepository;
+    private final PaymentService paymentService;
+    private final PaymentMapper paymentMapper;
 
-    public PaymentController(WalletService walletService, OrderRepository orderRepository) {
-        this.walletService = walletService;
-        this.orderRepository = orderRepository;
+    public PaymentController(PaymentService paymentService, PaymentMapper paymentMapper) {
+        this.paymentService = paymentService;
+        this.paymentMapper = paymentMapper;
     }
 
-    @PostMapping("/wallet/charge")
-    public ResponseEntity<String> chargeWallet(
-            @RequestBody PaymentRequestDto dto,
-            HttpSession session) {
-
-        String savedCaptcha = (String) session.getAttribute("captcha");
-
-        if (savedCaptcha == null) {
-            return ResponseEntity.badRequest().body("Captcha expired.");
-        }
-
-        if (!savedCaptcha.equalsIgnoreCase(dto.getCaptcha())) {
-            return ResponseEntity.badRequest().body("Invalid captcha.");
-        }
-
-        session.removeAttribute("captcha");
-
-        if (dto.getOrderId() == null) {
-            return ResponseEntity.badRequest().body("Missing order ID.");
-        }
-
-        Order order = orderRepository.findById(dto.getOrderId())
-                .orElseThrow(() -> new NotFoundException("Order not found"));
-
-        if (order.getOrderStatus() != OrderStatus.DONE) {
-            return ResponseEntity.badRequest().body("Order is not in DONE status.");
-        }
-
-        Long price = order.getFinalPrice() != null ? order.getFinalPrice() : order.getPriceOffer();
-
-        Long customerWalletId = order.getCustomer().getWallet().getId();
-
-        // شارژ کیف پول مشتری از طریق کارت
-        walletService.chargeWallet(customerWalletId, price);
-
-        // پرداخت به متخصص از کیف پول مشتری
-        walletService.payForOrder(order.getId());
-
-        return ResponseEntity.ok("Payment successful. Order is now PAID.");
+    @PostMapping("/charge")
+    public ResponseEntity<PaymentLinkResponseDto> charge(@RequestParam Long customerId,
+                                                         @RequestParam Long amount) {
+        PaymentSession session = paymentService.createChargeSession(customerId, amount);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(paymentMapper.toLinkDto(session));
     }
 
+    @GetMapping("/{token}")
+    public PaymentSessionResponseDto get(@PathVariable String token) {
+        return paymentMapper.toResponse(paymentService.findByToken(token));
+    }
 
-    @Controller
-    public class PaymentPageController {
-
-        @GetMapping("/customer/payment")
-        public String paymentPage(@RequestParam Long orderId, Model model) {
-
-            model.addAttribute("orderId", orderId);
-
-            return "payment";
-        }
+    @PostMapping("/{token}")
+    public PaymentResultDto pay(@PathVariable String token,
+                                @Valid @RequestBody PaymentRequestDto dto) {
+        PaymentSession session = paymentService.pay(token, dto);
+        return new PaymentResultDto(
+                "Payment successful. Your wallet has been charged.",
+                session.getStatus(),
+                session.getAmount()
+        );
     }
 }

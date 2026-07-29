@@ -9,6 +9,9 @@ import ir.HomeServiceApplication.entity.Specialist;
 import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.mapper.SpecialistMapper;
 import jakarta.annotation.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ir.HomeServiceApplication.service.ManagerService;
@@ -93,16 +96,15 @@ public class ManagerController {
 
     //               Service management                  //
     // R دیدن همه سرویس ها
-//    @GetMapping("/services")
-//    public ResponseEntity<List<Service>> getAllServices() {
-//        return ResponseEntity.ok(serviceService.getAllServices());
+    @GetMapping("/services")
+    public ResponseEntity<Page<ServiceResponseDto>> getServices(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-    // / /    }
-//    @GetMapping
-//    public ResponseEntity<List<ServiceResponseDto>> getAllServices() {
-//        return ResponseEntity.ok(CustomerService.getAllServices());
-//    }
+        Pageable pageable = PageRequest.of(page, size);
 
+        return ResponseEntity.ok(serviceService.getAllParentServices(pageable));
+    }
     // C اضافه کردن سرویس
     @PostMapping("/services")
     public ResponseEntity<ServiceResponseDto> createService(@Valid @RequestBody ServiceResponseDto dto) {

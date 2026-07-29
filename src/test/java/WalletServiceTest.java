@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ir.HomeServiceApplication.repository.OrderRepository;
 import ir.HomeServiceApplication.repository.WalletRepository;
+import ir.HomeServiceApplication.repository.WalletTransactionRepository;
 import ir.HomeServiceApplication.service.WalletService;
 
 import java.util.Optional;
@@ -22,6 +23,7 @@ class WalletServiceTest {
 
     @Mock private WalletRepository walletRepository;
     @Mock private OrderRepository orderRepository;
+    @Mock private WalletTransactionRepository walletTransactionRepository;
 
     @InjectMocks
     private WalletService walletService;
