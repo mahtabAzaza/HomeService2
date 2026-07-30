@@ -24,7 +24,12 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
+                    .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/payments/**", "/payment.html", "/css/**", "/js/**").permitAll()
+                    .requestMatchers("/customer/**").hasRole("CUSTOMER")
+                    .requestMatchers("/specialist/**").hasRole("SPECIALIST")
+                    .requestMatchers("/manager/**").hasRole("MANAGER")
+                    .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults());
 
