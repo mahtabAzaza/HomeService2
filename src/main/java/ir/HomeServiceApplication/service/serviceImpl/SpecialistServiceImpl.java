@@ -19,6 +19,7 @@ import ir.HomeServiceApplication.service.SpecialistService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -129,17 +130,38 @@ public class SpecialistServiceImpl implements SpecialistService {
             throw new InvalidOperationException("Profile image must be under 300 KB");
         }
 
-        specialist.setEmail(dto.getEmail());
+        specialist.setFirstName(dto.getFirstName());
+        specialist.setLastName(dto.getLastName());
 
-        specialist.setPassword(passwordEncoder.encode(dto.getPassword()));
+        boolean wasApproved = specialist.getStatus() == SpecialistStatus.APPROVED;
+        boolean emailChanged = !Objects.equals(specialist.getEmail(), dto.getEmail());
+        boolean photoChanged = dto.getProfileImage() != null;
+        boolean passwordChanged = dto.getPassword() != null && !dto.getPassword().isBlank();
 
-        if (dto.getProfileImage() != null) {
+        if (emailChanged) {
+            if (specialistRepository.findByEmail(dto.getEmail()) != null) {
+                throw new DuplicateEmailException("Email already in use");
+            }
+            specialist.setEmail(dto.getEmail());
+            specialist.setEmailVerified(false);
+            verificationService.issueVerificationToken(specialist);
+        }
+
+        if (passwordChanged) {
+            specialist.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
+        if (photoChanged) {
             specialist.setProfileImage(dto.getProfileImage());
             // آپلود یا به‌روزرسانی عکس پروفایل → باید دوباره توسط مدیر تایید شود
             // (فقط اگر ایمیل هم تایید شده باشد، طبق verificationService)
             verificationService.refreshApprovalEligibility(specialist);
         }
-        // اگر عکسی ارسال نشده، وضعیت تغییر نمی‌کند
+
+        // تغییر ایمیل، عکس یا رمز عبور → نیاز به تایید مجدد مدیر (نام و نام‌خانوادگی تاثیری ندارند)
+        if (wasApproved && (emailChanged || photoChanged || passwordChanged)) {
+            specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
+        }
     }
 // دیدن سفارشات
     @Override

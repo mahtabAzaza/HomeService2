@@ -23,7 +23,6 @@ import ir.HomeServiceApplication.service.SpecialistService;
 import ir.HomeServiceApplication.service.VerificationService;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -33,51 +32,40 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     private final SpecialistService specialistService;
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
-    private final EmailService emailService;
     private final VerificationService verificationService;
 
     public AuthServiceImpl(CustomerService customerService,
                            SpecialistService specialistService,
                            UserRepository userRepository,
                            VerificationTokenRepository verificationTokenRepository,
-                           EmailService emailService,
                            VerificationService verificationService) {
         this.customerService = customerService;
         this.specialistService = specialistService;
         this.userRepository = userRepository;
         this.verificationTokenRepository = verificationTokenRepository;
-        this.emailService = emailService;
         this.verificationService = verificationService;
     }
 
     @Override
     public CustomerResponseDto registerCustomer(CustomerSignupDto dto) {
         CustomerResponseDto response = customerService.signup(dto);
-        createAndSendVerificationToken(dto.getEmail());
+        issueVerificationToken(dto.getEmail());
         return response;
     }
 
     @Override
     public SpecialistResponseDto registerSpecialist(SpecialistSignupDto dto) {
         SpecialistResponseDto response = specialistService.signup(dto);
-        createAndSendVerificationToken(dto.getEmail());
+        issueVerificationToken(dto.getEmail());
         return response;
     }
 
-    private void createAndSendVerificationToken(String email) {
+    private void issueVerificationToken(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new NotFoundException("User not found");
         }
-
-        VerificationToken token = new VerificationToken();
-        token.setToken(UUID.randomUUID().toString());
-        token.setUser(user);
-        token.setExpiryDate(LocalDateTime.now().plusHours(24));
-        token.setUsed(false);
-        verificationTokenRepository.save(token);
-
-        emailService.sendVerificationEmail(email, token.getToken());
+        verificationService.issueVerificationToken(user);
     }
 
     @Override

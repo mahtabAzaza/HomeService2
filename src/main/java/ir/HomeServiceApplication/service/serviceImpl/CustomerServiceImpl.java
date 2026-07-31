@@ -10,6 +10,7 @@ import ir.HomeServiceApplication.mapper.CustomerMapper;
 import ir.HomeServiceApplication.repository.*;
 import ir.HomeServiceApplication.service.CustomerService;
 import ir.HomeServiceApplication.service.SpecialistScoreService;
+import ir.HomeServiceApplication.service.VerificationService;
 import ir.HomeServiceApplication.service.WalletService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -32,6 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final PasswordEncoder passwordEncoder;
     private final SpecialistScoreService ratingService;
     private final WalletService walletService;
+    private final VerificationService verificationService;
 
     public CustomerServiceImpl(CustomerRepository customerRepository,
                                ServiceRepository serviceRepository,
@@ -41,7 +44,8 @@ public class CustomerServiceImpl implements CustomerService {
                                ReviewRepository reviewRepository,
                                PasswordEncoder passwordEncoder,
                                SpecialistScoreService ratingService,
-                               WalletService walletService) {
+                               WalletService walletService,
+                               VerificationService verificationService) {
         this.customerRepository = customerRepository;
         this.serviceRepository = serviceRepository;
         this.orderRepository = orderRepository;
@@ -51,6 +55,7 @@ public class CustomerServiceImpl implements CustomerService {
         this.passwordEncoder = passwordEncoder;
         this.ratingService = ratingService;
         this.walletService = walletService;
+        this.verificationService = verificationService;
     }
 
     @Override
@@ -109,7 +114,16 @@ public class CustomerServiceImpl implements CustomerService {
 
         customer.setFirstName(dto.getFirstName());
         customer.setLastName(dto.getLastName());
-        customer.setEmail(dto.getEmail());
+
+        if (!Objects.equals(customer.getEmail(), dto.getEmail())) {
+            if (customerRepository.findByEmail(dto.getEmail()) != null) {
+                throw new DuplicateEmailException("Email already in use");
+            }
+            customer.setEmail(dto.getEmail());
+            customer.setEmailVerified(false);
+            verificationService.issueVerificationToken(customer);
+        }
+
         customer.setPassword(passwordEncoder.encode(dto.getPassword()));
     }
 
