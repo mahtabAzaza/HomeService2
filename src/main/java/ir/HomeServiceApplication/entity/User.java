@@ -34,4 +34,7 @@ public abstract class User extends BaseEntity<Long> {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
 }

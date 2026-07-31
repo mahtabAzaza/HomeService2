@@ -2,12 +2,9 @@ package ir.HomeServiceApplication.controller;
 
 
 import ir.HomeServiceApplication.DTO.*;
-import ir.HomeServiceApplication.entity.OrderStatus;
-import ir.HomeServiceApplication.entity.Role;
+import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.service.CustomerService;
 import jakarta.validation.Valid;
-import ir.HomeServiceApplication.entity.Specialist;
-import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.mapper.SpecialistMapper;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Page;
@@ -142,22 +139,13 @@ public class ManagerController {
 
     // تاریخچه سفارشات
     @GetMapping("/orders/history")
-    public ResponseEntity<Page<OrderHistoryDto>> getOrderHistory(
-            @RequestParam(required = false) OrderStatus status,
-            @RequestParam(required = false) Long serviceId,
-            @RequestParam(required = false) LocalDateTime from,
-            @RequestParam(required = false) LocalDateTime to,
+    public ResponseEntity<Page<Order>> getOrderHistory(
+            OrderHistoryDto search,
             Pageable pageable
     ) {
-
         return ResponseEntity.ok(
-                managerService.getOrderHistory(
-                        status,
-                        serviceId,
-                        from,
-                        to,
-                        pageable
-                )
+                managerService.orderHistory(search, pageable)
         );
+
     }
 }

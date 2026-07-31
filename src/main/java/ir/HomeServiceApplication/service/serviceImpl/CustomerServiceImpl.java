@@ -3,12 +3,10 @@ package ir.HomeServiceApplication.service.serviceImpl;
 import ir.HomeServiceApplication.DTO.CustomerResponseDto;
 import ir.HomeServiceApplication.DTO.CustomerSignupDto;
 
-import ir.HomeServiceApplication.DTO.ServiceResponseDto;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.exception.*;
 import ir.HomeServiceApplication.mapper.CustomerMapper;
 
-import ir.HomeServiceApplication.mapper.ServiceMapper;
 import ir.HomeServiceApplication.repository.*;
 import ir.HomeServiceApplication.service.CustomerService;
 import ir.HomeServiceApplication.service.SpecialistScoreService;
@@ -57,7 +55,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponseDto signup(CustomerSignupDto dto) {
-
         if (customerRepository.findByEmail(dto.getEmail()) != null) {
             throw new DuplicateEmailException("Email already in use");
         }
@@ -75,6 +72,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setProfilePicture(dto.getProfilePicture());
         customer.setRole(Role.CUSTOMER);
         customer.setWallet(wallet);
+
 
         customerRepository.save(customer);
         return CustomerMapper.toDto(customer);
@@ -96,6 +94,10 @@ public class CustomerServiceImpl implements CustomerService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
+        if (!customer.isEmailVerified()) {
+            throw new InvalidOperationException("Please verify your email before logging in");
+        }
+
         return customer;
     }
 
@@ -111,29 +113,9 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setPassword(passwordEncoder.encode(dto.getPassword()));
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//
-//
-//    public List<ir.HomeServiceApplication.entity.Service> getServices() {
-//
-//        return serviceRepository.findAll()
-//                .stream()
-//                .filter(s -> s.getParentService() == null)
-//                .toList();
-//    }
-//    public List<ServiceResponseDto> getAllServices() {
-//        return serviceRepository.findAll()
-//                .stream()
-//                .map(ServiceMapper::toResponseDto)
-//                .toList();
-//    }
-
-
-
     @Override
     public Order placeOrder(String email, Long serviceId, Long priceOffer,
-                           LocalDateTime startDateTime, String address, String description) {
+                            LocalDateTime startDateTime, String address, String description) {
 
         Customer customer = customerRepository.findByEmail(email);
         if (customer == null) throw new NotFoundException("Customer not found");
@@ -204,7 +186,7 @@ public class CustomerServiceImpl implements CustomerService {
         Proposal proposal = proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new NotFoundException("Proposal not found"));
 
-        if (order.getOrderStatus() != OrderStatus.WAITING_FOR_PROPOSAL) {
+        if (order.getOrderStatus() != OrderStatus.WAITING_FOR_SELECTION) {
             throw new InvalidOperationException("no proposal yet");
         }
 

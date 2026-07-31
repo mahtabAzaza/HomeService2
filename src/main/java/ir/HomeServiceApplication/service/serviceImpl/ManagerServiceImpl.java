@@ -5,16 +5,18 @@ import ir.HomeServiceApplication.DTO.UserFilterDto;
 import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.exception.DuplicateServiceException;
+import ir.HomeServiceApplication.exception.InvalidCredentialsException;
+import ir.HomeServiceApplication.repository.ManagerRepository;
 import ir.HomeServiceApplication.repository.OrderRepository;
 import ir.HomeServiceApplication.specification.OrderSpecification;
 import ir.HomeServiceApplication.specification.UserSpecification;
 
-//import org.springframework.stereotype.Service;
 import ir.HomeServiceApplication.exception.InvalidOperationException;
 import ir.HomeServiceApplication.exception.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import ir.HomeServiceApplication.repository.ServiceRepository;
 import ir.HomeServiceApplication.repository.SpecialistRepository;
@@ -23,7 +25,6 @@ import ir.HomeServiceApplication.service.ManagerService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// ?????
 @org.springframework.stereotype.Service
 @Transactional
 public class ManagerServiceImpl implements ManagerService {
@@ -32,14 +33,33 @@ public class ManagerServiceImpl implements ManagerService {
     private final ServiceRepository serviceRepository;
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
+    private final ManagerRepository managerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public ManagerServiceImpl(SpecialistRepository specialistRepository,
                               ServiceRepository serviceRepository,
-                              UserRepository userRepository, OrderRepository orderRepository) {
+                              UserRepository userRepository, OrderRepository orderRepository,
+                              ManagerRepository managerRepository,
+                              PasswordEncoder passwordEncoder) {
         this.specialistRepository = specialistRepository;
         this.serviceRepository = serviceRepository;
         this.userRepository = userRepository;
         this.orderRepository= orderRepository;
+        this.managerRepository = managerRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Manager login(String email, String password) {
+
+        Manager manager = managerRepository.findByEmail(email);
+
+        if (manager == null || !passwordEncoder.matches(password, manager.getPassword())) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        return manager;
     }
 
     // تایید متخصص
@@ -48,6 +68,10 @@ public class ManagerServiceImpl implements ManagerService {
 
         Specialist specialist = specialistRepository.findById(specialistId)
                 .orElseThrow(() -> new NotFoundException("Specialist not found"));
+
+        if (specialist.getStatus() != SpecialistStatus.WAITING_FOR_APPROVAL) {
+            throw new InvalidOperationException("Specialist is not waiting for approval");
+        }
 
         specialist.setStatus(SpecialistStatus.APPROVED);
     }

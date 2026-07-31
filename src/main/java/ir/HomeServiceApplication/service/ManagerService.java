@@ -3,6 +3,7 @@ package ir.HomeServiceApplication.service;
 import ir.HomeServiceApplication.DTO.OrderHistoryDto;
 import ir.HomeServiceApplication.DTO.UserFilterDto;
 import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
+import ir.HomeServiceApplication.entity.Manager;
 import ir.HomeServiceApplication.entity.Order;
 import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.entity.Specialist;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ManagerService {
+
+    Manager login(String email, String password);
 
     // تایید ثبت ‌نام متخصص
     void approveSpecialist(Long specialistId);

@@ -2,19 +2,21 @@ package ir.HomeServiceApplication.controller;
 
 import ir.HomeServiceApplication.DTO.*;
 import ir.HomeServiceApplication.entity.Customer;
+import ir.HomeServiceApplication.entity.Manager;
 import ir.HomeServiceApplication.entity.Specialist;
 import ir.HomeServiceApplication.mapper.CustomerMapper;
+import ir.HomeServiceApplication.mapper.ManagerMapper;
 import ir.HomeServiceApplication.mapper.SpecialistMapper;
+import ir.HomeServiceApplication.service.ManagerService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ir.HomeServiceApplication.service.AuthService;
 import ir.HomeServiceApplication.service.CustomerService;
 import ir.HomeServiceApplication.service.SpecialistService;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -23,15 +25,18 @@ public class AuthController {
     private final AuthService authService;
     private final CustomerService customerService;
     private final SpecialistService specialistService;
+    private final ManagerService managerService;
     private final ir.HomeServiceApplication.security.JwtUtil jwtUtil;
 
     public AuthController(AuthService authService,
                           CustomerService customerService,
                           SpecialistService specialistService,
+                          ManagerService managerService,
                           ir.HomeServiceApplication.security.JwtUtil jwtUtil) {
         this.authService = authService;
         this.customerService = customerService;
         this.specialistService = specialistService;
+        this.managerService = managerService;
         this.jwtUtil = jwtUtil;
     }
     // ثبت نام مشتری
@@ -68,5 +73,20 @@ public class AuthController {
         Specialist specialist = specialistService.login(dto.getEmail(), dto.getPassword());
         String token = jwtUtil.generateToken(specialist.getEmail(), "SPECIALIST");
         return ResponseEntity.ok(new LoginResponseDto(token, "SPECIALIST", SpecialistMapper.toDto(specialist)));
+    }
+
+    @PostMapping("/login/manager")
+    public ResponseEntity<LoginResponseDto> loginManager(
+            @Valid @RequestBody LogInDto dto) {
+
+        Manager manager = managerService.login(dto.getEmail(), dto.getPassword());
+        String token = jwtUtil.generateToken(manager.getEmail(), "MANAGER");
+        return ResponseEntity.ok(new LoginResponseDto(token, "MANAGER", ManagerMapper.toDto(manager)));
+    }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<Map<String, String>> verifyEmail(@RequestParam String token) {
+        authService.verifyEmail(token);
+        return ResponseEntity.ok(Map.of("message", "Email verified successfully"));
     }
 }

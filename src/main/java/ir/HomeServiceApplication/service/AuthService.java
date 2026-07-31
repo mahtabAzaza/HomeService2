@@ -10,4 +10,6 @@ public interface AuthService {
     CustomerResponseDto registerCustomer(CustomerSignupDto dto);
 
     SpecialistResponseDto registerSpecialist(SpecialistSignupDto dto);
+
+    void verifyEmail(String token);
 }

@@ -11,6 +11,7 @@ import ir.HomeServiceApplication.repository.ReviewRepository;
 import ir.HomeServiceApplication.repository.SpecialistRepository;
 import ir.HomeServiceApplication.repository.WalletRepository;
 import ir.HomeServiceApplication.repository.WalletTransactionRepository;
+import ir.HomeServiceApplication.service.VerificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ir.HomeServiceApplication.service.SpecialistService;
@@ -30,19 +31,22 @@ public class SpecialistServiceImpl implements SpecialistService {
     private final WalletTransactionRepository walletTransactionRepository;
     private final ReviewRepository reviewRepository;
     private final PasswordEncoder passwordEncoder;
+    private final VerificationService verificationService;
 
     public SpecialistServiceImpl(SpecialistRepository specialistRepository,
                                  OrderRepository orderRepository,
                                  WalletRepository walletRepository,
                                  WalletTransactionRepository walletTransactionRepository,
                                  ReviewRepository reviewRepository,
-                                 PasswordEncoder passwordEncoder) {
+                                 PasswordEncoder passwordEncoder,
+                                 VerificationService verificationService) {
         this.specialistRepository = specialistRepository;
         this.orderRepository = orderRepository;
         this.walletRepository = walletRepository;
         this.walletTransactionRepository = walletTransactionRepository;
         this.reviewRepository = reviewRepository;
         this.passwordEncoder = passwordEncoder;
+        this.verificationService = verificationService;
     }
 
 
@@ -67,18 +71,18 @@ public class SpecialistServiceImpl implements SpecialistService {
         specialist.setFirstName(dto.getFirstName());
         specialist.setLastName(dto.getLastName());
         specialist.setEmail(dto.getEmail());
+        specialist.setEmailVerified(false);
         specialist.setPassword(passwordEncoder.encode(dto.getPassword()));
         specialist.setProfileImage(dto.getProfileImage());
-        // اگر عکس پروفایل آپلود نشده باشد، وضعیت NEW است تا بعداً عکس آپلود کند
-        // اگر عکس آپلود شده باشد، وضعیت WAITING_FOR_APPROVAL برای تایید مدیر
-        specialist.setStatus(dto.getProfileImage() == null
-                ? SpecialistStatus.NEW
-                : SpecialistStatus.WAITING_FOR_APPROVAL);
+        // وضعیت NEW تا وقتی هم ایمیل تایید و هم عکس آپلود شود (رجوع به verificationService)
+        specialist.setStatus(SpecialistStatus.NEW);
         specialist.setRole(Role.SPECIALIST);
         specialist.setWallet(wallet);
 
-        specialistRepository.save(specialist);
-        return SpecialistMapper.toDto(specialist);
+        verificationService.refreshApprovalEligibility(specialist);
+
+        Specialist saved = specialistRepository.save(specialist);
+        return SpecialistMapper.toDto(saved);
     }
 
     @Override
@@ -132,7 +136,8 @@ public class SpecialistServiceImpl implements SpecialistService {
         if (dto.getProfileImage() != null) {
             specialist.setProfileImage(dto.getProfileImage());
             // آپلود یا به‌روزرسانی عکس پروفایل → باید دوباره توسط مدیر تایید شود
-            specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
+            // (فقط اگر ایمیل هم تایید شده باشد، طبق verificationService)
+            verificationService.refreshApprovalEligibility(specialist);
         }
         // اگر عکسی ارسال نشده، وضعیت تغییر نمی‌کند
     }

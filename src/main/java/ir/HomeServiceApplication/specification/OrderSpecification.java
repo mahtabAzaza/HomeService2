@@ -38,7 +38,7 @@ public class OrderSpecification {
 
             return (root, query, cb) ->
                     cb.between(
-                            root.get("orderRegisterDate"),
+                            root.get("orderSubmitDateTime"),
                             dateFrom,
                             dateTo
                     );
@@ -47,7 +47,7 @@ public class OrderSpecification {
 
             return (root, query, cb) ->
                     cb.greaterThanOrEqualTo(
-                            root.get("orderRegisterDate"),
+                            root.get("orderSubmitDateTime"),
                             dateFrom
                     );
 
@@ -55,7 +55,7 @@ public class OrderSpecification {
 
             return (root, query, cb) ->
                     cb.lessThanOrEqualTo(
-                            root.get("orderRegisterDate"),
+                            root.get("orderSubmitDateTime"),
                             dateTo
                     );
         }
@@ -69,7 +69,7 @@ public class OrderSpecification {
         return minPrice == null ? null :
                 (root, query, cb) ->
                         cb.greaterThanOrEqualTo(
-                                root.get("proposedPrice"),
+                                root.get("priceOffer"),
                                 minPrice
                         );
     }
@@ -91,7 +91,7 @@ public class OrderSpecification {
         return status == null ? null :
                 (root, query, cb) ->
                         cb.equal(
-                                root.get("status"),
+                                root.get("orderStatus"),
                                 status
                         );
     }
