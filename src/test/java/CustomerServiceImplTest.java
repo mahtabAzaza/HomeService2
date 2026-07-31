@@ -5,6 +5,7 @@ import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.exception.*;
 import ir.HomeServiceApplication.repository.*;
 import ir.HomeServiceApplication.service.SpecialistScoreService;
+import ir.HomeServiceApplication.service.VerificationService;
 import ir.HomeServiceApplication.service.WalletService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,7 @@ class CustomerServiceImplTest {
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private SpecialistScoreService ratingService;
     @Mock private WalletService walletService;
+    @Mock private VerificationService verificationService;
 
     @InjectMocks
     private CustomerServiceImpl customerService;
@@ -79,12 +81,13 @@ class CustomerServiceImplTest {
     // LOGIN
     // =====================================================
 
-    // Returns the customer when the email exists and the raw password matches the encoded one
+    // Returns the customer when the email exists, the raw password matches, and the email is verified
     @Test
     void login_shouldReturnCustomer_whenCredentialsAreCorrect() {
         Customer customer = new Customer();
         customer.setEmail("test@mail.com");
         customer.setPassword("encoded");
+        customer.setEmailVerified(true);
 
         when(customerRepository.findByEmail("test@mail.com")).thenReturn(customer);
         when(passwordEncoder.matches("raw", "encoded")).thenReturn(true);
@@ -92,6 +95,21 @@ class CustomerServiceImplTest {
         Customer result = customerService.login("test@mail.com", "raw");
 
         assertEquals("test@mail.com", result.getEmail());
+    }
+
+    // Throws when the credentials are correct but the email has not been verified yet
+    @Test
+    void login_shouldThrowException_whenEmailNotVerified() {
+        Customer customer = new Customer();
+        customer.setEmail("test@mail.com");
+        customer.setPassword("encoded");
+        customer.setEmailVerified(false);
+
+        when(customerRepository.findByEmail("test@mail.com")).thenReturn(customer);
+        when(passwordEncoder.matches("raw", "encoded")).thenReturn(true);
+
+        assertThrows(InvalidOperationException.class,
+                () -> customerService.login("test@mail.com", "raw"));
     }
 
     // Throws when the raw password does not match the stored encoded password
@@ -156,6 +174,8 @@ class CustomerServiceImplTest {
 
         assertEquals("new@mail.com", customer.getEmail());
         assertEquals("encodedNew", customer.getPassword());
+        assertFalse(customer.isEmailVerified());
+        verify(verificationService).issueVerificationToken(customer);
     }
 
     // Throws when the given customer ID does not exist in the repository
@@ -165,6 +185,43 @@ class CustomerServiceImplTest {
 
         assertThrows(NotFoundException.class,
                 () -> customerService.updateProfile(99L, new CustomerSignupDto()));
+    }
+
+    // Throws and does not touch the customer when the new email is already taken by someone else
+    @Test
+    void updateProfile_shouldThrowException_whenNewEmailAlreadyInUse() {
+        Customer customer = new Customer();
+        customer.setEmail("old@mail.com");
+
+        CustomerSignupDto dto = new CustomerSignupDto();
+        dto.setEmail("taken@mail.com");
+        dto.setPassword("newpass1");
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(customerRepository.findByEmail("taken@mail.com")).thenReturn(new Customer());
+
+        assertThrows(DuplicateEmailException.class, () -> customerService.updateProfile(1L, dto));
+        assertEquals("old@mail.com", customer.getEmail());
+    }
+
+    // Does not touch verification state when the email is left unchanged
+    @Test
+    void updateProfile_shouldNotReverify_whenEmailUnchanged() {
+        Customer customer = new Customer();
+        customer.setEmail("same@mail.com");
+        customer.setEmailVerified(true);
+
+        CustomerSignupDto dto = new CustomerSignupDto();
+        dto.setEmail("same@mail.com");
+        dto.setPassword("newpass1");
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(passwordEncoder.encode("newpass1")).thenReturn("encodedNew");
+
+        customerService.updateProfile(1L, dto);
+
+        assertTrue(customer.isEmailVerified());
+        verify(verificationService, never()).issueVerificationToken(any());
     }
 
     // =====================================================

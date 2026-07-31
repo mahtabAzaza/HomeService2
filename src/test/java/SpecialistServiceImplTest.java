@@ -14,6 +14,7 @@ import ir.HomeServiceApplication.repository.ReviewRepository;
 import ir.HomeServiceApplication.repository.SpecialistRepository;
 import ir.HomeServiceApplication.repository.WalletRepository;
 import ir.HomeServiceApplication.repository.WalletTransactionRepository;
+import ir.HomeServiceApplication.service.VerificationService;
 import ir.HomeServiceApplication.service.serviceImpl.SpecialistServiceImpl;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ class SpecialistServiceImplTest {
     @Mock private WalletTransactionRepository walletTransactionRepository;
     @Mock private ReviewRepository reviewRepository;
     @Mock private PasswordEncoder passwordEncoder;
+    @Mock private VerificationService verificationService;
 
     @InjectMocks
     private SpecialistServiceImpl specialistService;
@@ -220,6 +222,69 @@ class SpecialistServiceImplTest {
 
         assertThrows(InvalidOperationException.class,
                 () -> specialistService.updateProfile(1L, dto));
+    }
+
+    // Throws and leaves the specialist untouched when the new email is already taken by someone else
+    @Test
+    void updateProfile_shouldThrowException_whenNewEmailAlreadyInUse() {
+        Specialist specialist = new Specialist();
+        specialist.setEmail("old@mail.com");
+        specialist.setStatus(SpecialistStatus.APPROVED);
+
+        SpecialistSignupDto dto = new SpecialistSignupDto();
+        dto.setEmail("taken@mail.com");
+        dto.setPassword("newpass1");
+
+        when(specialistRepository.findById(1L)).thenReturn(Optional.of(specialist));
+        when(orderRepository.existsBySpecialistIdAndOrderStatusIn(any(), any())).thenReturn(false);
+        when(specialistRepository.findByEmail("taken@mail.com")).thenReturn(new Specialist());
+
+        assertThrows(DuplicateEmailException.class, () -> specialistService.updateProfile(1L, dto));
+        assertEquals("old@mail.com", specialist.getEmail());
+        assertEquals(SpecialistStatus.APPROVED, specialist.getStatus());
+    }
+
+    // A NEW (never-approved) specialist changing email stays NEW - there is no approved status to revoke
+    @Test
+    void updateProfile_shouldNotResetStatus_whenSpecialistWasNotApproved() {
+        Specialist specialist = new Specialist();
+        specialist.setEmail("old@mail.com");
+        specialist.setStatus(SpecialistStatus.NEW);
+
+        SpecialistSignupDto dto = new SpecialistSignupDto();
+        dto.setEmail("new@mail.com");
+        dto.setPassword("newpass1");
+
+        when(specialistRepository.findById(1L)).thenReturn(Optional.of(specialist));
+        when(orderRepository.existsBySpecialistIdAndOrderStatusIn(any(), any())).thenReturn(false);
+        when(passwordEncoder.encode("newpass1")).thenReturn("encodedNew");
+
+        specialistService.updateProfile(1L, dto);
+
+        assertEquals(SpecialistStatus.NEW, specialist.getStatus());
+        verify(verificationService).issueVerificationToken(specialist);
+    }
+
+    // Editing only first/last name does not revoke an already-approved specialist's status
+    @Test
+    void updateProfile_shouldNotResetStatus_whenOnlyNameChanged() {
+        Specialist specialist = new Specialist();
+        specialist.setEmail("same@mail.com");
+        specialist.setStatus(SpecialistStatus.APPROVED);
+
+        SpecialistSignupDto dto = new SpecialistSignupDto();
+        dto.setFirstName("NewFirst");
+        dto.setLastName("NewLast");
+        dto.setEmail("same@mail.com");
+
+        when(specialistRepository.findById(1L)).thenReturn(Optional.of(specialist));
+        when(orderRepository.existsBySpecialistIdAndOrderStatusIn(any(), any())).thenReturn(false);
+
+        specialistService.updateProfile(1L, dto);
+
+        assertEquals("NewFirst", specialist.getFirstName());
+        assertEquals(SpecialistStatus.APPROVED, specialist.getStatus());
+        verify(verificationService, never()).issueVerificationToken(any());
     }
 
     // =====================================================
