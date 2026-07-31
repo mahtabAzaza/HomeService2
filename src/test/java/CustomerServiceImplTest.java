@@ -252,7 +252,7 @@ class CustomerServiceImplTest {
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(orderRepository.findByCustomer(customer)).thenReturn(orders);
 
-        List<Order> result = customerService.getMyOrders(1L);
+        List<Order> result = customerService.getMyOrders(1L, null);
 
         assertEquals(2, result.size());
     }
@@ -262,7 +262,7 @@ class CustomerServiceImplTest {
     void getMyOrders_shouldThrowException_whenCustomerNotFound() {
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> customerService.getMyOrders(1L));
+        assertThrows(NotFoundException.class, () -> customerService.getMyOrders(1L, null));
     }
 
     // =====================================================

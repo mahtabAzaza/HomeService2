@@ -19,4 +19,6 @@ public interface OrderRepository extends
 
     // تاریخچه سفارشاتی که متخصص برای آن‌ها پیشنهاد داده
     List<Order> findByProposalsSpecialistId(Long specialistId);
+
+    List<Order> findByCustomerIdAndOrderStatus(Long customerId, OrderStatus status);
 }

@@ -23,15 +23,17 @@ public class AuthController {
     private final AuthService authService;
     private final CustomerService customerService;
     private final SpecialistService specialistService;
+    private final ir.HomeServiceApplication.security.JwtUtil jwtUtil;
 
     public AuthController(AuthService authService,
                           CustomerService customerService,
-                          SpecialistService specialistService) {
+                          SpecialistService specialistService,
+                          ir.HomeServiceApplication.security.JwtUtil jwtUtil) {
         this.authService = authService;
         this.customerService = customerService;
         this.specialistService = specialistService;
+        this.jwtUtil = jwtUtil;
     }
-
     // ثبت نام مشتری
     @PostMapping("/register/customer")
     public ResponseEntity<CustomerResponseDto> registerCustomer(
@@ -50,21 +52,21 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // ورود مشتری
     @PostMapping("/login/customer")
-    public ResponseEntity<CustomerResponseDto> loginCustomer(
+    public ResponseEntity<LoginResponseDto> loginCustomer(
             @Valid @RequestBody LogInDto dto) {
 
         Customer customer = customerService.login(dto.getEmail(), dto.getPassword());
-        return ResponseEntity.ok(CustomerMapper.toDto(customer));
+        String token = jwtUtil.generateToken(customer.getEmail(), "CUSTOMER");
+        return ResponseEntity.ok(new LoginResponseDto(token, "CUSTOMER", CustomerMapper.toDto(customer)));
     }
 
-    // ورود متخصص
     @PostMapping("/login/specialist")
-    public ResponseEntity<SpecialistResponseDto> loginSpecialist(
+    public ResponseEntity<LoginResponseDto> loginSpecialist(
             @Valid @RequestBody LogInDto dto) {
 
         Specialist specialist = specialistService.login(dto.getEmail(), dto.getPassword());
-        return ResponseEntity.ok(SpecialistMapper.toDto(specialist));
+        String token = jwtUtil.generateToken(specialist.getEmail(), "SPECIALIST");
+        return ResponseEntity.ok(new LoginResponseDto(token, "SPECIALIST", SpecialistMapper.toDto(specialist)));
     }
 }

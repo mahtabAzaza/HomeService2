@@ -41,7 +41,7 @@ public class UserSpecification {
         return (root, query, cb) -> {
             if (min == null) return null;
             var specialist = cb.treat(root, Specialist.class);
-            return cb.greaterThanOrEqualTo(specialist.get("Score"), min);
+            return cb.greaterThanOrEqualTo(specialist.get("score"), min);
         };
     }
 
@@ -49,7 +49,7 @@ public class UserSpecification {
         return (root, query, cb) -> {
             if (max == null) return null;
             var specialist = cb.treat(root, Specialist.class);
-            return cb.lessThanOrEqualTo(specialist.get("Score"), max);
+            return cb.lessThanOrEqualTo(specialist.get("score"), max);
         };
     }
 }

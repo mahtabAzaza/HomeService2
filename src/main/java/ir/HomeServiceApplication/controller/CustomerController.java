@@ -58,9 +58,10 @@ public ResponseEntity<OrderDto> placeOrder(@Valid @RequestBody PlaceOrderRequest
 }
 
     @GetMapping("/orders")
-    public ResponseEntity<List<OrderDto>> getMyOrders() {
+    public ResponseEntity<List<OrderDto>> getMyOrders(
+            @RequestParam(required = false) OrderStatus status) {
         Customer current = customerService.findByEmail(UserContext.getCurrentEmail());
-        List<Order> orders = customerService.getMyOrders(current.getId());
+        List<Order> orders = customerService.getMyOrders(current.getId(), status);
         List<OrderDto> dtos = orders.stream().map(OrderMapper::toDto).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }

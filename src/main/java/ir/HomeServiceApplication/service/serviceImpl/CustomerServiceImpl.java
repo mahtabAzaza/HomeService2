@@ -160,10 +160,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Order> getMyOrders(Long customerId) {
+    public List<Order> getMyOrders(Long customerId, OrderStatus status) {
 
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
+
+        if (status != null) {
+            return orderRepository.findByCustomerIdAndOrderStatus(customerId, status);
+        }
 
         return orderRepository.findByCustomer(customer);
     }

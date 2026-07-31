@@ -23,7 +23,7 @@ public interface CustomerService {
                     LocalDateTime startDateTime, String address, String description);
 
 
-    List<Order> getMyOrders(Long customerId);
+    List<Order> getMyOrders(Long customerId, OrderStatus status);
 
     List<Proposal> getProposalsForOrder(Long orderId, ProposalSortByType sortBy);
 
