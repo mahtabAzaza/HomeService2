@@ -137,9 +137,9 @@ public class ManagerController {
     }
 
 
-    // تاریخچه سفارشات
+    // تاریخچه سفارشات — خلاصه (لیست/صفحه‌بندی)
     @GetMapping("/orders/history")
-    public ResponseEntity<Page<Order>> getOrderHistory(
+    public ResponseEntity<Page<OrderHistorySummaryDto>> getOrderHistory(
             OrderHistoryDto search,
             Pageable pageable
     ) {
@@ -147,5 +147,11 @@ public class ManagerController {
                 managerService.orderHistory(search, pageable)
         );
 
+    }
+
+    // تاریخچه سفارشات — جزئیات کامل یک سفارش خاص (فقط با کلیک/درخواست جداگانه)
+    @GetMapping("/orders/history/{orderId}")
+    public ResponseEntity<OrderHistoryDetailDto> getOrderHistoryDetail(@PathVariable Long orderId) {
+        return ResponseEntity.ok(managerService.getOrderHistoryDetail(orderId));
     }
 }

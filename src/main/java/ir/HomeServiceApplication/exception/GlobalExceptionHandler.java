@@ -29,6 +29,13 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(DuplicateServiceException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateService(DuplicateServiceException ex) {
+        return new ResponseEntity<>(
+                new ErrorResponseDto(HttpStatus.CONFLICT.value(), ex.getMessage()),
+                HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ErrorResponseDto> handleInvalidCredentials(InvalidCredentialsException ex) {
         return new ResponseEntity<>(

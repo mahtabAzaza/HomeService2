@@ -141,7 +141,7 @@ class WalletServiceTest {
     // PAY FOR ORDER
     // =====================================================
 
-    // Deducts the order price from the customer's wallet, credits the specialist, and marks the order PAID
+    // Deducts the full order price from the customer, credits 70% to the specialist, and marks the order PAID
     @Test
     void payForOrder_shouldTransferFundsAndMarkPaid() {
         Wallet customerWallet = new Wallet();
@@ -166,7 +166,7 @@ class WalletServiceTest {
         walletService.payForOrder(1L);
 
         assertEquals(600L, customerWallet.getBalance());
-        assertEquals(400L, specialistWallet.getBalance());
+        assertEquals(280L, specialistWallet.getBalance()); // 400 * 70% = 280
         assertEquals(OrderStatus.PAID, order.getOrderStatus());
     }
 

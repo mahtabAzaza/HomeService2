@@ -25,6 +25,12 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Override
     public void refreshApprovalEligibility(Specialist specialist) {
+        // فقط متخصص‌های تازه‌ثبت‌نام (NEW) با این متد وارد صف تایید می‌شوند.
+        // متخصص APPROVED یا DEACTIVATED نباید صرفاً با آپلود دوباره عکس یا تایید مجدد ایمیل
+        // به‌طور ضمنی تغییر وضعیت بدهد — APPROVED با updateProfile و DEACTIVATED با تصمیم مدیر مدیریت می‌شود.
+        if (specialist.getStatus() != SpecialistStatus.NEW) {
+            return;
+        }
         if (specialist.isEmailVerified() && specialist.getProfileImage() != null) {
             specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
         }

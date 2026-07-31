@@ -387,7 +387,7 @@ class CustomerServiceImplTest {
     void selectProposal_shouldSetSpecialistAndChangeStatus() {
         Specialist specialist = new Specialist();
         Order order = new Order();
-        order.setOrderStatus(OrderStatus.WAITING_FOR_PROPOSAL);
+        order.setOrderStatus(OrderStatus.WAITING_FOR_SELECTION);
 
         Proposal proposal = new Proposal();
         proposal.setSpecialist(specialist);
@@ -491,20 +491,17 @@ class CustomerServiceImplTest {
     // PAY ORDER
     // =====================================================
 
-    // Deducts the full price from the customer's wallet, credits 70% to the specialist, and marks the order PAID
+    // Delegates the actual fund transfer to WalletService once the order is DONE and balance suffices
+    // (the wallet math itself is covered by WalletServiceTest.payForOrder_shouldTransferFundsAndMarkPaid)
     @Test
-    void payOrder_shouldTransferFundsAndMarkPaid() {
+    void payOrder_shouldDelegateToWalletService() {
         Wallet customerWallet = new Wallet();
         customerWallet.setBalance(1000L);
-
-        Wallet specialistWallet = new Wallet();
-        specialistWallet.setBalance(0L);
 
         Customer customer = new Customer();
         customer.setWallet(customerWallet);
 
         Specialist specialist = new Specialist();
-        specialist.setWallet(specialistWallet);
 
         Order order = new Order();
         order.setOrderStatus(OrderStatus.DONE);
@@ -516,9 +513,7 @@ class CustomerServiceImplTest {
 
         customerService.payOrder(1L);
 
-        assertEquals(700L, customerWallet.getBalance());
-        assertEquals(210L, specialistWallet.getBalance()); // 300 * 70% = 210
-        assertEquals(OrderStatus.PAID, order.getOrderStatus());
+        verify(walletService).payForOrder(1L);
     }
 
     // Throws when the customer's wallet balance is less than the order's final price
@@ -625,10 +620,12 @@ class CustomerServiceImplTest {
     // CHARGE WALLET
     // =====================================================
 
-    // Adds the given amount to the customer's wallet balance
+    // Delegates to WalletService with the customer's wallet ID and the given amount
+    // (the balance math itself is covered by WalletServiceTest.chargeWallet_shouldIncreaseBalance)
     @Test
-    void chargeWallet_shouldIncreaseBalance() {
+    void chargeWallet_shouldDelegateToWalletService() {
         Wallet wallet = new Wallet();
+        wallet.setId(7L);
         wallet.setBalance(100L);
 
         Customer customer = new Customer();
@@ -638,7 +635,7 @@ class CustomerServiceImplTest {
 
         customerService.chargeWallet(1L, 50L);
 
-        assertEquals(150L, wallet.getBalance());
+        verify(walletService).chargeWallet(7L, 50L);
     }
 
     // Throws when the given customer ID does not exist in the repository

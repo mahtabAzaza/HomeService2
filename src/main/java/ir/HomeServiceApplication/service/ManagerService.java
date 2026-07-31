@@ -1,10 +1,11 @@
 package ir.HomeServiceApplication.service;
 
+import ir.HomeServiceApplication.DTO.OrderHistoryDetailDto;
 import ir.HomeServiceApplication.DTO.OrderHistoryDto;
+import ir.HomeServiceApplication.DTO.OrderHistorySummaryDto;
 import ir.HomeServiceApplication.DTO.UserFilterDto;
 import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
 import ir.HomeServiceApplication.entity.Manager;
-import ir.HomeServiceApplication.entity.Order;
 import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.entity.Specialist;
 import org.springframework.data.domain.Page;
@@ -46,6 +47,9 @@ public interface ManagerService {
     // جستجو و فیلتر کاربران
     List<UserSearchResponseDto> searchUsers(UserFilterDto filter);
 
-    Page<Order> orderHistory(OrderHistoryDto search, Pageable pageable);
+    // خلاصه تاریخچه سفارشات — جزئیات کامل فقط با getOrderHistoryDetail روی یک سفارش خاص
+    Page<OrderHistorySummaryDto> orderHistory(OrderHistoryDto search, Pageable pageable);
+
+    OrderHistoryDetailDto getOrderHistoryDetail(Long orderId);
 
 }

@@ -1,11 +1,14 @@
 package ir.HomeServiceApplication.service.serviceImpl;
 
+import ir.HomeServiceApplication.DTO.OrderHistoryDetailDto;
 import ir.HomeServiceApplication.DTO.OrderHistoryDto;
+import ir.HomeServiceApplication.DTO.OrderHistorySummaryDto;
 import ir.HomeServiceApplication.DTO.UserFilterDto;
 import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.exception.DuplicateServiceException;
 import ir.HomeServiceApplication.exception.InvalidCredentialsException;
+import ir.HomeServiceApplication.mapper.OrderMapper;
 import ir.HomeServiceApplication.repository.ManagerRepository;
 import ir.HomeServiceApplication.repository.OrderRepository;
 import ir.HomeServiceApplication.specification.OrderSpecification;
@@ -209,8 +212,18 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public Page<Order> orderHistory(OrderHistoryDto search, Pageable pageable) {
-        return orderRepository.findAll(OrderSpecification.fromFilter(search ), pageable);
+    @Transactional(readOnly = true)
+    public Page<OrderHistorySummaryDto> orderHistory(OrderHistoryDto search, Pageable pageable) {
+        return orderRepository.findAll(OrderSpecification.fromFilter(search), pageable)
+                .map(OrderMapper::toHistorySummaryDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderHistoryDetailDto getOrderHistoryDetail(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+        return OrderMapper.toHistoryDetailDto(order);
     }
 
 

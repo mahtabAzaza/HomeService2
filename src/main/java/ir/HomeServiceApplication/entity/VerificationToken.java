@@ -23,6 +23,9 @@ public class VerificationToken {
 
     private boolean used;
 
-    @OneToOne
+    // ManyToOne عمداً: یک کاربر می‌تواند طی زمان چند توکن داشته باشد
+    // (مثلاً چند بار تغییر ایمیل قبل از تایید، یا ارسال دوباره ایمیل تایید در آینده)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }

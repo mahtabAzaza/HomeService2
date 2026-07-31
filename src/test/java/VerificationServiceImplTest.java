@@ -67,6 +67,32 @@ class VerificationServiceImplTest {
         assertEquals(SpecialistStatus.NEW, specialist.getStatus());
     }
 
+    // A DEACTIVATED specialist re-uploading a photo must stay DEACTIVATED, not silently re-enter the approval queue
+    @Test
+    void refreshApprovalEligibility_shouldNotPromote_whenDeactivated() {
+        Specialist specialist = new Specialist();
+        specialist.setEmailVerified(true);
+        specialist.setProfileImage(new byte[]{1, 2, 3});
+        specialist.setStatus(SpecialistStatus.DEACTIVATED);
+
+        verificationService.refreshApprovalEligibility(specialist);
+
+        assertEquals(SpecialistStatus.DEACTIVATED, specialist.getStatus());
+    }
+
+    // An already-APPROVED specialist is not re-promoted through this eligibility check
+    @Test
+    void refreshApprovalEligibility_shouldNotChange_whenAlreadyApproved() {
+        Specialist specialist = new Specialist();
+        specialist.setEmailVerified(true);
+        specialist.setProfileImage(new byte[]{1, 2, 3});
+        specialist.setStatus(SpecialistStatus.APPROVED);
+
+        verificationService.refreshApprovalEligibility(specialist);
+
+        assertEquals(SpecialistStatus.APPROVED, specialist.getStatus());
+    }
+
     // =====================================================
     // ISSUE VERIFICATION TOKEN
     // =====================================================

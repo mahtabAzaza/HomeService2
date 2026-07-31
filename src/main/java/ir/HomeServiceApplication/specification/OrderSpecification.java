@@ -2,9 +2,7 @@ package ir.HomeServiceApplication.specification;
 
 import ir.HomeServiceApplication.DTO.OrderHistoryDto;
 import ir.HomeServiceApplication.entity.Order;
-import ir.HomeServiceApplication.entity.Proposal;
 import ir.HomeServiceApplication.entity.OrderStatus;
-import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -99,19 +97,14 @@ public class OrderSpecification {
 
     private static Specification<Order> specialistIdEquals(Long specialistId) {
 
+        // فیلتر بر اساس متخصصی که واقعاً سفارش را انجام داده (order.specialist)
+        // نه هر کسی که صرفاً برای این سفارش پیشنهاد داده (proposals)
         return specialistId == null ? null :
-                (root, query, cb) -> {
-
-                    Join<Order, Proposal> join =
-                            root.join("proposals");
-
-                    query.distinct(true);
-
-                    return cb.equal(
-                            join.get("specialist").get("id"),
-                            specialistId
-                    );
-                };
+                (root, query, cb) ->
+                        cb.equal(
+                                root.get("specialist").get("id"),
+                                specialistId
+                        );
     }
 
 
