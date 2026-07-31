@@ -1,16 +1,19 @@
 package ir.HomeServiceApplication.service.serviceImpl;
 
+import ir.HomeServiceApplication.DTO.OrderHistoryDto;
 import ir.HomeServiceApplication.DTO.UserFilterDto;
 import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
-import ir.HomeServiceApplication.entity.Service;
-import ir.HomeServiceApplication.entity.Specialist;
-import ir.HomeServiceApplication.entity.SpecialistStatus;
-import ir.HomeServiceApplication.entity.User;
+import ir.HomeServiceApplication.entity.*;
+import ir.HomeServiceApplication.exception.DuplicateServiceException;
+import ir.HomeServiceApplication.repository.OrderRepository;
+import ir.HomeServiceApplication.specification.OrderSpecification;
 import ir.HomeServiceApplication.specification.UserSpecification;
 
 //import org.springframework.stereotype.Service;
 import ir.HomeServiceApplication.exception.InvalidOperationException;
 import ir.HomeServiceApplication.exception.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import ir.HomeServiceApplication.repository.ServiceRepository;
@@ -28,13 +31,15 @@ public class ManagerServiceImpl implements ManagerService {
     private final SpecialistRepository specialistRepository;
     private final ServiceRepository serviceRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
     public ManagerServiceImpl(SpecialistRepository specialistRepository,
                               ServiceRepository serviceRepository,
-                              UserRepository userRepository) {
+                              UserRepository userRepository, OrderRepository orderRepository) {
         this.specialistRepository = specialistRepository;
         this.serviceRepository = serviceRepository;
         this.userRepository = userRepository;
+        this.orderRepository= orderRepository;
     }
 
     // تایید متخصص
@@ -58,20 +63,13 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     // ایجاد سرویس
-//    @Override
-//    public void createService(String name, String description, Long basePrice) {
-//
-//        Service service = new Service();
-//        service.setServiceName(name);
-//        service.setServiceDescription(description);
-//        service.setServiceBasePrice(basePrice);
-//        service.setParentService(null);
-//
-//        serviceRepository.save(service);
-//    }
 
     @Override
     public Service createService(String name, String description, Long basePrice) {
+
+        if (serviceRepository.existsByServiceNameIgnoreCaseAndParentServiceIsNull(name)) {
+            throw new DuplicateServiceException("Root service already exists.");
+        }
 
         Service service = new Service();
         service.setServiceName(name);
@@ -186,6 +184,13 @@ public class ManagerServiceImpl implements ManagerService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Page<Order> orderHistory(OrderHistoryDto search, Pageable pageable) {
+        return orderRepository.findAll(OrderSpecification.fromFilter(search ), pageable);
+    }
+
+
+    // -------to mapper
     private UserSearchResponseDto toSearchResponseDto(User user) {
         UserSearchResponseDto dto = new UserSearchResponseDto();
         dto.setId(user.getId());
@@ -205,4 +210,6 @@ public class ManagerServiceImpl implements ManagerService {
         }
         return dto;
     }
+
+
 }

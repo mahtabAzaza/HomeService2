@@ -2,6 +2,7 @@ package ir.HomeServiceApplication.controller;
 
 
 import ir.HomeServiceApplication.DTO.*;
+import ir.HomeServiceApplication.entity.OrderStatus;
 import ir.HomeServiceApplication.entity.Role;
 import ir.HomeServiceApplication.service.CustomerService;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import ir.HomeServiceApplication.service.ManagerService;
 import ir.HomeServiceApplication.service.ServiceService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -135,5 +137,27 @@ public class ManagerController {
     public ResponseEntity<Void> deleteService(@PathVariable Long id) {
         managerService.removeSubService(id);
         return ResponseEntity.ok().build();
+    }
+
+
+    // تاریخچه سفارشات
+    @GetMapping("/orders/history")
+    public ResponseEntity<Page<OrderHistoryDto>> getOrderHistory(
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(required = false) Long serviceId,
+            @RequestParam(required = false) LocalDateTime from,
+            @RequestParam(required = false) LocalDateTime to,
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                managerService.getOrderHistory(
+                        status,
+                        serviceId,
+                        from,
+                        to,
+                        pageable
+                )
+        );
     }
 }

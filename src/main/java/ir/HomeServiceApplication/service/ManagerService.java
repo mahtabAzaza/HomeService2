@@ -1,9 +1,14 @@
 package ir.HomeServiceApplication.service;
 
+import ir.HomeServiceApplication.DTO.OrderHistoryDto;
 import ir.HomeServiceApplication.DTO.UserFilterDto;
 import ir.HomeServiceApplication.DTO.UserSearchResponseDto;
+import ir.HomeServiceApplication.entity.Order;
 import ir.HomeServiceApplication.entity.Service;
 import ir.HomeServiceApplication.entity.Specialist;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface ManagerService {
@@ -15,8 +20,8 @@ public interface ManagerService {
     void deleteSpecialist(Long specialistId);
 
     // ایجاد خدمت اصلی (بدون والد)
-//    void createService(String name, String description, Long basePrice);
     Service createService(String name, String description, Long basePrice);
+
     // افزودن زیرخدمت (با والد)
     void addSubService(Long parentId, String name, String description, Long basePrice);
 
@@ -37,4 +42,7 @@ public interface ManagerService {
 
     // جستجو و فیلتر کاربران
     List<UserSearchResponseDto> searchUsers(UserFilterDto filter);
+
+    Page<Order> orderHistory(OrderHistoryDto search, Pageable pageable);
+
 }

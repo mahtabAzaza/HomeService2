@@ -9,11 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ServiceRepository extends
-        JpaRepository<Service, Long>
-//        ,        JpaSpecificationExecutor<Manager>
-{
+        JpaRepository<Service, Long> {
 
     @EntityGraph(attributePaths = "childServices")
     Page<Service> findByParentServiceIsNull(Pageable pageable);
+
     boolean existsByParentServiceAndServiceName(Service parentService, String serviceName);
+    boolean existsByServiceNameIgnoreCaseAndParentServiceIsNull(String serviceName);
 }
