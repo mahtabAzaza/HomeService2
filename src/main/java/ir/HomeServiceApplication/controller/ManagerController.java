@@ -10,6 +10,7 @@ import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ir.HomeServiceApplication.service.ManagerService;
@@ -48,23 +49,23 @@ public class ManagerController {
     }
 
     @DeleteMapping("/specialists/{id}")
-    public ResponseEntity<Void> deleteSpecialist(@PathVariable Long id) {
+    public ResponseEntity<String> deleteSpecialist(@PathVariable Long id) {
         managerService.deleteSpecialist(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Specialist deleted successfully");
     }
 
     @PostMapping("/services/{serviceId}/specialists/{specialistId}")
-    public ResponseEntity<Void> addSpecialistToService(@PathVariable Long serviceId,
+    public ResponseEntity<String> addSpecialistToService(@PathVariable Long serviceId,
                                                        @PathVariable Long specialistId) {
         managerService.addSpecialistToService(specialistId, serviceId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Specialist added to service successfully");
     }
 
     @DeleteMapping("/services/{serviceId}/specialists/{specialistId}")
-    public ResponseEntity<Void> removeSpecialistFromService(@PathVariable Long serviceId,
+    public ResponseEntity<String> removeSpecialistFromService(@PathVariable Long serviceId,
                                                             @PathVariable Long specialistId) {
         managerService.removeSpecialistFromService(specialistId, serviceId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Specialist removed from service successfully");
     }
 
     @GetMapping("/users/search")
@@ -88,8 +89,8 @@ public class ManagerController {
     }
 
     @GetMapping("/test")
-    public String test() {
-        return "OK";
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("OK");
     }
 
 
@@ -106,34 +107,33 @@ public class ManagerController {
     }
     // C اضافه کردن سرویس
     @PostMapping("/services")
-    public ResponseEntity<ServiceResponseDto> createService(@Valid @RequestBody ServiceResponseDto dto) {
+    public ResponseEntity<String> createService(@Valid @RequestBody ServiceResponseDto dto) {
         managerService.createService(dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("Service created successfully");
     }
 
     // C اضافه کردن زیر سرویس
     @PostMapping("/services/{parentId}/subservices")
-    public ResponseEntity<Void> addSubService(@PathVariable Long parentId,
+    public ResponseEntity<String> addSubService(@PathVariable Long parentId,
                                               @Valid @RequestBody ServiceResponseDto dto) {
         managerService.addSubService(parentId, dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("Sub-service added successfully");
     }
 
     // U ویرایش سرویس
     @PutMapping("/services/{id}")
-    public ResponseEntity<List<ServiceResponseDto>> updateService(@PathVariable Long id,
+    public ResponseEntity<String> updateService(@PathVariable Long id,
                                                                   @Valid @RequestBody ServiceResponseDto dto) {
         managerService.updateService(id, dto.getServiceName(), dto.getServiceDescription(), dto.getServiceBasePrice());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Service updated successfully");
     }
 
 
     // D حذف سرویس
     @DeleteMapping("/services/{id}")
-    public ResponseEntity<Void> deleteService(@PathVariable Long id) {
+    public ResponseEntity<String> deleteService(@PathVariable Long id) {
         managerService.removeSubService(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Service deleted successfully");
     }
 
 

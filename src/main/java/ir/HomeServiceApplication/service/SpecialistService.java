@@ -31,5 +31,5 @@ public interface SpecialistService {
     List<WalletTransactionDto> getWalletTransactions(Long specialistId);
 
     void withdraw(Long specialistId, Long amount);
-    void score(Long specialistId);
+
 }

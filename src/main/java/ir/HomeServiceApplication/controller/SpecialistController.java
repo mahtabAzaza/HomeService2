@@ -51,7 +51,7 @@ public class SpecialistController {
 
     // ثبت پیشنهاد
     @PostMapping("/proposals")
-    public ResponseEntity<Void> submitProposal(@Valid @RequestBody ProposalDto dto) {
+    public ResponseEntity<String> submitProposal(@Valid @RequestBody ProposalDto dto) {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
         proposalService.submitProposal(
                 current.getId(),
@@ -60,7 +60,7 @@ public class SpecialistController {
                 dto.getStartDate(),
                 dto.getDuration()
         );
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Proposal submitted successfully");
     }
 
 
@@ -94,17 +94,17 @@ public class SpecialistController {
 
     // برداشت
     @PostMapping("/wallet/withdraw")
-    public ResponseEntity<Void> withdraw(@RequestParam Long amount) {
+    public ResponseEntity<String> withdraw(@RequestParam Long amount) {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
         specialistService.withdraw(current.getId(), amount);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Withdrawal successful");
     }
 
     // ویرایش اطلاعات
     @PutMapping("/profile")
-    public ResponseEntity<Void> updateProfile(@Valid @RequestBody SpecialistSignupDto dto) {
+    public ResponseEntity<String> updateProfile(@Valid @RequestBody SpecialistSignupDto dto) {
         Specialist current = specialistService.findByEmail(UserContext.getCurrentEmail());
         specialistService.updateProfile(current.getId(), dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Profile updated successfully");
     }
 }

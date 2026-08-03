@@ -11,6 +11,7 @@ public class SpecialistMapper {
         dto.setFirstName(specialist.getFirstName());
         dto.setLastName(specialist.getLastName());
         dto.setEmail(specialist.getEmail());
+        dto.setProfileImage(specialist.getProfileImage());
         dto.setStatus(specialist.getStatus().name());
         return dto;
     }

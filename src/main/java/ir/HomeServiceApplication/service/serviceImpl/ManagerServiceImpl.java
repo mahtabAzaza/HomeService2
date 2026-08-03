@@ -184,7 +184,6 @@ public class ManagerServiceImpl implements ManagerService {
 
         specialist.getServices().remove(service);
         specialistRepository.save(specialist);
-        // save??
     }
 
     // مشاهده متخصصان R

@@ -124,7 +124,9 @@ public class CustomerServiceImpl implements CustomerService {
             verificationService.issueVerificationToken(customer);
         }
 
-        customer.setPassword(passwordEncoder.encode(dto.getPassword()));
+        if (!passwordEncoder.matches(dto.getPassword(), customer.getPassword())) {
+            customer.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
     }
 
     @Override
@@ -201,7 +203,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new NotFoundException("Proposal not found"));
 
         if (order.getOrderStatus() != OrderStatus.WAITING_FOR_SELECTION) {
-            throw new InvalidOperationException("no proposal yet");
+            throw new InvalidOperationException("Order is not awaiting proposal selection");
         }
 
         order.setSpecialist(proposal.getSpecialist());

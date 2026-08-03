@@ -104,9 +104,6 @@ public class SpecialistServiceImpl implements SpecialistService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
-        if (specialist.getStatus() != SpecialistStatus.APPROVED) {
-            throw new NotApprovedException("Your account is not approved yet");
-        }
 
         return specialist;
     }
@@ -153,9 +150,7 @@ public class SpecialistServiceImpl implements SpecialistService {
 
         if (photoChanged) {
             specialist.setProfileImage(dto.getProfileImage());
-            // آپلود یا به‌روزرسانی عکس پروفایل → باید دوباره توسط مدیر تایید شود
-            // (فقط اگر ایمیل هم تایید شده باشد، طبق verificationService)
-            verificationService.refreshApprovalEligibility(specialist);
+            specialist.setStatus(SpecialistStatus.WAITING_FOR_APPROVAL);
         }
 
         // تغییر ایمیل، عکس یا رمز عبور → نیاز به تایید مجدد مدیر (نام و نام‌خانوادگی تاثیری ندارند)
@@ -273,11 +268,5 @@ public class SpecialistServiceImpl implements SpecialistService {
                     return dto;
                 })
                 .collect(Collectors.toList());
-    }
-
-    // امتیاز متخصص
-    public void score(Long specialistId) {
-
-
     }
 }

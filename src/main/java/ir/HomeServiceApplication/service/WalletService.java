@@ -80,7 +80,11 @@ public class WalletService {
         Long price = order.getFinalPrice();
 
         if (customerWallet.getBalance() < price) {
-            throw new InsufficientBalanceException("Not enough balance in wallet");
+            throw new InsufficientBalanceException(
+                    customerWallet.getBalance(),
+                    price,
+                    "/payment.html?orderId=" + orderId
+            );
         }
 
         customerWallet.setBalance(customerWallet.getBalance() - price);

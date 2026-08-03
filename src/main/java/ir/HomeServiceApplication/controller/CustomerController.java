@@ -76,21 +76,21 @@ public ResponseEntity<OrderDto> placeOrder(@Valid @RequestBody PlaceOrderRequest
     }
 
     @PostMapping("/orders/{orderId}/select/{proposalId}")
-    public ResponseEntity<Void> selectProposal(@PathVariable Long orderId,
+    public ResponseEntity<String> selectProposal(@PathVariable Long orderId,
                                                @PathVariable Long proposalId) {
         customerService.selectProposal(orderId, proposalId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Proposal selected successfully");
     }
     @PutMapping("/orders/{orderId}/start")
-    public ResponseEntity<Void> markStarted(@PathVariable Long orderId) {
+    public ResponseEntity<String> markStarted(@PathVariable Long orderId) {
         customerService.markOrderStarted(orderId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Order marked as started");
     }
 
     @PutMapping("/orders/{orderId}/done")
-    public ResponseEntity<Void> markDone(@PathVariable Long orderId) {
+    public ResponseEntity<String> markDone(@PathVariable Long orderId) {
         customerService.markOrderDone(orderId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Order marked as done");
     }
 
 
@@ -102,12 +102,12 @@ public ResponseEntity<OrderDto> placeOrder(@Valid @RequestBody PlaceOrderRequest
     }
 
     @PostMapping("/orders/{orderId}/review")
-    public ResponseEntity<Void> submitReview(@PathVariable Long orderId,
+    public ResponseEntity<String> submitReview(@PathVariable Long orderId,
                                              @RequestParam int score,
                                              @RequestParam(required = false) String statement) {
         Customer current = customerService.findByEmail(UserContext.getCurrentEmail());
         customerService.submitReview(current.getId(), orderId, score, statement);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Review submitted successfully");
     }
 
     @GetMapping("/wallet")
@@ -117,9 +117,9 @@ public ResponseEntity<OrderDto> placeOrder(@Valid @RequestBody PlaceOrderRequest
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<Void> updateProfile(@Valid @RequestBody CustomerSignupDto dto) {
+    public ResponseEntity<String> updateProfile(@Valid @RequestBody CustomerSignupDto dto) {
         Customer current = customerService.findByEmail(UserContext.getCurrentEmail());
         customerService.updateProfile(current.getId(), dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Profile updated successfully");
     }
 }

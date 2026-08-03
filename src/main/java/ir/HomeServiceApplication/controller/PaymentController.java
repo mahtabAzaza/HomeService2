@@ -33,18 +33,18 @@ public class PaymentController {
     }
 
     @GetMapping("/{token}")
-    public PaymentSessionResponseDto get(@PathVariable String token) {
-        return paymentMapper.toResponse(paymentService.findByToken(token));
+    public ResponseEntity<PaymentSessionResponseDto> get(@PathVariable String token) {
+        return ResponseEntity.ok(paymentMapper.toResponse(paymentService.findByToken(token)));
     }
 
     @PostMapping("/{token}")
-    public PaymentResultDto pay(@PathVariable String token,
+    public ResponseEntity<PaymentResultDto> pay(@PathVariable String token,
                                 @Valid @RequestBody PaymentRequestDto dto) {
         PaymentSession session = paymentService.pay(token, dto);
-        return new PaymentResultDto(
+        return ResponseEntity.ok(new PaymentResultDto(
                 "Payment successful. Your wallet has been charged.",
                 session.getStatus(),
                 session.getAmount()
-        );
+        ));
     }
 }
