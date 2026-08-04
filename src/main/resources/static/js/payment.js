@@ -31,7 +31,7 @@ function loadSession() {
         return;
     }
 
-    fetch("/payments/" + token)
+    fetch("/customer/payments/" + token)
         .then(res => {
             if (!res.ok) return res.text().then(t => { throw new Error(t); });
             return res.json();
@@ -81,7 +81,7 @@ function submitPayment() {
     document.getElementById("payBtn").disabled = true;
     setStatus("Processing...", "#555");
 
-    fetch("/payments/" + encodeURIComponent(token), {
+    fetch("/customer/payments/" + encodeURIComponent(token), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cardNumber, cvv2, expiry, password, captcha })

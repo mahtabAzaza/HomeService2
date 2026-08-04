@@ -4,7 +4,9 @@ import ir.HomeServiceApplication.DTO.*;
 import jakarta.validation.Valid;
 import ir.HomeServiceApplication.entity.*;
 import ir.HomeServiceApplication.mapper.OrderMapper;
+import ir.HomeServiceApplication.mapper.PaymentMapper;
 import ir.HomeServiceApplication.mapper.ProposalMapper;
+import ir.HomeServiceApplication.service.PaymentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,13 +25,15 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final ServiceService serviceService;
+    private final PaymentService paymentService;
+    private final PaymentMapper paymentMapper;
 
-
-
-    public CustomerController(CustomerService customerService, ServiceService serviceService) {
+    public CustomerController(CustomerService customerService, ServiceService serviceService,
+                              PaymentService paymentService, PaymentMapper paymentMapper) {
         this.customerService = customerService;
         this.serviceService = serviceService;
-
+        this.paymentService = paymentService;
+        this.paymentMapper = paymentMapper;
     }
 
     @GetMapping("/services")
@@ -121,5 +125,28 @@ public ResponseEntity<OrderDto> placeOrder(@Valid @RequestBody PlaceOrderRequest
         Customer current = customerService.findByEmail(UserContext.getCurrentEmail());
         customerService.updateProfile(current.getId(), dto);
         return ResponseEntity.ok("Profile updated successfully");
+    }
+
+    @PostMapping("/charge-wallet")
+    public ResponseEntity<PaymentLinkResponseDto> chargeWallet(@RequestParam Long amount) {
+        Customer current = customerService.findByEmail(UserContext.getCurrentEmail());
+        PaymentSession session = paymentService.createChargeSession(current.getId(), amount);
+        return ResponseEntity.ok(paymentMapper.toLinkDto(session));
+    }
+
+    @GetMapping("/payments/{token}")
+    public ResponseEntity<PaymentSessionResponseDto> getPaymentSession(@PathVariable String token) {
+        return ResponseEntity.ok(paymentMapper.toResponse(paymentService.findByToken(token)));
+    }
+
+    @PostMapping("/payments/{token}")
+    public ResponseEntity<PaymentResultDto> pay(@PathVariable String token,
+                                                @Valid @RequestBody PaymentRequestDto dto) {
+        PaymentSession session = paymentService.pay(token, dto);
+        return ResponseEntity.ok(new PaymentResultDto(
+                "Payment successful. Your wallet has been charged.",
+                session.getStatus(),
+                session.getAmount()
+        ));
     }
 }

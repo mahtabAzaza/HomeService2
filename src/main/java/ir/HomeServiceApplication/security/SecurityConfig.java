@@ -42,10 +42,10 @@ public class SecurityConfig {
 
                         // Public endpoints
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/payments/**",
-                                "/payment.html",
+                        .requestMatchers("/payment.html",
                                 "/css/**",
                                 "/js/**").permitAll()
+                        .requestMatchers("/customer/payments/**").permitAll()
 
                         // Role based endpoints
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
